@@ -1,0 +1,13 @@
+{
+  "editor.fontSize": 15,
+  "editor.formatOnSave": true,
+  "files.autoSave": "afterDelay",
+  "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+  "editor.wordWrap": "on",
+  "editor.tabSize": 2,
+  "workbench.hover.delay": 1000,
+  "workbench.layoutControl.enabled": false,
+  "workbench.editor.limit.value": 15,
+  "eslint.format.enable": true,
+  "eslint.lintTask.enable": true
+}
