@@ -7,7 +7,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "lint": "npx expo lint"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -34,7 +35,12 @@
     "@types/jest": "^29.5.14",
     "@types/react": "~19.1.17",
     "baseline-browser-mapping": "^2.9.11",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~10.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
     "jest-expo": "^54.0.16",
+    "prettier": "^3.7.4",
     "react-test-renderer": "19.1.0",
     "ts-jest": "^29.4.6",
     "typescript": "~5.9.2"

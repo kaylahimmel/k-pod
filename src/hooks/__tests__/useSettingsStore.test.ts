@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-native';
-import settingsStore from '../../stores/settingsStore';
+import {settingsStore} from '../../stores';
 import { useSettingsStore } from '../useSettingsStore';
 
 describe('useSettingsStore', () => {

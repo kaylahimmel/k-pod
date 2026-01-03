@@ -1,4 +1,4 @@
-import queueStore from '../stores/queueStore';
+import {queueStore} from '../stores';
 
 /**
  * Hook to access the queue store

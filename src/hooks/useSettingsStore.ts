@@ -1,4 +1,4 @@
-import settingsStore from '../stores/settingsStore';
+import {settingsStore} from '../stores';
 
 /**
  * Hook to access the settings store

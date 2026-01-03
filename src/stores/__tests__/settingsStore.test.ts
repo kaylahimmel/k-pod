@@ -1,5 +1,5 @@
-import settingsStore from '../../stores/settingsStore';
-import { AppSettings } from '../../models/AppSettings';
+import {settingsStore} from '../../stores';
+import { AppSettings } from '../../models';
 
 describe('settingsStore', () => {
   const defaultSettings: AppSettings = {

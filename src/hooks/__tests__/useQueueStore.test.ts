@@ -1,9 +1,7 @@
 import { renderHook, act } from '@testing-library/react-native';
-import queueStore from '../../stores/queueStore';
+import {queueStore} from '../../stores';
 import { useQueueStore } from '../useQueueStore';
-import { QueueItem } from '../../models/QueueItem';
-import { Episode } from '../../models/Episode';
-import { Podcast } from '../../models/Podcast';
+import { QueueItem, Episode, Podcast } from '../../models';
 
 describe('useQueueStore', () => {
   const mockEpisode: Episode = {

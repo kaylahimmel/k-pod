@@ -1,5 +1,5 @@
-import playerStore from '../../stores/playerStore';
-import { Episode } from '../../models/Episode';
+import {playerStore} from '../../stores';
+import { Episode, PlaybackSpeed } from '../../models';
 
 describe('playerStore', () => {
   beforeEach(() => {
@@ -113,7 +113,7 @@ describe('playerStore', () => {
     });
 
     it('should handle various speed values', () => {
-      const speeds: Array<0.5 | 0.6 | 0.7 | 0.8 | 0.9 | 1 | 1.1 | 1.2 | 1.3 | 1.4 | 1.5 | 1.6 | 1.7 | 1.8 | 1.9 | 2> = [
+      const speeds: PlaybackSpeed[] = [
         0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2,
       ];
       speeds.forEach((speed) => {
