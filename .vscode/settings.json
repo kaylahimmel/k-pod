@@ -6,7 +6,7 @@
   "editor.wordWrap": "on",
   "editor.tabSize": 2,
   "workbench.hover.delay": 1000,
-  "workbench.layoutControl.enabled": false,
+  "workbench.layoutControl.enabled": true,
   "workbench.editor.limit.value": 15,
   "eslint.format.enable": true,
   "eslint.lintTask.enable": true
