@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { usePlayerStore } from '../usePlayerStore';
-import playerStore from '../../stores/playerStore';
-import { Episode } from '../../models/Episode';
+import {playerStore} from '../../stores';
+import { Episode } from '../../models';
 
 describe('usePlayerStore', () => {
   beforeEach(() => {

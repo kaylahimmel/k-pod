@@ -1,5 +1,3 @@
-import { renderHook } from '@testing-library/react-native';
-
 describe('PodcastViewModel', () => {
   describe('initialization', () => {
     it('should initialize with default state', () => {

@@ -1,7 +1,5 @@
-import queueStore from '../../stores/queueStore';
-import { QueueItem } from '../../models/QueueItem';
-import { Episode } from '../../models/Episode';
-import { Podcast } from '../../models/Podcast';
+import {queueStore} from '../../stores';
+import { QueueItem, Episode, Podcast } from '../../models';
 
 describe('queueStore', () => {
   beforeEach(() => {

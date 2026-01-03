@@ -1,4 +1,4 @@
-import { Podcast } from '../../../models/Podcast';
+import { Podcast } from '../../../models';
 
 describe('PodcastPresenter', () => {
   const mockPodcast: Podcast = {

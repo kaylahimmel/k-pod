@@ -1,56 +1,9 @@
 import { XMLParser } from 'fast-xml-parser';
-import { Podcast } from '../models/Podcast';
-import { Episode } from '../models/Episode';
-
-// ============================================
-// TYPES
-// ============================================
-
-/**
- * Result type for RSS operations
- * Using a Result pattern helps handle errors gracefully without throwing
- */
-export type RSSResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: string };
-
-/**
- * Raw RSS XML structure after parsing
- * This matches the actual XML structure of podcast RSS feeds
- */
-interface RSSFeed {
-  rss: {
-    channel: {
-      title?: string;
-      description?: string;
-      link?: string;
-      image?: { url?: string };
-      'itunes:author'?: string;
-      'itunes:image'?: { '@_href'?: string };
-      item?: RSSItem | RSSItem[]; // Can be single item or array
-    };
-  };
-}
-
-interface RSSItem {
-  title?: string;
-  description?: string;
-  pubDate?: string;
-  guid?: string | { '#text'?: string };
-  link?: string;
-  enclosure?: {
-    '@_url'?: string;
-    '@_type'?: string;
-    '@_length'?: string;
-  };
-  'itunes:duration'?: string;
-  'itunes:summary'?: string;
-}
+import { Episode, Podcast, RSSFeed, RSSItem, ServiceResult } from '../models';
 
 // ============================================
 // PARSER CONFIGURATION
 // ============================================
-
 /**
  * Configure the XML parser
  * - ignoreAttributes: false - We need attributes like enclosure's url
@@ -64,7 +17,6 @@ const parser = new XMLParser({
 // ============================================
 // HELPER FUNCTIONS
 // ============================================
-
 /**
  * Generate a unique ID from a string (used for episodes without GUIDs)
  * This creates a simple hash - not cryptographically secure, but good enough for IDs
@@ -144,12 +96,11 @@ function normalizeItems(items: RSSItem | RSSItem[] | undefined): RSSItem[] {
 // ============================================
 // MAIN FUNCTIONS
 // ============================================
-
 /**
  * Fetch and parse an RSS feed from a URL
  * Returns the raw parsed feed data
  */
-async function fetchAndParseFeed(rssUrl: string): Promise<RSSResult<RSSFeed>> {
+async function fetchAndParseFeed(rssUrl: string): Promise<ServiceResult<RSSFeed>> {
   try {
     const response = await fetch(rssUrl);
 
@@ -224,7 +175,7 @@ function transformFeedToPodcast(feed: RSSFeed, rssUrl: string): Podcast {
  */
 async function transformPodcastFromRSS(
   rssUrl: string
-): Promise<RSSResult<Podcast>> {
+): Promise<ServiceResult<Podcast>> {
   const feedResult = await fetchAndParseFeed(rssUrl);
 
   if (!feedResult.success) {
@@ -242,7 +193,7 @@ async function transformPodcastFromRSS(
 async function refreshEpisodes(
   podcastId: string,
   rssUrl: string
-): Promise<RSSResult<Episode[]>> {
+): Promise<ServiceResult<Episode[]>> {
   const feedResult = await fetchAndParseFeed(rssUrl);
 
   if (!feedResult.success) {
@@ -259,7 +210,6 @@ async function refreshEpisodes(
 // ============================================
 // EXPORTS
 // ============================================
-
 export const RSSService = {
   transformPodcastFromRSS,
   refreshEpisodes,
