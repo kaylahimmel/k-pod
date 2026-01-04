@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { PlayerStore } from '../models';
+import { create } from "zustand";
+import { PlayerStore } from "../models";
 
 export const playerStore = create<PlayerStore>((set) => ({
   currentEpisode: null,

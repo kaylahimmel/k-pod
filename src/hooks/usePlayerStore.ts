@@ -1,4 +1,4 @@
-import {playerStore} from '../stores';
+import { playerStore } from "../stores";
 
 /**
  * Hook to access the player store

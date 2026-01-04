@@ -29,7 +29,7 @@ export interface PlaybackState {
   speed: PlaybackSpeed; // Playback speed (0.5x to 2x)
 }
 
-  /**
+/**
  * Callback types for playback events
  */
 export type OnProgressCallback = (position: number, duration: number) => void;
