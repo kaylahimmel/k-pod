@@ -37,8 +37,8 @@ describe("useQueueStore", () => {
   afterEach(() => {
     // Wrapped in act() because store actions can trigger re-renders in mounted hooks
     act(() => {
-    queueStore.getState().setQueue([]);
-    queueStore.getState().setCurrentIndex(0);
+      queueStore.getState().setQueue([]);
+      queueStore.getState().setCurrentIndex(0);
     });
   });
 

@@ -7,3 +7,4 @@ export * from "./AppSettings.types";
 export * from "./Playback.types";
 export * from "./ServiceResult.types";
 export * from "./RSSFeed.types";
+export * from "./Discovery.types";
