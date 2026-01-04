@@ -1,5 +1,5 @@
-import { XMLParser } from 'fast-xml-parser';
-import { Episode, Podcast, RSSFeed, RSSItem, ServiceResult } from '../models';
+import { XMLParser } from "fast-xml-parser";
+import { Episode, Podcast, RSSFeed, RSSItem, ServiceResult } from "../models";
 
 // ============================================
 // PARSER CONFIGURATION
@@ -11,7 +11,7 @@ import { Episode, Podcast, RSSFeed, RSSItem, ServiceResult } from '../models';
  */
 const parser = new XMLParser({
   ignoreAttributes: false,
-  attributeNamePrefix: '@_',
+  attributeNamePrefix: "@_",
 });
 
 // ============================================
@@ -40,12 +40,12 @@ function parseDuration(duration: string | undefined): number {
 
   // If it's already a number (seconds), return it
   const asNumber = parseInt(duration, 10);
-  if (!isNaN(asNumber) && !duration.includes(':')) {
+  if (!isNaN(asNumber) && !duration.includes(":")) {
     return asNumber;
   }
 
   // Parse time format (HH:MM:SS or MM:SS)
-  const parts = duration.split(':').map((p) => parseInt(p, 10));
+  const parts = duration.split(":").map((p) => parseInt(p, 10));
   if (parts.some(isNaN)) return 0;
 
   if (parts.length === 3) {
@@ -64,10 +64,10 @@ function parseDuration(duration: string | undefined): number {
  * Enclosure is the RSS term for media attachments (like audio files)
  */
 function extractAudioUrl(item: RSSItem): string {
-  if (item.enclosure?.['@_url']) {
-    return item.enclosure['@_url'];
+  if (item.enclosure?.["@_url"]) {
+    return item.enclosure["@_url"];
   }
-  return '';
+  return "";
 }
 
 /**
@@ -75,13 +75,13 @@ function extractAudioUrl(item: RSSItem): string {
  * GUID can be a simple string or an object with #text property
  */
 function extractGuid(item: RSSItem): string {
-  if (typeof item.guid === 'string') {
+  if (typeof item.guid === "string") {
     return item.guid;
   }
-  if (item.guid?.['#text']) {
-    return item.guid['#text'];
+  if (item.guid?.["#text"]) {
+    return item.guid["#text"];
   }
-  return '';
+  return "";
 }
 
 /**
@@ -100,7 +100,9 @@ function normalizeItems(items: RSSItem | RSSItem[] | undefined): RSSItem[] {
  * Fetch and parse an RSS feed from a URL
  * Returns the raw parsed feed data
  */
-async function fetchAndParseFeed(rssUrl: string): Promise<ServiceResult<RSSFeed>> {
+async function fetchAndParseFeed(
+  rssUrl: string,
+): Promise<ServiceResult<RSSFeed>> {
   try {
     const response = await fetch(rssUrl);
 
@@ -118,13 +120,13 @@ async function fetchAndParseFeed(rssUrl: string): Promise<ServiceResult<RSSFeed>
     if (!feed.rss?.channel) {
       return {
         success: false,
-        error: 'Invalid RSS feed: missing channel element',
+        error: "Invalid RSS feed: missing channel element",
       };
     }
 
     return { success: true, data: feed };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
+    const message = error instanceof Error ? error.message : "Unknown error";
     return { success: false, error: `RSS parsing failed: ${message}` };
   }
 }
@@ -143,10 +145,10 @@ function transformFeedToPodcast(feed: RSSFeed, rssUrl: string): Podcast {
     return {
       id: guid || generateId(rssUrl + item.title + item.pubDate),
       podcastId: generateId(rssUrl),
-      title: item.title || '',
-      description: item.description || item['itunes:summary'] || '',
+      title: item.title || "",
+      description: item.description || item["itunes:summary"] || "",
       audioUrl: extractAudioUrl(item),
-      duration: parseDuration(item['itunes:duration']),
+      duration: parseDuration(item["itunes:duration"]),
       publishDate: item.pubDate || now,
       played: false,
     };
@@ -154,15 +156,15 @@ function transformFeedToPodcast(feed: RSSFeed, rssUrl: string): Podcast {
 
   // Get artwork URL - try itunes:image first (higher quality), then channel image
   const artworkUrl =
-    channel['itunes:image']?.['@_href'] || channel.image?.url || '';
+    channel["itunes:image"]?.["@_href"] || channel.image?.url || "";
 
   return {
     id: generateId(rssUrl),
-    title: channel.title || 'Unknown Podcast',
-    author: channel['itunes:author'] || channel.title || 'Unknown Author',
+    title: channel.title || "Unknown Podcast",
+    author: channel["itunes:author"] || channel.title || "Unknown Author",
     rssUrl: rssUrl,
     artworkUrl,
-    description: channel.description || '',
+    description: channel.description || "",
     subscribeDate: now,
     lastUpdated: now,
     episodes,
@@ -174,7 +176,7 @@ function transformFeedToPodcast(feed: RSSFeed, rssUrl: string): Podcast {
  * Returns a fully-populated Podcast object with episodes
  */
 async function transformPodcastFromRSS(
-  rssUrl: string
+  rssUrl: string,
 ): Promise<ServiceResult<Podcast>> {
   const feedResult = await fetchAndParseFeed(rssUrl);
 
@@ -192,7 +194,7 @@ async function transformPodcastFromRSS(
  */
 async function refreshEpisodes(
   podcastId: string,
-  rssUrl: string
+  rssUrl: string,
 ): Promise<ServiceResult<Episode[]>> {
   const feedResult = await fetchAndParseFeed(rssUrl);
 

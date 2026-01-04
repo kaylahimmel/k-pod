@@ -1,22 +1,25 @@
-import { renderHook, act } from '@testing-library/react-native';
-import { usePlayerStore } from '../usePlayerStore';
-import {playerStore} from '../../stores';
-import { Episode } from '../../models';
+import { renderHook, act } from "@testing-library/react-native";
+import { usePlayerStore } from "../usePlayerStore";
+import { playerStore } from "../../stores";
+import { Episode } from "../../models";
 
-describe('usePlayerStore', () => {
+describe("usePlayerStore", () => {
   beforeEach(() => {
     // Reset store to initial state before each test
-    playerStore.setState({
-      currentEpisode: null,
-      isPlaying: false,
-      position: 0,
-      duration: 0,
-      speed: 1,
+    // Wrapped in act() because setState can trigger re-renders in mounted hooks
+    act(() => {
+      playerStore.setState({
+        currentEpisode: null,
+        isPlaying: false,
+        position: 0,
+        duration: 0,
+        speed: 1,
+      });
     });
   });
 
-  describe('playback state', () => {
-    it('should update playing state', () => {
+  describe("playback state", () => {
+    it("should update playing state", () => {
       const { result } = renderHook(() => usePlayerStore());
 
       expect(result.current.isPlaying).toBe(false);
@@ -33,14 +36,14 @@ describe('usePlayerStore', () => {
     });
   });
 
-  describe('episode management', () => {
-    it('should set current episode', () => {
+  describe("episode management", () => {
+    it("should set current episode", () => {
       const mockEpisode: Episode = {
-        id: 'e1',
-        podcastId: 'p1',
-        title: 'Episode 1',
-        description: 'Test episode',
-        audioUrl: 'https://example.com/audio.mp3',
+        id: "e1",
+        podcastId: "p1",
+        title: "Episode 1",
+        description: "Test episode",
+        audioUrl: "https://example.com/audio.mp3",
         duration: 3600,
         publishDate: new Date().toISOString(),
         played: false,
@@ -51,7 +54,7 @@ describe('usePlayerStore', () => {
       act(() => {
         result.current.setCurrentEpisode(mockEpisode);
       });
-      expect(result.current.currentEpisode?.id).toBe('e1');
+      expect(result.current.currentEpisode?.id).toBe("e1");
 
       act(() => {
         result.current.setCurrentEpisode(null);
@@ -60,8 +63,8 @@ describe('usePlayerStore', () => {
     });
   });
 
-  describe('position and duration', () => {
-    it('should update position', () => {
+  describe("position and duration", () => {
+    it("should update position", () => {
       const { result } = renderHook(() => usePlayerStore());
 
       expect(result.current.position).toBe(0);
@@ -72,7 +75,7 @@ describe('usePlayerStore', () => {
       expect(result.current.position).toBe(120);
     });
 
-    it('should update duration', () => {
+    it("should update duration", () => {
       const { result } = renderHook(() => usePlayerStore());
 
       expect(result.current.duration).toBe(0);
@@ -84,8 +87,8 @@ describe('usePlayerStore', () => {
     });
   });
 
-  describe('playback speed', () => {
-    it('should update speed to valid values', () => {
+  describe("playback speed", () => {
+    it("should update speed to valid values", () => {
       const { result } = renderHook(() => usePlayerStore());
 
       expect(result.current.speed).toBe(1);
@@ -102,8 +105,8 @@ describe('usePlayerStore', () => {
     });
   });
 
-  describe('reset', () => {
-    it('should reset all state to defaults', () => {
+  describe("reset", () => {
+    it("should reset all state to defaults", () => {
       const { result } = renderHook(() => usePlayerStore());
 
       act(() => {
@@ -125,13 +128,13 @@ describe('usePlayerStore', () => {
     });
   });
 
-  it('resets all player state', () => {
+  it("resets all player state", () => {
     const mockEpisode: Episode = {
-      id: 'e1',
-      podcastId: 'p1',
-      title: 'Episode 1',
-      description: 'Test episode',
-      audioUrl: 'https://example.com/audio.mp3',
+      id: "e1",
+      podcastId: "p1",
+      title: "Episode 1",
+      description: "Test episode",
+      audioUrl: "https://example.com/audio.mp3",
       duration: 3600,
       publishDate: new Date().toISOString(),
       played: false,
