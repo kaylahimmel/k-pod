@@ -1,5 +1,8 @@
 import { AudioPlayerService } from "../AudioPlayerService";
 
+// Import Audio after mocking
+import { Audio } from "expo-av";
+
 // ===========================================
 // MOCK SETUP
 // ===========================================
@@ -35,9 +38,6 @@ jest.mock("expo-av", () => ({
     },
   },
 }));
-
-// Import Audio after mocking
-import { Audio } from "expo-av";
 
 // Mock episode for testing
 const mockEpisode = {
