@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import type { DiscoverStackParamList } from "./types";
 import { defaultScreenOptions } from "./screenOptions";
+import { DiscoverScreen } from "../screens/DiscoverScreen";
 
 const Stack = createNativeStackNavigator<DiscoverStackParamList>();
 
@@ -17,11 +18,9 @@ const PlaceholderScreen = ({ name }: { name: string }) => (
 );
 
 // TODO: Replace with actual screen imports
-// import { DiscoverScreen } from "../screens/DiscoverScreen/DiscoverScreen";
 // import { SearchResultsScreen } from "../screens/SearchResultsScreen/SearchResultsScreen";
 // import { PodcastPreviewScreen } from "../screens/PodcastPreviewScreen/PodcastPreviewScreen";
 
-const DiscoverScreenPlaceholder = () => <PlaceholderScreen name="Discover" />;
 const SearchResultsScreenPlaceholder = () => (
   <PlaceholderScreen name="Search Results" />
 );
@@ -37,7 +36,7 @@ export const DiscoverStackNavigator = () => {
     <Stack.Navigator screenOptions={defaultScreenOptions}>
       <Stack.Screen
         name="Discover"
-        component={DiscoverScreenPlaceholder}
+        component={DiscoverScreen}
         options={{ title: "Discover" }}
       />
       <Stack.Screen
