@@ -101,8 +101,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#E5E5EA",
     paddingTop: 8,
-    paddingBottom: 8,
-    height: 60,
   },
   tabBarLabel: {
     fontSize: 10,
