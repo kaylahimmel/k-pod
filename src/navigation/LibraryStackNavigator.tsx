@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import type { LibraryStackParamList } from "./types";
 import { defaultScreenOptions } from "./screenOptions";
 import { LibraryScreen } from "../screens/LibraryScreen";
+import { PodcastDetailScreen } from "../screens/PodcastDetailScreen";
 
 const Stack = createNativeStackNavigator<LibraryStackParamList>();
 
@@ -18,12 +19,8 @@ const PlaceholderScreen = ({ name }: { name: string }) => (
 );
 
 // TODO: Replace with actual screen imports
-// import { PodcastDetailScreen } from "../screens/PodcastDetailScreen/PodcastDetailScreen";
 // import { EpisodeDetailScreen } from "../screens/EpisodeDetailScreen/EpisodeDetailScreen";
 
-const PodcastDetailScreenPlaceholder = () => (
-  <PlaceholderScreen name="Podcast Detail" />
-);
 const EpisodeDetailScreenPlaceholder = () => (
   <PlaceholderScreen name="Episode Detail" />
 );
@@ -41,7 +38,7 @@ export const LibraryStackNavigator = () => {
       />
       <Stack.Screen
         name="PodcastDetail"
-        component={PodcastDetailScreenPlaceholder}
+        component={PodcastDetailScreen}
         options={{ title: "Podcast" }}
       />
       <Stack.Screen
