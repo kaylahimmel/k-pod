@@ -4,17 +4,13 @@ import { Ionicons } from "@expo/vector-icons";
 import type { LibraryScreenProps } from "../../navigation/types";
 import { LibraryView } from "./LibraryView";
 
-// =============================================================================
-// Library Screen - Navigation Wrapper
-// =============================================================================
-
 export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
   // Navigation handler: Navigate to podcast detail
   const handlePodcastPress = useCallback(
     (podcastId: string) => {
       navigation.navigate("PodcastDetail", { podcastId });
     },
-    [navigation]
+    [navigation],
   );
 
   // Navigation handler: Open add podcast modal

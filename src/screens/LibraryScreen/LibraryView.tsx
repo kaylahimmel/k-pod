@@ -1,110 +1,19 @@
-import React, { useState, useCallback } from "react";
+import React from "react";
 import {
   View,
   Text,
   FlatList,
-  TextInput,
   TouchableOpacity,
-  Image,
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { usePodcastStore } from "../../hooks/usePodcastStore";
-import {
-  preparePodcastsForDisplay,
-  FormattedPodcast,
-  SortOption,
-} from "./LibraryPresenter";
-
-// =============================================================================
-// Types
-// =============================================================================
-
-interface LibraryViewProps {
-  onPodcastPress: (podcastId: string) => void;
-  onAddPodcastPress: () => void;
-}
-
-// =============================================================================
-// Constants
-// =============================================================================
-
-const COLORS = {
-  primary: "#007AFF",
-  background: "#F2F2F7",
-  cardBackground: "#FFFFFF",
-  textPrimary: "#1C1C1E",
-  textSecondary: "#8E8E93",
-  border: "#E5E5EA",
-  searchBackground: "#E5E5EA",
-};
-
-// =============================================================================
-// Sub-Components
-// =============================================================================
-
-interface SearchBarProps {
-  value: string;
-  onChangeText: (text: string) => void;
-}
-
-const SearchBar = ({ value, onChangeText }: SearchBarProps) => (
-  <View style={styles.searchContainer}>
-    <Ionicons
-      name="search"
-      size={18}
-      color={COLORS.textSecondary}
-      style={styles.searchIcon}
-    />
-    <TextInput
-      style={styles.searchInput}
-      placeholder="Search library..."
-      placeholderTextColor={COLORS.textSecondary}
-      value={value}
-      onChangeText={onChangeText}
-      autoCapitalize="none"
-      autoCorrect={false}
-    />
-    {value.length > 0 && (
-      <TouchableOpacity onPress={() => onChangeText("")}>
-        <Ionicons
-          name="close-circle"
-          size={18}
-          color={COLORS.textSecondary}
-        />
-      </TouchableOpacity>
-    )}
-  </View>
-);
-
-interface PodcastCardProps {
-  podcast: FormattedPodcast;
-  onPress: () => void;
-}
-
-const PodcastCard = ({ podcast, onPress }: PodcastCardProps) => (
-  <TouchableOpacity style={styles.podcastCard} onPress={onPress}>
-    <Image
-      source={{ uri: podcast.artworkUrl }}
-      style={styles.podcastArtwork}
-      defaultSource={require("../../../assets/icon.png")}
-    />
-    <View style={styles.podcastInfo}>
-      <Text style={styles.podcastTitle} numberOfLines={2}>
-        {podcast.displayTitle}
-      </Text>
-      <Text style={styles.podcastAuthor} numberOfLines={1}>
-        {podcast.author}
-      </Text>
-      <Text style={styles.podcastMeta}>
-        {podcast.episodeCountLabel} • Subscribed {podcast.formattedSubscribeDate}
-      </Text>
-    </View>
-    <Ionicons name="chevron-forward" size={20} color={COLORS.textSecondary} />
-  </TouchableOpacity>
-);
+import { FormattedPodcast } from "./LibraryPresenter";
+import { useLibraryViewModel } from "./LibraryViewModel";
+import { COLORS } from "../../constants/Colors";
+import { LibraryViewProps } from "./Library.types";
+import { SearchBar, LibraryPodcastCard } from "../../components";
 
 const EmptyState = ({ onAddPress }: { onAddPress: () => void }) => (
   <View style={styles.emptyContainer}>
@@ -124,9 +33,7 @@ const NoResultsState = ({ query }: { query: string }) => (
   <View style={styles.emptyContainer}>
     <Ionicons name="search-outline" size={64} color={COLORS.textSecondary} />
     <Text style={styles.emptyTitle}>No Results</Text>
-    <Text style={styles.emptyMessage}>
-      No podcasts found matching "{query}"
-    </Text>
+    <Text style={styles.emptyMessage}>No podcasts found matching {query}</Text>
   </View>
 );
 
@@ -155,81 +62,69 @@ const ErrorState = ({
   </View>
 );
 
-// =============================================================================
-// Main Component
-// =============================================================================
-
 export const LibraryView = ({
   onPodcastPress,
   onAddPodcastPress,
 }: LibraryViewProps) => {
-  const { podcasts, loading, error } = usePodcastStore();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption] = useState<SortOption>("recent");
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Format podcasts for display using the presenter
-  const displayPodcasts = preparePodcastsForDisplay(
-    podcasts,
-    searchQuery,
-    sortOption
-  );
-
-  const handleRefresh = useCallback(() => {
-    setRefreshing(true);
-    // TODO: Add refresh logic when RSS service integration is complete
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
-
-  const renderPodcastItem = useCallback(
-    ({ item }: { item: FormattedPodcast }) => (
-      <PodcastCard podcast={item} onPress={() => onPodcastPress(item.id)} />
-    ),
-    [onPodcastPress]
-  );
-
-  const keyExtractor = useCallback(
-    (item: FormattedPodcast) => item.id,
-    []
-  );
+  const viewModel = useLibraryViewModel(onPodcastPress, onAddPodcastPress);
 
   // Loading state
-  if (loading && podcasts.length === 0) {
+  if (viewModel.isLoading) {
     return <LoadingState />;
   }
 
   // Error state
-  if (error && podcasts.length === 0) {
-    return <ErrorState message={error} onRetry={handleRefresh} />;
+  if (viewModel.hasError) {
+    return (
+      <ErrorState
+        message={viewModel.error!}
+        onRetry={viewModel.handleRefresh}
+      />
+    );
   }
 
   // Empty state (no podcasts subscribed)
-  if (podcasts.length === 0) {
-    return <EmptyState onAddPress={onAddPodcastPress} />;
+  if (viewModel.hasNoPodcasts) {
+    return <EmptyState onAddPress={viewModel.handleAddPress} />;
   }
 
   // No results from search
-  if (displayPodcasts.length === 0 && searchQuery.length > 0) {
+  if (viewModel.hasNoSearchResults) {
     return (
       <View style={styles.container}>
-        <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
-        <NoResultsState query={searchQuery} />
+        <SearchBar
+          value={viewModel.searchQuery}
+          onChangeText={viewModel.handleSearchQueryChange}
+          isUsedInLibrary
+        />
+        <NoResultsState query={viewModel.searchQuery} />
       </View>
     );
   }
 
+  const renderPodcastItem = ({ item }: { item: FormattedPodcast }) => (
+    <LibraryPodcastCard
+      podcast={item}
+      onPress={() => viewModel.handlePodcastPress(item.id)}
+    />
+  );
+
   return (
     <View style={styles.container}>
-      <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+      <SearchBar
+        value={viewModel.searchQuery}
+        onChangeText={viewModel.handleSearchQueryChange}
+        isUsedInLibrary
+      />
       <FlatList
-        data={displayPodcasts}
+        data={viewModel.displayPodcasts}
         renderItem={renderPodcastItem}
-        keyExtractor={keyExtractor}
+        keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
+            refreshing={viewModel.refreshing}
+            onRefresh={viewModel.handleRefresh}
             tintColor={COLORS.primary}
           />
         }
@@ -238,10 +133,6 @@ export const LibraryView = ({
     </View>
   );
 };
-
-// =============================================================================
-// Styles
-// =============================================================================
 
 const styles = StyleSheet.create({
   container: {
@@ -268,7 +159,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 16,
-    paddingBottom: 100, // Space for mini player
+    paddingBottom: 100,
   },
   podcastCard: {
     flexDirection: "row",
