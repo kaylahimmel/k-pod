@@ -35,11 +35,11 @@ const ErrorState = ({
   onRetry: () => void;
 }) => (
   <View style={styles.emptyContainer}>
-    <Ionicons name="alert-circle-outline" size={64} color="#FF3B30" />
+    <Ionicons name="alert-circle-outline" size={64} color={COLORS.danger} />
     <Text style={styles.emptyTitle}>Something went wrong</Text>
     <Text style={styles.emptyMessage}>{message}</Text>
     <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
-      <Ionicons name="refresh" size={20} color="#FFFFFF" />
+      <Ionicons name="refresh" size={20} color={COLORS.cardBackground} />
       <Text style={styles.retryButtonText}>Try Again</Text>
     </TouchableOpacity>
   </View>

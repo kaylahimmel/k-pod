@@ -1,10 +1,7 @@
 import React, { useCallback } from "react";
-import { Alert } from "react-native";
 import type { DiscoverScreenProps } from "../../navigation/types";
-import type { DiscoveryPodcast, Podcast } from "../../models";
-import { podcastStore } from "../../stores";
+import type { DiscoveryPodcast } from "../../models";
 import { DiscoverView } from "./DiscoverView";
-import { useDiscoverViewModel } from "./DiscoverViewModel";
 
 export const DiscoverScreen = ({ navigation }: DiscoverScreenProps) => {
   // Navigation handler: Navigate to podcast preview
