@@ -17,12 +17,8 @@ jest.mock("../../../services/DiscoveryService", () => ({
 // Mock Alert
 jest.spyOn(Alert, "alert");
 
-// =============================================================================
-// Test Data
-// =============================================================================
-
 const createMockDiscoveryPodcast = (
-  overrides: Partial<DiscoveryPodcast> = {}
+  overrides: Partial<DiscoveryPodcast> = {},
 ): DiscoveryPodcast => ({
   id: "123",
   title: "Test Podcast",
@@ -46,10 +42,6 @@ const mockRoute = {
   params: undefined,
 };
 
-// =============================================================================
-// Test Setup
-// =============================================================================
-
 describe("DiscoverScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -62,16 +54,15 @@ describe("DiscoverScreen", () => {
     // Default mock for getTrendingPodcasts
     (DiscoveryService.getTrendingPodcasts as jest.Mock).mockResolvedValue({
       success: true,
-      data: [createMockDiscoveryPodcast({ id: "1", title: "Trending Podcast" })],
+      data: [
+        createMockDiscoveryPodcast({ id: "1", title: "Trending Podcast" }),
+      ],
     });
   });
 
   const renderDiscoverScreen = () =>
     render(<DiscoverScreen navigation={mockNavigation} route={mockRoute} />);
 
-  // ===========================================================================
-  // Rendering Tests
-  // ===========================================================================
   describe("Rendering", () => {
     it("should render DiscoverView", async () => {
       const { getByPlaceholderText } = renderDiscoverScreen();
@@ -82,9 +73,6 @@ describe("DiscoverScreen", () => {
     });
   });
 
-  // ===========================================================================
-  // Navigation Tests
-  // ===========================================================================
   describe("Navigation", () => {
     it("should navigate to PodcastPreview when podcast is pressed", async () => {
       const { getByText } = renderDiscoverScreen();
@@ -98,9 +86,6 @@ describe("DiscoverScreen", () => {
     });
   });
 
-  // ===========================================================================
-  // Subscribe Tests
-  // ===========================================================================
   describe("Subscribe", () => {
     it("should show alert when subscribing to already subscribed podcast", async () => {
       podcastStore.setState({
