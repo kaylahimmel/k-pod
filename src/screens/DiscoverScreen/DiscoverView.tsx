@@ -1,129 +1,24 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
   FlatList,
-  TextInput,
   TouchableOpacity,
-  Image,
-  StyleSheet,
   ActivityIndicator,
   SectionList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { usePodcastStore } from "../../hooks/usePodcastStore";
-import { DiscoveryService } from "../../services/DiscoveryService";
 import type { DiscoveryPodcast } from "../../models";
-import {
-  formatDiscoveryPodcasts,
-  groupPodcastsByGenre,
-  filterOutSubscribed,
-  isSubscribed,
-  FormattedDiscoveryPodcast,
-} from "./DiscoverPresenter";
+import { FormattedDiscoveryPodcast } from "./DiscoverPresenter";
+import { useDiscoverViewModel } from "./DiscoverViewModel";
+import { COLORS } from "../../constants/Colors";
+import { DiscoveryPodcastCard, SearchBar } from "../../components";
+import { styles } from "./Discover.styles";
 
-// =============================================================================
-// Types
-// =============================================================================
 interface DiscoverViewProps {
   onPodcastPress: (podcast: DiscoveryPodcast) => void;
   onSubscribe: (podcast: DiscoveryPodcast) => void;
 }
-
-// =============================================================================
-// Constants
-// =============================================================================
-const COLORS = {
-  primary: "#007AFF",
-  background: "#F2F2F7",
-  cardBackground: "#FFFFFF",
-  textPrimary: "#1C1C1E",
-  textSecondary: "#8E8E93",
-  border: "#E5E5EA",
-  searchBackground: "#E5E5EA",
-  success: "#34C759",
-};
-
-// =============================================================================
-// Sub-Components
-// =============================================================================
-interface SearchBarProps {
-  value: string;
-  onChangeText: (text: string) => void;
-  onSubmit: () => void;
-}
-
-const SearchBar = ({ value, onChangeText, onSubmit }: SearchBarProps) => (
-  <View style={styles.searchContainer}>
-    <Ionicons
-      name="search"
-      size={18}
-      color={COLORS.textSecondary}
-      style={styles.searchIcon}
-    />
-    <TextInput
-      style={styles.searchInput}
-      placeholder="Search podcasts..."
-      placeholderTextColor={COLORS.textSecondary}
-      value={value}
-      onChangeText={onChangeText}
-      onSubmitEditing={onSubmit}
-      autoCapitalize="none"
-      autoCorrect={false}
-      returnKeyType="search"
-    />
-    {value.length > 0 && (
-      <TouchableOpacity onPress={() => onChangeText("")}>
-        <Ionicons name="close-circle" size={18} color={COLORS.textSecondary} />
-      </TouchableOpacity>
-    )}
-  </View>
-);
-
-interface DiscoveryPodcastCardProps {
-  podcast: FormattedDiscoveryPodcast;
-  isSubscribed: boolean;
-  onPress: () => void;
-  onSubscribe: () => void;
-}
-
-const DiscoveryPodcastCard = ({
-  podcast,
-  isSubscribed: subscribed,
-  onPress,
-  onSubscribe,
-}: DiscoveryPodcastCardProps) => (
-  <TouchableOpacity style={styles.podcastCard} onPress={onPress}>
-    <Image
-      source={{ uri: podcast.artworkUrl }}
-      style={styles.podcastArtwork}
-      defaultSource={require("../../../assets/icon.png")}
-    />
-    <View style={styles.podcastInfo}>
-      <Text style={styles.podcastTitle} numberOfLines={2}>
-        {podcast.displayTitle}
-      </Text>
-      <Text style={styles.podcastAuthor} numberOfLines={1}>
-        {podcast.author}
-      </Text>
-      <View style={styles.podcastMeta}>
-        <Text style={styles.podcastGenre}>{podcast.genre}</Text>
-        <Text style={styles.podcastEpisodes}>{podcast.episodeCountLabel}</Text>
-      </View>
-    </View>
-    <TouchableOpacity
-      style={[styles.subscribeButton, subscribed && styles.subscribedButton]}
-      onPress={onSubscribe}
-      disabled={subscribed}
-    >
-      {subscribed ? (
-        <Ionicons name="checkmark" size={16} color={COLORS.success} />
-      ) : (
-        <Ionicons name="add" size={16} color={COLORS.primary} />
-      )}
-    </TouchableOpacity>
-  </TouchableOpacity>
-);
 
 const LoadingState = () => (
   <View style={styles.loadingContainer}>
@@ -140,11 +35,11 @@ const ErrorState = ({
   onRetry: () => void;
 }) => (
   <View style={styles.emptyContainer}>
-    <Ionicons name="alert-circle-outline" size={64} color="#FF3B30" />
+    <Ionicons name="alert-circle-outline" size={64} color={COLORS.danger} />
     <Text style={styles.emptyTitle}>Something went wrong</Text>
     <Text style={styles.emptyMessage}>{message}</Text>
     <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
-      <Ionicons name="refresh" size={20} color="#FFFFFF" />
+      <Ionicons name="refresh" size={20} color={COLORS.cardBackground} />
       <Text style={styles.retryButtonText}>Try Again</Text>
     </TouchableOpacity>
   </View>
@@ -181,178 +76,101 @@ const SectionHeader = ({ title }: SectionHeaderProps) => (
 // =============================================================================
 // Main Component
 // =============================================================================
+
 export const DiscoverView = ({
   onPodcastPress,
   onSubscribe,
 }: DiscoverViewProps) => {
-  const { podcasts } = usePodcastStore();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<DiscoveryPodcast[]>([]);
-  const [trendingPodcasts, setTrendingPodcasts] = useState<DiscoveryPodcast[]>(
-    [],
-  );
-  const [loading, setLoading] = useState(false);
-  const [loadingTrending, setLoadingTrending] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [hasSearched, setHasSearched] = useState(false);
+  const viewModel = useDiscoverViewModel(onPodcastPress, onSubscribe);
 
-  // Get subscribed feed URLs for comparison
-  const subscribedFeedUrls = podcasts.map((p) => p.rssUrl);
+  const renderPodcastCard = ({ item }: { item: FormattedDiscoveryPodcast }) => {
+    const originalPodcast = viewModel.getOriginalPodcast(item.id);
+    const subscribed = viewModel.checkIsSubscribed(item.feedUrl);
 
-  // Fetch trending podcasts on mount
-  useEffect(() => {
-    const fetchTrending = async () => {
-      setLoadingTrending(true);
-      const result = await DiscoveryService.getTrendingPodcasts("ALL", 20);
-      if (result.success && result.data) {
-        setTrendingPodcasts(result.data);
-      }
-      setLoadingTrending(false);
-    };
-    fetchTrending();
-  }, []);
+    return (
+      <DiscoveryPodcastCard
+        podcast={item}
+        isSubscribed={subscribed}
+        onPress={() =>
+          originalPodcast && viewModel.handlePodcastPress(originalPodcast)
+        }
+        onSubscribe={() =>
+          originalPodcast && viewModel.handleSubscribe(originalPodcast)
+        }
+      />
+    );
+  };
 
-  const handleSearch = useCallback(async () => {
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-      setHasSearched(false);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    setHasSearched(true);
-
-    const result = await DiscoveryService.searchPodcasts({
-      query: searchQuery,
-    });
-
-    if (result.success) {
-      setSearchResults(result.data);
-    } else {
-      setError(result.error);
-      setSearchResults([]);
-    }
-
-    setLoading(false);
-  }, [searchQuery]);
-
-  const handleClearSearch = useCallback(() => {
-    setSearchQuery("");
-    setSearchResults([]);
-    setHasSearched(false);
-    setError(null);
-  }, []);
-
-  const handleSearchQueryChange = useCallback(
-    (text: string) => {
-      setSearchQuery(text);
-      if (text === "") {
-        handleClearSearch();
-      }
-    },
-    [handleClearSearch],
-  );
-
-  const renderPodcastCard = useCallback(
-    ({ item }: { item: FormattedDiscoveryPodcast }) => {
-      const originalPodcast = [...searchResults, ...trendingPodcasts].find(
-        (p) => p.id === item.id,
-      );
-      const subscribed = isSubscribed(item.feedUrl, subscribedFeedUrls);
-
-      return (
-        <DiscoveryPodcastCard
-          podcast={item}
-          isSubscribed={subscribed}
-          onPress={() => originalPodcast && onPodcastPress(originalPodcast)}
-          onSubscribe={() => originalPodcast && onSubscribe(originalPodcast)}
-        />
-      );
-    },
-    [
-      searchResults,
-      trendingPodcasts,
-      subscribedFeedUrls,
-      onPodcastPress,
-      onSubscribe,
-    ],
-  );
-
-  const keyExtractor = useCallback(
-    (item: FormattedDiscoveryPodcast) => item.id,
-    [],
-  );
-
-  // Show loading state for initial trending fetch
-  if (loadingTrending && !hasSearched) {
+  // Loading state for initial trending fetch
+  if (viewModel.isLoadingTrending) {
     return (
       <View style={styles.container}>
         <SearchBar
-          value={searchQuery}
-          onChangeText={handleSearchQueryChange}
-          onSubmit={handleSearch}
+          value={viewModel.searchQuery}
+          onChangeText={viewModel.handleSearchQueryChange}
+          onSubmit={viewModel.handleSearch}
         />
         <LoadingState />
       </View>
     );
   }
 
-  // Show search results if user has searched
-  if (hasSearched) {
-    if (loading) {
+  // Search mode
+  if (viewModel.hasSearched) {
+    if (viewModel.isSearching) {
       return (
         <View style={styles.container}>
           <SearchBar
-            value={searchQuery}
-            onChangeText={handleSearchQueryChange}
-            onSubmit={handleSearch}
+            value={viewModel.searchQuery}
+            onChangeText={viewModel.handleSearchQueryChange}
+            onSubmit={viewModel.handleSearch}
           />
           <LoadingState />
         </View>
       );
     }
 
-    if (error) {
+    if (viewModel.hasSearchError) {
       return (
         <View style={styles.container}>
           <SearchBar
-            value={searchQuery}
-            onChangeText={handleSearchQueryChange}
-            onSubmit={handleSearch}
+            value={viewModel.searchQuery}
+            onChangeText={viewModel.handleSearchQueryChange}
+            onSubmit={viewModel.handleSearch}
           />
-          <ErrorState message={error} onRetry={handleSearch} />
+          <ErrorState
+            message={viewModel.error!}
+            onRetry={viewModel.handleSearch}
+          />
         </View>
       );
     }
 
-    if (searchResults.length === 0) {
+    if (viewModel.hasNoSearchResults) {
       return (
         <View style={styles.container}>
           <SearchBar
-            value={searchQuery}
-            onChangeText={handleSearchQueryChange}
-            onSubmit={handleSearch}
+            value={viewModel.searchQuery}
+            onChangeText={viewModel.handleSearchQueryChange}
+            onSubmit={viewModel.handleSearch}
           />
-          <NoResultsState query={searchQuery} />
+          <NoResultsState query={viewModel.searchQuery} />
         </View>
       );
     }
-
-    const formattedResults = formatDiscoveryPodcasts(searchResults);
 
     return (
       <View style={styles.container}>
         <SearchBar
-          value={searchQuery}
-          onChangeText={handleSearchQueryChange}
-          onSubmit={handleSearch}
+          value={viewModel.searchQuery}
+          onChangeText={viewModel.handleSearchQueryChange}
+          onSubmit={viewModel.handleSearch}
         />
-        <SectionHeader title={`Results for "${searchQuery}"`} />
+        <SectionHeader title={`Results for "${viewModel.searchQuery}"`} />
         <FlatList
-          data={formattedResults}
+          data={viewModel.formattedSearchResults}
           renderItem={renderPodcastCard}
-          keyExtractor={keyExtractor}
+          keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />
@@ -360,36 +178,24 @@ export const DiscoverView = ({
     );
   }
 
-  // Show trending podcasts grouped by genre
-  const filteredTrending = filterOutSubscribed(
-    trendingPodcasts,
-    subscribedFeedUrls,
-  );
-  const groupedPodcasts = groupPodcastsByGenre(filteredTrending);
-
-  // Convert to SectionList data format
-  const sections = groupedPodcasts.map((group) => ({
-    title: group.genre,
-    data: group.podcasts,
-  }));
-
+  // Trending mode
   return (
     <View style={styles.container}>
       <SearchBar
-        value={searchQuery}
-        onChangeText={handleSearchQueryChange}
-        onSubmit={handleSearch}
+        value={viewModel.searchQuery}
+        onChangeText={viewModel.handleSearchQueryChange}
+        onSubmit={viewModel.handleSearch}
       />
-      {sections.length === 0 ? (
+      {viewModel.hasNoTrendingResults ? (
         <EmptySearchState />
       ) : (
         <SectionList
-          sections={sections}
+          sections={viewModel.sections}
           renderItem={renderPodcastCard}
           renderSectionHeader={({ section }) => (
             <SectionHeader title={section.title} />
           )}
-          keyExtractor={keyExtractor}
+          keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           stickySectionHeadersEnabled={false}
@@ -398,155 +204,5 @@ export const DiscoverView = ({
     </View>
   );
 };
-
-// =============================================================================
-// Styles
-// =============================================================================
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.searchBackground,
-    borderRadius: 10,
-    marginHorizontal: 16,
-    marginVertical: 12,
-    paddingHorizontal: 12,
-    height: 40,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    color: COLORS.textPrimary,
-  },
-  listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 100,
-  },
-  sectionHeader: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
-    backgroundColor: COLORS.background,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: COLORS.textPrimary,
-  },
-  podcastCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.cardBackground,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  podcastArtwork: {
-    width: 64,
-    height: 64,
-    borderRadius: 8,
-    backgroundColor: COLORS.border,
-  },
-  podcastInfo: {
-    flex: 1,
-    marginLeft: 12,
-    marginRight: 8,
-  },
-  podcastTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: COLORS.textPrimary,
-    marginBottom: 2,
-  },
-  podcastAuthor: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    marginBottom: 4,
-  },
-  podcastMeta: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  podcastGenre: {
-    fontSize: 12,
-    color: COLORS.primary,
-    marginRight: 8,
-  },
-  podcastEpisodes: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-  },
-  subscribeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.background,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-  },
-  subscribedButton: {
-    backgroundColor: COLORS.background,
-    borderColor: COLORS.success,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 32,
-    backgroundColor: COLORS.background,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: COLORS.textPrimary,
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptyMessage: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-    textAlign: "center",
-    marginBottom: 24,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: COLORS.background,
-  },
-  loadingText: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-    marginTop: 12,
-  },
-  retryButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 10,
-  },
-  retryButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
-    marginLeft: 8,
-  },
-});
 
 export default DiscoverView;

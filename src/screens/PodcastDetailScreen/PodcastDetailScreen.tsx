@@ -20,7 +20,7 @@ export const PodcastDetailScreen = ({
     (episodeId: string) => {
       navigation.navigate("EpisodeDetail", { episodeId, podcastId });
     },
-    [navigation, podcastId]
+    [navigation, podcastId],
   );
 
   // Play handler: Open full player with episode
@@ -28,7 +28,7 @@ export const PodcastDetailScreen = ({
     (episode: Episode, podcast: Podcast) => {
       navigation.navigate("FullPlayer", { episode, podcast });
     },
-    [navigation]
+    [navigation],
   );
 
   // Unsubscribe handler: Remove podcast and go back
