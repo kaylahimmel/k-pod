@@ -1,28 +1,11 @@
 import type { DiscoveryPodcast } from "../../models";
-
-// =============================================================================
-// Types
-// =============================================================================
-export interface FormattedDiscoveryPodcast {
-  id: string;
-  title: string;
-  displayTitle: string;
-  author: string;
-  feedUrl: string;
-  artworkUrl: string;
-  genre: string;
-  episodeCount: number;
-  episodeCountLabel: string;
-}
+import type { FormattedDiscoveryPodcast } from "./Discover.types";
 
 export interface PodcastsByGenre {
   genre: string;
   podcasts: FormattedDiscoveryPodcast[];
 }
 
-// =============================================================================
-// Text Formatting
-// =============================================================================
 /**
  * Truncates text to a maximum length with ellipsis
  */
@@ -46,9 +29,6 @@ export function formatEpisodeCount(count: number): string {
   }
 }
 
-// =============================================================================
-// Podcast Formatting
-// =============================================================================
 /**
  * Transforms a DiscoveryPodcast into a view-friendly format
  */
@@ -77,9 +57,6 @@ export function formatDiscoveryPodcasts(
   return podcasts.map(formatDiscoveryPodcast);
 }
 
-// =============================================================================
-// Grouping Functions
-// =============================================================================
 /**
  * Groups podcasts by genre
  */
@@ -115,9 +92,6 @@ export function getUniqueGenres(podcasts: DiscoveryPodcast[]): string[] {
   return Array.from(genres).sort();
 }
 
-// =============================================================================
-// Filter Functions
-// =============================================================================
 /**
  * Filters podcasts by genre
  */

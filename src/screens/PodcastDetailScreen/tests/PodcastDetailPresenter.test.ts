@@ -1,4 +1,4 @@
-import { Episode, Podcast } from "../../../models";
+import { createMockEpisode, createMockPodcast } from "../../../__mocks__";
 import {
   formatDuration,
   formatDurationLong,
@@ -10,35 +10,6 @@ import {
   formatEpisodes,
   formatPodcastDetail,
 } from "../PodcastDetailPresenter";
-
-// =============================================================================
-// Test Data
-// =============================================================================
-
-const createMockEpisode = (overrides: Partial<Episode> = {}): Episode => ({
-  id: "episode-1",
-  podcastId: "podcast-1",
-  title: "Test Episode",
-  description: "A test episode description",
-  audioUrl: "https://example.com/audio.mp3",
-  duration: 3600,
-  publishDate: new Date().toISOString(),
-  played: false,
-  ...overrides,
-});
-
-const createMockPodcast = (overrides: Partial<Podcast> = {}): Podcast => ({
-  id: "podcast-1",
-  title: "Test Podcast",
-  author: "Test Author",
-  rssUrl: "https://example.com/rss",
-  artworkUrl: "https://example.com/artwork.jpg",
-  description: "A test podcast description",
-  subscribeDate: new Date().toISOString(),
-  lastUpdated: new Date().toISOString(),
-  episodes: [],
-  ...overrides,
-});
 
 // =============================================================================
 // formatDuration Tests
@@ -216,6 +187,7 @@ describe("formatEpisode", () => {
     const episode = createMockEpisode({
       title: "My Episode Title",
       duration: 3665,
+      publishDate: new Date().toISOString(),
     });
 
     const formatted = formatEpisode(episode);

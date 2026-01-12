@@ -2,24 +2,7 @@ import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react-native";
 import { LibraryView } from "../LibraryView";
 import { podcastStore } from "../../../stores";
-import { Podcast } from "../../../models";
-
-// =============================================================================
-// Test Data
-// =============================================================================
-
-const createMockPodcast = (overrides: Partial<Podcast> = {}): Podcast => ({
-  id: "podcast-1",
-  title: "Test Podcast",
-  author: "Test Author",
-  rssUrl: "https://example.com/rss",
-  artworkUrl: "https://example.com/artwork.jpg",
-  description: "A test podcast description",
-  subscribeDate: new Date().toISOString(),
-  lastUpdated: new Date().toISOString(),
-  episodes: [],
-  ...overrides,
-});
+import { createMockPodcast } from "../../../__mocks__";
 
 // =============================================================================
 // Test Setup

@@ -3,38 +3,10 @@ import { render, fireEvent, waitFor } from "@testing-library/react-native";
 import { Alert } from "react-native";
 import { PodcastDetailView } from "../PodcastDetailView";
 import { podcastStore, queueStore } from "../../../stores";
-import { Podcast, Episode } from "../../../models";
+import { createMockEpisode, createMockPodcast } from "../../../__mocks__";
 
 // Mock Alert
 jest.spyOn(Alert, "alert");
-
-// =============================================================================
-// Test Data
-// =============================================================================
-const createMockEpisode = (overrides: Partial<Episode> = {}): Episode => ({
-  id: "episode-1",
-  podcastId: "podcast-1",
-  title: "Test Episode",
-  description: "A test episode description",
-  audioUrl: "https://example.com/audio.mp3",
-  duration: 3600,
-  publishDate: new Date().toISOString(),
-  played: false,
-  ...overrides,
-});
-
-const createMockPodcast = (overrides: Partial<Podcast> = {}): Podcast => ({
-  id: "podcast-1",
-  title: "Test Podcast",
-  author: "Test Author",
-  rssUrl: "https://example.com/rss",
-  artworkUrl: "https://example.com/artwork.jpg",
-  description: "A test podcast description",
-  subscribeDate: new Date().toISOString(),
-  lastUpdated: new Date().toISOString(),
-  episodes: [],
-  ...overrides,
-});
 
 // =============================================================================
 // Test Setup

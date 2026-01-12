@@ -1,4 +1,4 @@
-import { Podcast } from "../../../models";
+import { createMockPodcast } from "../../../__mocks__";
 import {
   truncateText,
   formatRelativeDate,
@@ -9,23 +9,6 @@ import {
   filterPodcasts,
   preparePodcastsForDisplay,
 } from "../LibraryPresenter";
-
-// =============================================================================
-// Test Data
-// =============================================================================
-
-const createMockPodcast = (overrides: Partial<Podcast> = {}): Podcast => ({
-  id: "podcast-1",
-  title: "Test Podcast",
-  author: "Test Author",
-  rssUrl: "https://example.com/rss",
-  artworkUrl: "https://example.com/artwork.jpg",
-  description: "A test podcast description",
-  subscribeDate: new Date().toISOString(),
-  lastUpdated: new Date().toISOString(),
-  episodes: [],
-  ...overrides,
-});
 
 // =============================================================================
 // truncateText Tests
@@ -124,6 +107,7 @@ describe("formatPodcast", () => {
   it("should transform podcast to formatted podcast", () => {
     const podcast = createMockPodcast({
       title: "My Amazing Podcast",
+      subscribeDate: new Date().toISOString(),
       episodes: [
         {
           id: "1",

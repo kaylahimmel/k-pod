@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor } from "@testing-library/react-native";
 import { DiscoverView } from "../DiscoverView";
 import { podcastStore } from "../../../stores";
 import { DiscoveryService } from "../../../services/DiscoveryService";
-import type { DiscoveryPodcast } from "../../../models";
+import { createMockDiscoveryPodcast } from "../../../__mocks__";
 
 // Mock DiscoveryService
 jest.mock("../../../services/DiscoveryService", () => ({
@@ -12,23 +12,6 @@ jest.mock("../../../services/DiscoveryService", () => ({
     getTrendingPodcasts: jest.fn(),
   },
 }));
-
-// =============================================================================
-// Test Data
-// =============================================================================
-
-const createMockDiscoveryPodcast = (
-  overrides: Partial<DiscoveryPodcast> = {}
-): DiscoveryPodcast => ({
-  id: "123",
-  title: "Test Podcast",
-  author: "Test Author",
-  feedUrl: "https://example.com/feed.xml",
-  artworkUrl: "https://example.com/artwork.jpg",
-  genre: "Technology",
-  episodeCount: 100,
-  ...overrides,
-});
 
 // =============================================================================
 // Test Setup

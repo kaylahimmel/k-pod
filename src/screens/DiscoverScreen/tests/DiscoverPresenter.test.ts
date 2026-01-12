@@ -1,4 +1,4 @@
-import { DiscoveryPodcast } from "../../../models";
+import { createMockDiscoveryPodcast } from "../../../__mocks__";
 import {
   truncateText,
   formatEpisodeCount,
@@ -10,23 +10,6 @@ import {
   filterOutSubscribed,
   isSubscribed,
 } from "../DiscoverPresenter";
-
-// =============================================================================
-// Test Data
-// =============================================================================
-
-const createMockDiscoveryPodcast = (
-  overrides: Partial<DiscoveryPodcast> = {}
-): DiscoveryPodcast => ({
-  id: "123",
-  title: "Test Podcast",
-  author: "Test Author",
-  feedUrl: "https://example.com/feed.xml",
-  artworkUrl: "https://example.com/artwork.jpg",
-  genre: "Technology",
-  episodeCount: 100,
-  ...overrides,
-});
 
 // =============================================================================
 // truncateText Tests

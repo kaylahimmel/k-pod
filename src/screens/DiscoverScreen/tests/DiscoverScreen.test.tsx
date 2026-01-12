@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 import { DiscoverScreen } from "../DiscoverScreen";
 import { podcastStore } from "../../../stores";
 import { DiscoveryService } from "../../../services/DiscoveryService";
-import type { DiscoveryPodcast } from "../../../models";
+import { createMockDiscoveryPodcast } from "../../../__mocks__";
 
 // Mock DiscoveryService
 jest.mock("../../../services/DiscoveryService", () => ({
@@ -16,23 +16,6 @@ jest.mock("../../../services/DiscoveryService", () => ({
 
 // Mock Alert
 jest.spyOn(Alert, "alert");
-
-// =============================================================================
-// Test Data
-// =============================================================================
-
-const createMockDiscoveryPodcast = (
-  overrides: Partial<DiscoveryPodcast> = {}
-): DiscoveryPodcast => ({
-  id: "123",
-  title: "Test Podcast",
-  author: "Test Author",
-  feedUrl: "https://example.com/feed.xml",
-  artworkUrl: "https://example.com/artwork.jpg",
-  genre: "Technology",
-  episodeCount: 100,
-  ...overrides,
-});
 
 const mockNavigation = {
   navigate: jest.fn(),
@@ -62,7 +45,9 @@ describe("DiscoverScreen", () => {
     // Default mock for getTrendingPodcasts
     (DiscoveryService.getTrendingPodcasts as jest.Mock).mockResolvedValue({
       success: true,
-      data: [createMockDiscoveryPodcast({ id: "1", title: "Trending Podcast" })],
+      data: [
+        createMockDiscoveryPodcast({ id: "1", title: "Trending Podcast" }),
+      ],
     });
   });
 

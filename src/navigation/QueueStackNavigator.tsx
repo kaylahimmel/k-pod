@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import type { QueueStackParamList } from "./types";
 import { defaultScreenOptions } from "./screenOptions";
+import { QueueScreen } from "../screens/QueueScreen";
 
 const Stack = createNativeStackNavigator<QueueStackParamList>();
 
@@ -16,11 +17,7 @@ const PlaceholderScreen = ({ name }: { name: string }) => (
   </View>
 );
 
-// TODO: Replace with actual screen imports
-// import { QueueScreen } from "../screens/QueueScreen/QueueScreen";
-// import { EpisodeDetailScreen } from "../screens/EpisodeDetailScreen/EpisodeDetailScreen";
-
-const QueueScreenPlaceholder = () => <PlaceholderScreen name="Up Next" />;
+// TODO: Replace with actual EpisodeDetailScreen
 const EpisodeDetailScreenPlaceholder = () => (
   <PlaceholderScreen name="Episode Detail" />
 );
@@ -33,7 +30,7 @@ export const QueueStackNavigator = () => {
     <Stack.Navigator screenOptions={defaultScreenOptions}>
       <Stack.Screen
         name="Queue"
-        component={QueueScreenPlaceholder}
+        component={QueueScreen}
         options={{ title: "Up Next" }}
       />
       <Stack.Screen
