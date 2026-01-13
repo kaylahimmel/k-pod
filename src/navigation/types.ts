@@ -9,7 +9,6 @@ import type { Episode, Podcast, DiscoveryPodcast } from "../models";
 // =============================================================================
 // Stack Navigator Param Lists
 // =============================================================================
-
 /**
  * Library Stack - For browsing subscribed podcasts and their episodes
  */
@@ -55,7 +54,6 @@ export type SettingsStackParamList = {
 // =============================================================================
 // Bottom Tab Navigator Param List
 // =============================================================================
-
 /**
  * Bottom Tab Navigator - Main tab bar with 5 tabs
  */
@@ -70,7 +68,6 @@ export type BottomTabParamList = {
 // =============================================================================
 // Root Stack Param List
 // =============================================================================
-
 /**
  * Root Stack - Contains the main tab navigator and modal screens
  */
@@ -83,7 +80,6 @@ export type RootStackParamList = {
 // =============================================================================
 // Screen Props Types - Library Stack
 // =============================================================================
-
 export type LibraryScreenProps = CompositeScreenProps<
   NativeStackScreenProps<LibraryStackParamList, "Library">,
   CompositeScreenProps<
@@ -111,7 +107,6 @@ export type EpisodeDetailScreenProps = CompositeScreenProps<
 // =============================================================================
 // Screen Props Types - Discover Stack
 // =============================================================================
-
 export type DiscoverScreenProps = CompositeScreenProps<
   NativeStackScreenProps<DiscoverStackParamList, "Discover">,
   CompositeScreenProps<
@@ -139,7 +134,6 @@ export type PodcastPreviewScreenProps = CompositeScreenProps<
 // =============================================================================
 // Screen Props Types - Queue Stack
 // =============================================================================
-
 export type QueueScreenProps = CompositeScreenProps<
   NativeStackScreenProps<QueueStackParamList, "Queue">,
   CompositeScreenProps<
@@ -159,7 +153,6 @@ export type QueueEpisodeDetailScreenProps = CompositeScreenProps<
 // =============================================================================
 // Screen Props Types - Profile Stack
 // =============================================================================
-
 export type ProfileScreenProps = CompositeScreenProps<
   NativeStackScreenProps<ProfileStackParamList, "Profile">,
   CompositeScreenProps<
@@ -187,7 +180,6 @@ export type ChangePasswordScreenProps = CompositeScreenProps<
 // =============================================================================
 // Screen Props Types - Settings Stack
 // =============================================================================
-
 export type SettingsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<SettingsStackParamList, "Settings">,
   CompositeScreenProps<
@@ -199,7 +191,6 @@ export type SettingsScreenProps = CompositeScreenProps<
 // =============================================================================
 // Screen Props Types - Root Stack (Modals)
 // =============================================================================
-
 export type FullPlayerScreenProps = NativeStackScreenProps<
   RootStackParamList,
   "FullPlayer"
@@ -213,7 +204,6 @@ export type AddPodcastModalScreenProps = NativeStackScreenProps<
 // =============================================================================
 // Global Navigation Declaration for TypeScript
 // =============================================================================
-
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamList {}

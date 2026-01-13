@@ -29,10 +29,6 @@ const mockRoute = {
   params: undefined,
 };
 
-// =============================================================================
-// Test Setup
-// =============================================================================
-
 describe("DiscoverScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -54,9 +50,6 @@ describe("DiscoverScreen", () => {
   const renderDiscoverScreen = () =>
     render(<DiscoverScreen navigation={mockNavigation} route={mockRoute} />);
 
-  // ===========================================================================
-  // Rendering Tests
-  // ===========================================================================
   describe("Rendering", () => {
     it("should render DiscoverView", async () => {
       const { getByPlaceholderText } = renderDiscoverScreen();
@@ -67,9 +60,6 @@ describe("DiscoverScreen", () => {
     });
   });
 
-  // ===========================================================================
-  // Navigation Tests
-  // ===========================================================================
   describe("Navigation", () => {
     it("should navigate to PodcastPreview when podcast is pressed", async () => {
       const { getByText } = renderDiscoverScreen();
@@ -83,9 +73,6 @@ describe("DiscoverScreen", () => {
     });
   });
 
-  // ===========================================================================
-  // Subscribe Tests
-  // ===========================================================================
   describe("Subscribe", () => {
     it("should show alert when subscribing to already subscribed podcast", async () => {
       podcastStore.setState({

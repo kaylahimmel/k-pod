@@ -3,10 +3,7 @@ import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import type { LibraryScreenProps } from "../../navigation/types";
 import { LibraryView } from "./LibraryView";
-
-// =============================================================================
-// Library Screen - Navigation Wrapper
-// =============================================================================
+import { COLORS } from "../../constants/Colors";
 
 export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
   // Navigation handler: Navigate to podcast detail
@@ -14,7 +11,7 @@ export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
     (podcastId: string) => {
       navigation.navigate("PodcastDetail", { podcastId });
     },
-    [navigation]
+    [navigation],
   );
 
   // Navigation handler: Open add podcast modal
@@ -30,7 +27,11 @@ export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
           onPress={handleAddPodcastPress}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="add-circle-outline" size={28} color="#007AFF" />
+          <Ionicons
+            name="add-circle-outline"
+            size={28}
+            color={COLORS.primary}
+          />
         </TouchableOpacity>
       ),
     });

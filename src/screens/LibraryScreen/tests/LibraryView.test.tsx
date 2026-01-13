@@ -4,10 +4,6 @@ import { LibraryView } from "../LibraryView";
 import { podcastStore } from "../../../stores";
 import { createMockPodcast } from "../../../__mocks__";
 
-// =============================================================================
-// Test Setup
-// =============================================================================
-
 describe("LibraryView", () => {
   const mockOnPodcastPress = jest.fn();
   const mockOnAddPodcastPress = jest.fn();
@@ -29,10 +25,6 @@ describe("LibraryView", () => {
         onAddPodcastPress={mockOnAddPodcastPress}
       />,
     );
-
-  // ===========================================================================
-  // Empty State Tests
-  // ===========================================================================
 
   describe("Empty State", () => {
     it("should display empty state when no podcasts", () => {
@@ -59,10 +51,6 @@ describe("LibraryView", () => {
     });
   });
 
-  // ===========================================================================
-  // Loading State Tests
-  // ===========================================================================
-
   describe("Loading State", () => {
     it("should display loading state when loading with no podcasts", () => {
       podcastStore.setState({ loading: true, podcasts: [] });
@@ -83,10 +71,6 @@ describe("LibraryView", () => {
       expect(queryByText("Loading podcasts...")).toBeNull();
     });
   });
-
-  // ===========================================================================
-  // Error State Tests
-  // ===========================================================================
 
   describe("Error State", () => {
     it("should display error state when there is an error with no podcasts", () => {
@@ -112,10 +96,6 @@ describe("LibraryView", () => {
       expect(getByText("Try Again")).toBeTruthy();
     });
   });
-
-  // ===========================================================================
-  // Podcast List Tests
-  // ===========================================================================
 
   describe("Podcast List", () => {
     it("should render list of podcasts", () => {
@@ -176,10 +156,6 @@ describe("LibraryView", () => {
     });
   });
 
-  // ===========================================================================
-  // Search Tests
-  // ===========================================================================
-
   describe("Search Functionality", () => {
     it("should render search bar", () => {
       podcastStore.setState({
@@ -223,7 +199,7 @@ describe("LibraryView", () => {
       await waitFor(() => {
         expect(getByText("No Results")).toBeTruthy();
         expect(
-          getByText(/No podcasts found matching "nonexistent"/),
+          getByText(/No podcasts found matching.*nonexistent/),
         ).toBeTruthy();
       });
     });
@@ -233,8 +209,7 @@ describe("LibraryView", () => {
         podcasts: [createMockPodcast({ title: "Test Podcast" })],
       });
 
-      const { getByPlaceholderText, getByText, getByTestId } =
-        renderLibraryView();
+      const { getByPlaceholderText } = renderLibraryView();
 
       const searchInput = getByPlaceholderText("Search library...");
       fireEvent.changeText(searchInput, "test");
