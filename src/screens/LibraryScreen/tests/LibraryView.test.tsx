@@ -199,7 +199,7 @@ describe("LibraryView", () => {
       await waitFor(() => {
         expect(getByText("No Results")).toBeTruthy();
         expect(
-          getByText(/No podcasts found matching.*nonexistent/),
+          getByText(/No podcasts found matching\s+nonexistent/),
         ).toBeTruthy();
       });
     });
