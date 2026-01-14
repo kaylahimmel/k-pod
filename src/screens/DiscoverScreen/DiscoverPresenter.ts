@@ -1,19 +1,10 @@
 import type { DiscoveryPodcast } from "../../models";
 import type { FormattedDiscoveryPodcast } from "./Discover.types";
+import { truncateText } from "../../utils";
 
 export interface PodcastsByGenre {
   genre: string;
   podcasts: FormattedDiscoveryPodcast[];
-}
-
-/**
- * Truncates text to a maximum length with ellipsis
- */
-export function truncateText(text: string, maxLength: number): string {
-  if (!text || text.length <= maxLength) {
-    return text || "";
-  }
-  return text.slice(0, maxLength - 1).trim() + "…";
 }
 
 /**

@@ -3,17 +3,12 @@ import {
   formatDuration,
   formatDurationLong,
   formatPublishDate,
-  truncateText,
-  stripHtml,
   formatEpisodeCount,
   formatEpisode,
   formatEpisodes,
   formatPodcastDetail,
 } from "../PodcastDetailPresenter";
-
-// =============================================================================
-// formatDuration Tests
-// =============================================================================
+import { truncateText, stripHtml } from "../../../utils";
 
 describe("formatDuration", () => {
   it("should format seconds to MM:SS", () => {
@@ -48,10 +43,6 @@ describe("formatDuration", () => {
   });
 });
 
-// =============================================================================
-// formatDurationLong Tests
-// =============================================================================
-
 describe("formatDurationLong", () => {
   it("should format minutes only", () => {
     expect(formatDurationLong(300)).toBe("5 min");
@@ -73,10 +64,6 @@ describe("formatDurationLong", () => {
     expect(formatDurationLong(-1)).toBe("0 min");
   });
 });
-
-// =============================================================================
-// formatPublishDate Tests
-// =============================================================================
 
 describe("formatPublishDate", () => {
   const now = new Date();
@@ -107,10 +94,6 @@ describe("formatPublishDate", () => {
   });
 });
 
-// =============================================================================
-// truncateText Tests
-// =============================================================================
-
 describe("truncateText", () => {
   it("should return original text if shorter than max", () => {
     expect(truncateText("Short", 10)).toBe("Short");
@@ -129,10 +112,6 @@ describe("truncateText", () => {
     expect(truncateText(undefined as any, 10)).toBe("");
   });
 });
-
-// =============================================================================
-// stripHtml Tests
-// =============================================================================
 
 describe("stripHtml", () => {
   it("should remove HTML tags", () => {
@@ -159,10 +138,6 @@ describe("stripHtml", () => {
   });
 });
 
-// =============================================================================
-// formatEpisodeCount Tests
-// =============================================================================
-
 describe("formatEpisodeCount", () => {
   it("should return 'No episodes' for 0", () => {
     expect(formatEpisodeCount(0)).toBe("No episodes");
@@ -177,10 +152,6 @@ describe("formatEpisodeCount", () => {
     expect(formatEpisodeCount(100)).toBe("100 episodes");
   });
 });
-
-// =============================================================================
-// formatEpisode Tests
-// =============================================================================
 
 describe("formatEpisode", () => {
   it("should format episode with all fields", () => {
@@ -231,10 +202,6 @@ describe("formatEpisode", () => {
   });
 });
 
-// =============================================================================
-// formatEpisodes Tests
-// =============================================================================
-
 describe("formatEpisodes", () => {
   it("should format array of episodes", () => {
     const episodes = [
@@ -269,10 +236,6 @@ describe("formatEpisodes", () => {
     expect(formatEpisodes([])).toEqual([]);
   });
 });
-
-// =============================================================================
-// formatPodcastDetail Tests
-// =============================================================================
 
 describe("formatPodcastDetail", () => {
   it("should format podcast with all fields", () => {

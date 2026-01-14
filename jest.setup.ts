@@ -1,6 +1,29 @@
 import "@testing-library/react-native/build/matchers/extend-expect";
 import "react-native-gesture-handler/jestSetup";
 
+// Mock utils module for presenter tests
+jest.mock("./src/utils", () => ({
+  truncateText: (text: string, maxLength: number): string => {
+    if (!text || text.length <= maxLength) {
+      return text || "";
+    }
+    return text.slice(0, maxLength - 1).trim() + "…";
+  },
+  stripHtml: (html: string): string => {
+    if (!html) return "";
+    return html
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/\s+/g, " ")
+      .trim();
+  },
+}));
+
 // Mock @expo/vector-icons to prevent async font loading warnings in tests
 jest.mock("@expo/vector-icons", () => {
   const React = require("react");

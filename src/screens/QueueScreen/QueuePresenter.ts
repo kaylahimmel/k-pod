@@ -1,5 +1,6 @@
 import type { QueueItem } from "../../models";
 import { FormattedQueueItem } from "./Queue.types";
+import { truncateText } from "../../utils";
 
 /**
  * Formats duration in seconds to HH:MM:SS or MM:SS format
@@ -46,16 +47,6 @@ export function formatRemainingTime(seconds: number): string {
     return `${hours}h ${minutes}m remaining`;
   }
   return `${minutes}m remaining`;
-}
-
-/**
- * Truncates text to a maximum length with ellipsis
- */
-export function truncateText(text: string, maxLength: number): string {
-  if (!text || text.length <= maxLength) {
-    return text || "";
-  }
-  return text.slice(0, maxLength - 1).trim() + "…";
 }
 
 /**

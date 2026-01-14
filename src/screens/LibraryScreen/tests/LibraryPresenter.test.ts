@@ -1,6 +1,5 @@
 import { createMockPodcast } from "../../../__mocks__";
 import {
-  truncateText,
   formatRelativeDate,
   formatEpisodeCount,
   formatPodcast,
@@ -9,6 +8,7 @@ import {
   filterPodcasts,
   preparePodcastsForDisplay,
 } from "../LibraryPresenter";
+import { truncateText } from "../../../utils";
 
 describe("truncateText", () => {
   it("should return the original text if shorter than maxLength", () => {

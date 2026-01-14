@@ -7,7 +7,6 @@ import {
   formatDuration,
   calculateRemainingTime,
   formatRemainingTime,
-  truncateText,
   formatPositionLabel,
   formatQueueItem,
   formatQueueItems,
@@ -16,6 +15,7 @@ import {
   formatQueueCount,
   getQueueStats,
 } from "../QueuePresenter";
+import { truncateText } from "../../../utils";
 
 describe("formatDuration", () => {
   it("should return 0:00 for 0 seconds", () => {
@@ -52,10 +52,6 @@ describe("formatDuration", () => {
   });
 });
 
-// =============================================================================
-// calculateRemainingTime Tests
-// =============================================================================
-
 describe("calculateRemainingTime", () => {
   it("should return 0 for empty queue", () => {
     expect(calculateRemainingTime([], 0)).toBe(0);
@@ -88,10 +84,6 @@ describe("calculateRemainingTime", () => {
   });
 });
 
-// =============================================================================
-// formatRemainingTime Tests
-// =============================================================================
-
 describe("formatRemainingTime", () => {
   it("should return 'No time remaining' for 0 seconds", () => {
     expect(formatRemainingTime(0)).toBe("No time remaining");
@@ -111,10 +103,6 @@ describe("formatRemainingTime", () => {
     expect(formatRemainingTime(7200)).toBe("2h 0m remaining");
   });
 });
-
-// =============================================================================
-// truncateText Tests
-// =============================================================================
 
 describe("truncateText", () => {
   it("should return original text if shorter than max length", () => {
@@ -139,10 +127,6 @@ describe("truncateText", () => {
   });
 });
 
-// =============================================================================
-// formatPositionLabel Tests
-// =============================================================================
-
 describe("formatPositionLabel", () => {
   it("should return 'Now Playing' for currently playing item", () => {
     expect(formatPositionLabel(0, true)).toBe("Now Playing");
@@ -155,10 +139,6 @@ describe("formatPositionLabel", () => {
     expect(formatPositionLabel(9, false)).toBe("#10");
   });
 });
-
-// =============================================================================
-// formatQueueItem Tests
-// =============================================================================
 
 describe("formatQueueItem", () => {
   it("should format queue item with all fields", () => {
@@ -211,10 +191,6 @@ describe("formatQueueItem", () => {
   });
 });
 
-// =============================================================================
-// formatQueueItems Tests
-// =============================================================================
-
 describe("formatQueueItems", () => {
   it("should format array of queue items", () => {
     const queue = [
@@ -251,10 +227,6 @@ describe("formatQueueItems", () => {
   });
 });
 
-// =============================================================================
-// getCurrentlyPlayingItem Tests
-// =============================================================================
-
 describe("getCurrentlyPlayingItem", () => {
   it("should return null for empty queue", () => {
     expect(getCurrentlyPlayingItem([], 0)).toBeNull();
@@ -278,10 +250,6 @@ describe("getCurrentlyPlayingItem", () => {
     expect(current?.positionLabel).toBe("Now Playing");
   });
 });
-
-// =============================================================================
-// getUpcomingItems Tests
-// =============================================================================
 
 describe("getUpcomingItems", () => {
   it("should return empty array for empty queue", () => {
@@ -321,10 +289,6 @@ describe("getUpcomingItems", () => {
   });
 });
 
-// =============================================================================
-// formatQueueCount Tests
-// =============================================================================
-
 describe("formatQueueCount", () => {
   it("should return 'Queue is empty' for 0", () => {
     expect(formatQueueCount(0)).toBe("Queue is empty");
@@ -339,10 +303,6 @@ describe("formatQueueCount", () => {
     expect(formatQueueCount(100)).toBe("100 episodes");
   });
 });
-
-// =============================================================================
-// getQueueStats Tests
-// =============================================================================
 
 describe("getQueueStats", () => {
   it("should return empty stats for empty queue", () => {

@@ -1,25 +1,18 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import DraggableFlatList, {
   RenderItemParams,
 } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { COLORS } from "../../constants/Colors";
 import { useQueueViewModel } from "./QueueViewModel";
 import { FormattedQueueItem, QueueViewProps } from "./Queue.types";
 import { styles } from "./Queue.styles";
-import { CardNowPlaying, CardQueueItem, HeaderQueue } from "../../components";
-
-const EmptyState = () => (
-  <View style={styles.emptyContainer}>
-    <Ionicons name="list-outline" size={64} color={COLORS.textSecondary} />
-    <Text style={styles.emptyTitle}>Your Queue is Empty</Text>
-    <Text style={styles.emptyMessage}>
-      Add episodes to your queue from any podcast to listen to them next
-    </Text>
-  </View>
-);
+import {
+  CardNowPlaying,
+  CardQueueItem,
+  HeaderQueue,
+  StateEmpty,
+} from "../../components";
 
 export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
   const viewModel = useQueueViewModel(onEpisodePress);
@@ -41,7 +34,11 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
   if (viewModel.isEmpty) {
     return (
       <View style={styles.container}>
-        <EmptyState />
+        <StateEmpty
+          icon="list-outline"
+          title="Your Queue is Empty"
+          message="Add episodes to your queue from any podcast to listen to them next"
+        />
       </View>
     );
   }

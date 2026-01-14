@@ -1,67 +1,22 @@
 import React from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-  SectionList,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, Text, FlatList, SectionList } from "react-native";
 import type { DiscoveryPodcast } from "../../models";
 import { FormattedDiscoveryPodcast } from "./Discover.types";
 import { useDiscoverViewModel } from "./DiscoverViewModel";
-import { COLORS } from "../../constants/Colors";
-import { DiscoveryPodcastCard, SearchBar } from "../../components";
+import {
+  DiscoveryPodcastCard,
+  SearchBar,
+  StateEmpty,
+  StateLoading,
+  StateError,
+  StateNoResults,
+} from "../../components";
 import { styles } from "./Discover.styles";
 
 interface DiscoverViewProps {
   onPodcastPress: (podcast: DiscoveryPodcast) => void;
   onSubscribe: (podcast: DiscoveryPodcast) => void;
 }
-
-const LoadingState = () => (
-  <View style={styles.loadingContainer}>
-    <ActivityIndicator size="large" color={COLORS.primary} />
-    <Text style={styles.loadingText}>Searching...</Text>
-  </View>
-);
-
-const ErrorState = ({
-  message,
-  onRetry,
-}: {
-  message: string;
-  onRetry: () => void;
-}) => (
-  <View style={styles.emptyContainer}>
-    <Ionicons name="alert-circle-outline" size={64} color={COLORS.danger} />
-    <Text style={styles.emptyTitle}>Something went wrong</Text>
-    <Text style={styles.emptyMessage}>{message}</Text>
-    <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
-      <Ionicons name="refresh" size={20} color={COLORS.cardBackground} />
-      <Text style={styles.retryButtonText}>Try Again</Text>
-    </TouchableOpacity>
-  </View>
-);
-
-const EmptySearchState = () => (
-  <View style={styles.emptyContainer}>
-    <Ionicons name="search-outline" size={64} color={COLORS.textSecondary} />
-    <Text style={styles.emptyTitle}>Discover Podcasts</Text>
-    <Text style={styles.emptyMessage}>
-      Search for your favorite podcasts or browse trending shows below
-    </Text>
-  </View>
-);
-
-const NoResultsState = ({ query }: { query: string }) => (
-  <View style={styles.emptyContainer}>
-    <Ionicons name="sad-outline" size={64} color={COLORS.textSecondary} />
-    <Text style={styles.emptyTitle}>No Results</Text>
-    <Text style={styles.emptyMessage}>No podcasts found for {query}</Text>
-  </View>
-);
 
 interface SectionHeaderProps {
   title: string;
@@ -106,7 +61,7 @@ export const DiscoverView = ({
           onChangeText={viewModel.handleSearchQueryChange}
           onSubmit={viewModel.handleSearch}
         />
-        <LoadingState />
+        <StateLoading message="Searching..." />
       </View>
     );
   }
@@ -121,7 +76,7 @@ export const DiscoverView = ({
             onChangeText={viewModel.handleSearchQueryChange}
             onSubmit={viewModel.handleSearch}
           />
-          <LoadingState />
+          <StateLoading message="Searching..." />
         </View>
       );
     }
@@ -134,7 +89,7 @@ export const DiscoverView = ({
             onChangeText={viewModel.handleSearchQueryChange}
             onSubmit={viewModel.handleSearch}
           />
-          <ErrorState
+          <StateError
             message={viewModel.error!}
             onRetry={viewModel.handleSearch}
           />
@@ -150,7 +105,7 @@ export const DiscoverView = ({
             onChangeText={viewModel.handleSearchQueryChange}
             onSubmit={viewModel.handleSearch}
           />
-          <NoResultsState query={viewModel.searchQuery} />
+          <StateNoResults query={viewModel.searchQuery} icon="sad-outline" />
         </View>
       );
     }
@@ -183,7 +138,11 @@ export const DiscoverView = ({
         onSubmit={viewModel.handleSearch}
       />
       {viewModel.hasNoTrendingResults ? (
-        <EmptySearchState />
+        <StateEmpty
+          icon="search-outline"
+          title="Discover Podcasts"
+          message="Search for your favorite podcasts or browse trending shows below"
+        />
       ) : (
         <SectionList
           sections={viewModel.sections}

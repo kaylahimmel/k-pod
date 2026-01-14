@@ -1,15 +1,6 @@
 import type { Podcast } from "../../models";
 import { FormattedPodcast, SortOption } from "./Library.types";
-
-/**
- * Truncates a string to a maximum length with ellipsis
- */
-export function truncateText(text: string, maxLength: number): string {
-  if (text.length <= maxLength) {
-    return text;
-  }
-  return text.slice(0, maxLength - 1).trim() + "…";
-}
+import { truncateText } from "../../utils";
 
 /**
  * Formats a date string to a relative time (e.g., "2 days ago")

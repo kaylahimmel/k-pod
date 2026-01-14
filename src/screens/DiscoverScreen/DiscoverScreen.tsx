@@ -5,14 +5,15 @@ import { DiscoverView } from "./DiscoverView";
 
 export const DiscoverScreen = ({ navigation }: DiscoverScreenProps) => {
   // Navigation handler: Navigate to podcast preview
-  const handlePodcastPress = useCallback(
+  const handlePodcastPressNav = useCallback(
     (podcast: DiscoveryPodcast) => {
       navigation.navigate("PodcastPreview", { podcast });
     },
     [navigation],
   );
 
-  const handleSubscribe = useCallback(
+  // Navigation handler: Navigate to podcast preview for subscription
+  const handleSubscribeNav = useCallback(
     (podcast: DiscoveryPodcast) => {
       navigation.navigate("PodcastPreview", { podcast });
     },
@@ -21,8 +22,8 @@ export const DiscoverScreen = ({ navigation }: DiscoverScreenProps) => {
 
   return (
     <DiscoverView
-      onPodcastPress={handlePodcastPress}
-      onSubscribe={handleSubscribe}
+      onPodcastPress={handlePodcastPressNav}
+      onSubscribe={handleSubscribeNav}
     />
   );
 };

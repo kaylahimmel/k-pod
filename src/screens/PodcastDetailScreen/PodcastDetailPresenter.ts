@@ -3,6 +3,7 @@ import {
   FormattedEpisode,
   FormattedPodcastDetail,
 } from "./PodcastDetail.types";
+import { truncateText, stripHtml } from "../../utils";
 
 /**
  * Formats duration in seconds to HH:MM:SS or MM:SS format
@@ -68,33 +69,6 @@ export function formatPublishDate(isoDateString: string): string {
       year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
     });
   }
-}
-
-/**
- * Truncates text to a maximum length with ellipsis
- */
-export function truncateText(text: string, maxLength: number): string {
-  if (!text || text.length <= maxLength) {
-    return text || "";
-  }
-  return text.slice(0, maxLength - 1).trim() + "…";
-}
-
-/**
- * Strips HTML tags from text
- */
-export function stripHtml(html: string): string {
-  if (!html) return "";
-  return html
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\s+/g, " ")
-    .trim();
 }
 
 /**
