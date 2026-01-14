@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { styles } from "./DiscoverPodcastCard.styles";
+import { styles } from "./CardDiscoverPodcast.styles";
 import { COLORS } from "../../constants/Colors";
-import { FormattedDiscoveryPodcast } from "../../screens/DiscoverScreen/DiscoverPresenter";
+import { FormattedDiscoveryPodcast } from "../../screens/DiscoverScreen/Discover.types";
 
 interface DiscoveryPodcastCardProps {
   podcast: FormattedDiscoveryPodcast;

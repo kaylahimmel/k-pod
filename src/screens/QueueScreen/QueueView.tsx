@@ -1,23 +1,15 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DraggableFlatList, {
-  ScaleDecorator,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { COLORS } from "../../constants/Colors";
 import { useQueueViewModel } from "./QueueViewModel";
-import { type FormattedQueueItem } from "./QueuePresenter";
+import { FormattedQueueItem, QueueViewProps } from "./Queue.types";
 import { styles } from "./Queue.styles";
-
-interface QueueViewProps {
-  onEpisodePress?: (episodeId: string, podcastId: string) => void;
-}
-
-// =============================================================================
-// Sub-components
-// =============================================================================
+import { CardNowPlaying, CardQueueItem, HeaderQueue } from "../../components";
 
 const EmptyState = () => (
   <View style={styles.emptyContainer}>
@@ -29,160 +21,6 @@ const EmptyState = () => (
   </View>
 );
 
-interface NowPlayingCardProps {
-  item: FormattedQueueItem;
-  isPlaying: boolean;
-  onPress: () => void;
-}
-
-const NowPlayingCard = ({ item, isPlaying, onPress }: NowPlayingCardProps) => (
-  <TouchableOpacity style={styles.nowPlayingContainer} onPress={onPress}>
-    <View style={styles.nowPlayingHeader}>
-      <Ionicons
-        name={isPlaying ? "volume-high" : "pause"}
-        size={14}
-        color="#FFFFFF"
-      />
-      <Text style={styles.nowPlayingLabel}>
-        {isPlaying ? "NOW PLAYING" : "PAUSED"}
-      </Text>
-    </View>
-    <View style={styles.nowPlayingContent}>
-      {item.podcastArtworkUrl ? (
-        <Image
-          source={{ uri: item.podcastArtworkUrl }}
-          style={styles.nowPlayingArtwork}
-        />
-      ) : (
-        <View style={styles.nowPlayingArtwork}>
-          <Ionicons
-            name="musical-notes"
-            size={30}
-            color={COLORS.textSecondary}
-          />
-        </View>
-      )}
-      <View style={styles.nowPlayingInfo}>
-        <Text style={styles.nowPlayingTitle} numberOfLines={2}>
-          {item.displayTitle}
-        </Text>
-        <Text style={styles.nowPlayingPodcast} numberOfLines={1}>
-          {item.podcastTitle}
-        </Text>
-        <Text style={styles.nowPlayingDuration}>{item.formattedDuration}</Text>
-      </View>
-    </View>
-  </TouchableOpacity>
-);
-
-interface QueueItemCardProps {
-  item: FormattedQueueItem;
-  drag: () => void;
-  isActive: boolean;
-  onRemove: () => void;
-  onPress: () => void;
-}
-
-const QueueItemCard = ({
-  item,
-  drag,
-  isActive,
-  onRemove,
-  onPress,
-}: QueueItemCardProps) => (
-  <ScaleDecorator>
-    <TouchableOpacity
-      style={[styles.queueItemContainer, isActive && styles.queueItemDragging]}
-      onPress={onPress}
-      onLongPress={drag}
-      delayLongPress={150}
-    >
-      <View style={styles.queueItemContent}>
-        <TouchableOpacity
-          style={styles.dragHandle}
-          onLongPress={drag}
-          delayLongPress={0}
-        >
-          <Ionicons name="menu" size={20} color={COLORS.textSecondary} />
-        </TouchableOpacity>
-
-        {item.podcastArtworkUrl ? (
-          <Image
-            source={{ uri: item.podcastArtworkUrl }}
-            style={styles.queueItemArtwork}
-          />
-        ) : (
-          <View style={styles.queueItemArtwork}>
-            <Ionicons
-              name="musical-notes"
-              size={24}
-              color={COLORS.textSecondary}
-            />
-          </View>
-        )}
-
-        <View style={styles.queueItemInfo}>
-          <Text style={styles.queueItemTitle} numberOfLines={2}>
-            {item.displayTitle}
-          </Text>
-          <Text style={styles.queueItemPodcast} numberOfLines={1}>
-            {item.podcastTitle}
-          </Text>
-          <View style={styles.queueItemMeta}>
-            <Text style={styles.queueItemDuration}>
-              {item.formattedDuration}
-            </Text>
-            <Text style={styles.queueItemPosition}>{item.positionLabel}</Text>
-          </View>
-        </View>
-
-        <View style={styles.queueItemActions}>
-          <TouchableOpacity
-            style={styles.removeButton}
-            onPress={onRemove}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Ionicons name="close-circle" size={24} color={COLORS.danger} />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </TouchableOpacity>
-  </ScaleDecorator>
-);
-
-interface QueueHeaderProps {
-  count: string;
-  remainingTime: string;
-  onClear: () => void;
-  hasItems: boolean;
-}
-
-const QueueHeader = ({
-  count,
-  remainingTime,
-  onClear,
-  hasItems,
-}: QueueHeaderProps) => (
-  <View style={styles.headerContainer}>
-    <View style={styles.headerRow}>
-      <View style={styles.headerStats}>
-        <Text style={styles.headerTitle}>Up Next: {count}</Text>
-        <Text style={styles.headerSubtitle}>{remainingTime}</Text>
-      </View>
-      {hasItems && (
-        <TouchableOpacity style={styles.clearButton} onPress={onClear}>
-          <Ionicons name="trash-outline" size={16} color={COLORS.danger} />
-          <Text style={styles.clearButtonText}>Clear</Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  </View>
-);
-
-// =============================================================================
-// Main Component
-// =============================================================================
-
 export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
   const viewModel = useQueueViewModel(onEpisodePress);
 
@@ -191,7 +29,7 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
     drag,
     isActive,
   }: RenderItemParams<FormattedQueueItem>) => (
-    <QueueItemCard
+    <CardQueueItem
       item={item}
       drag={drag}
       isActive={isActive}
@@ -210,7 +48,7 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <QueueHeader
+      <HeaderQueue
         count={viewModel.queueStats.count}
         remainingTime={viewModel.queueStats.remainingTime}
         onClear={viewModel.handleClearQueue}
@@ -218,7 +56,7 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
       />
 
       {viewModel.hasCurrentlyPlaying && viewModel.currentlyPlaying && (
-        <NowPlayingCard
+        <CardNowPlaying
           item={viewModel.currentlyPlaying}
           isPlaying={viewModel.isPlaying}
           onPress={() =>

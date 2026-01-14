@@ -8,10 +8,9 @@ import {
   RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { FormattedPodcast } from "./LibraryPresenter";
 import { useLibraryViewModel } from "./LibraryViewModel";
 import { COLORS } from "../../constants/Colors";
-import { LibraryViewProps } from "./Library.types";
+import { LibraryViewProps, FormattedPodcast } from "./Library.types";
 import { SearchBar, LibraryPodcastCard } from "../../components";
 import { styles } from "./Library.styles";
 

@@ -1,26 +1,5 @@
 import type { Podcast } from "../../models";
-
-// =============================================================================
-// Types
-// =============================================================================
-
-export interface FormattedPodcast {
-  id: string;
-  title: string;
-  displayTitle: string; // Truncated for display
-  author: string;
-  artworkUrl: string;
-  episodeCount: number;
-  episodeCountLabel: string;
-  subscribeDate: string;
-  formattedSubscribeDate: string;
-}
-
-export type SortOption = "recent" | "alphabetical" | "episodeCount";
-
-// =============================================================================
-// Formatting Functions
-// =============================================================================
+import { FormattedPodcast, SortOption } from "./Library.types";
 
 /**
  * Truncates a string to a maximum length with ellipsis
@@ -76,10 +55,6 @@ export function formatEpisodeCount(count: number): string {
   }
 }
 
-// =============================================================================
-// Presenter Functions
-// =============================================================================
-
 /**
  * Transforms a Podcast model into a view-friendly format
  */
@@ -109,7 +84,7 @@ export function formatPodcasts(podcasts: Podcast[]): FormattedPodcast[] {
  */
 export function sortPodcasts(
   podcasts: Podcast[],
-  sortOption: SortOption
+  sortOption: SortOption,
 ): Podcast[] {
   const sorted = [...podcasts];
 
@@ -119,12 +94,12 @@ export function sortPodcasts(
       return sorted.sort(
         (a, b) =>
           new Date(b.subscribeDate).getTime() -
-          new Date(a.subscribeDate).getTime()
+          new Date(a.subscribeDate).getTime(),
       );
     case "alphabetical":
       // A-Z by title
       return sorted.sort((a, b) =>
-        a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+        a.title.toLowerCase().localeCompare(b.title.toLowerCase()),
       );
     case "episodeCount":
       // Most episodes first
@@ -147,7 +122,7 @@ export function filterPodcasts(podcasts: Podcast[], query: string): Podcast[] {
   return podcasts.filter(
     (podcast) =>
       podcast.title.toLowerCase().includes(lowerQuery) ||
-      podcast.author.toLowerCase().includes(lowerQuery)
+      podcast.author.toLowerCase().includes(lowerQuery),
   );
 }
 
@@ -157,7 +132,7 @@ export function filterPodcasts(podcasts: Podcast[], query: string): Podcast[] {
 export function preparePodcastsForDisplay(
   podcasts: Podcast[],
   searchQuery: string,
-  sortOption: SortOption
+  sortOption: SortOption,
 ): FormattedPodcast[] {
   const filtered = filterPodcasts(podcasts, searchQuery);
   const sorted = sortPodcasts(filtered, sortOption);

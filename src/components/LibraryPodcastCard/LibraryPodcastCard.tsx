@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { FormattedPodcast } from "../../screens/LibraryScreen/LibraryPresenter";
+import { FormattedPodcast } from "../../screens/LibraryScreen/Library.types";
 import { COLORS } from "../../constants/Colors";
 import { styles } from "./LibraryPodcastCard.styles";
 

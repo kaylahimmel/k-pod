@@ -3,10 +3,6 @@ import { render, fireEvent } from "@testing-library/react-native";
 import { LibraryScreen } from "../LibraryScreen";
 import { podcastStore } from "../../../stores";
 
-// =============================================================================
-// Mock Navigation
-// =============================================================================
-
 const mockNavigate = jest.fn();
 const mockSetOptions = jest.fn();
 
@@ -32,10 +28,6 @@ const mockRoute = {
   params: undefined,
 };
 
-// =============================================================================
-// Test Setup
-// =============================================================================
-
 describe("LibraryScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -49,10 +41,6 @@ describe("LibraryScreen", () => {
   const renderLibraryScreen = () =>
     render(<LibraryScreen navigation={mockNavigation} route={mockRoute} />);
 
-  // ===========================================================================
-  // Navigation Setup Tests
-  // ===========================================================================
-
   describe("Navigation Setup", () => {
     it("should set header options on mount", () => {
       renderLibraryScreen();
@@ -61,7 +49,7 @@ describe("LibraryScreen", () => {
       expect(mockSetOptions).toHaveBeenCalledWith(
         expect.objectContaining({
           headerRight: expect.any(Function),
-        })
+        }),
       );
     });
 
@@ -73,16 +61,12 @@ describe("LibraryScreen", () => {
       const HeaderRight = setOptionsCall.headerRight;
 
       // Render the header right component
-      const { getByTestId } = render(<HeaderRight />);
+      const {} = render(<HeaderRight />);
 
       // The button should be touchable
       expect(HeaderRight).toBeDefined();
     });
   });
-
-  // ===========================================================================
-  // Navigation Handler Tests
-  // ===========================================================================
 
   describe("Navigation Handlers", () => {
     it("should navigate to PodcastDetail when podcast is pressed", () => {
@@ -119,10 +103,6 @@ describe("LibraryScreen", () => {
       expect(mockNavigate).toHaveBeenCalledWith("AddPodcastModal");
     });
   });
-
-  // ===========================================================================
-  // Rendering Tests
-  // ===========================================================================
 
   describe("Rendering", () => {
     it("should render LibraryView component", () => {

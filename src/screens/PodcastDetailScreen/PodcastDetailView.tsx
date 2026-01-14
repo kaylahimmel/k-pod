@@ -1,13 +1,15 @@
 import React from "react";
 import { FlatList, RefreshControl } from "react-native";
-import { FormattedEpisode } from "./PodcastDetailPresenter";
-import { PodcastDetailViewProps } from "./PodcastDetail.types";
+import {
+  FormattedEpisode,
+  PodcastDetailViewProps,
+} from "./PodcastDetail.types";
 import { usePodcastDetailViewModel } from "./PodcastDetailViewModel";
 import { styles } from "./PodcastDetail.styles";
 import { COLORS } from "../../constants/Colors";
 import {
   EpisodeCard,
-  PodcastHeader,
+  HeaderPodcast,
   EmptyEpisodes,
   EpisodeLoadingState,
   EpisodeNotFoundState,
@@ -53,7 +55,7 @@ export const PodcastDetailView = (props: PodcastDetailViewProps) => {
       renderItem={renderEpisode}
       keyExtractor={(item) => item.id}
       ListHeaderComponent={
-        <PodcastHeader
+        <HeaderPodcast
           podcast={viewModel.formattedPodcast}
           onUnsubscribe={viewModel.handleEpisodeUnsubscribe}
           showFullDescription={viewModel.showFullDescription}

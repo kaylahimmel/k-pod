@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import type { DiscoveryPodcast } from "../../models";
-import { FormattedDiscoveryPodcast } from "./DiscoverPresenter";
+import { FormattedDiscoveryPodcast } from "./Discover.types";
 import { useDiscoverViewModel } from "./DiscoverViewModel";
 import { COLORS } from "../../constants/Colors";
 import { DiscoveryPodcastCard, SearchBar } from "../../components";
@@ -72,10 +72,6 @@ const SectionHeader = ({ title }: SectionHeaderProps) => (
     <Text style={styles.sectionTitle}>{title}</Text>
   </View>
 );
-
-// =============================================================================
-// Main Component
-// =============================================================================
 
 export const DiscoverView = ({
   onPodcastPress,

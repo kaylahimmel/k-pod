@@ -1,40 +1,8 @@
 import type { Episode, Podcast } from "../../models";
-
-// =============================================================================
-// Types
-// =============================================================================
-
-export interface FormattedEpisode {
-  id: string;
-  podcastId: string;
-  title: string;
-  displayTitle: string;
-  description: string;
-  truncatedDescription: string;
-  audioUrl: string;
-  duration: number;
-  formattedDuration: string;
-  publishDate: string;
-  formattedPublishDate: string;
-  played: boolean;
-}
-
-export interface FormattedPodcastDetail {
-  id: string;
-  title: string;
-  author: string;
-  artworkUrl: string;
-  description: string;
-  truncatedDescription: string;
-  episodeCount: number;
-  episodeCountLabel: string;
-  formattedSubscribeDate: string;
-  episodes: FormattedEpisode[];
-}
-
-// =============================================================================
-// Duration Formatting
-// =============================================================================
+import {
+  FormattedEpisode,
+  FormattedPodcastDetail,
+} from "./PodcastDetail.types";
 
 /**
  * Formats duration in seconds to HH:MM:SS or MM:SS format
@@ -75,10 +43,6 @@ export function formatDurationLong(seconds: number): string {
   }
 }
 
-// =============================================================================
-// Date Formatting
-// =============================================================================
-
 /**
  * Formats a date to a relative time or formatted date
  */
@@ -105,10 +69,6 @@ export function formatPublishDate(isoDateString: string): string {
     });
   }
 }
-
-// =============================================================================
-// Text Formatting
-// =============================================================================
 
 /**
  * Truncates text to a maximum length with ellipsis
@@ -150,10 +110,6 @@ export function formatEpisodeCount(count: number): string {
   }
 }
 
-// =============================================================================
-// Episode Formatting
-// =============================================================================
-
 /**
  * Transforms an Episode model into a view-friendly format
  */
@@ -184,14 +140,10 @@ export function formatEpisodes(episodes: Episode[]): FormattedEpisode[] {
   return [...episodes]
     .sort(
       (a, b) =>
-        new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime()
+        new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime(),
     )
     .map(formatEpisode);
 }
-
-// =============================================================================
-// Podcast Detail Formatting
-// =============================================================================
 
 /**
  * Transforms a Podcast model into a detailed view-friendly format

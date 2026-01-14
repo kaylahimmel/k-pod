@@ -1,9 +1,5 @@
 import type { ITunesSearchResponse, DiscoveryPodcast } from "../models";
 
-// =============================================================================
-// Discovery Podcast Mock Creator
-// =============================================================================
-
 /**
  * Creates a mock DiscoveryPodcast object for testing
  * @param overrides - Optional partial DiscoveryPodcast to override default values
@@ -25,7 +21,9 @@ export const createMockDiscoveryPodcast = (
  * Creates multiple mock discovery podcasts for testing list scenarios
  * @param count - Number of podcasts to create
  */
-export const createMockDiscoveryPodcasts = (count: number): DiscoveryPodcast[] =>
+export const createMockDiscoveryPodcasts = (
+  count: number,
+): DiscoveryPodcast[] =>
   Array.from({ length: count }, (_, i) =>
     createMockDiscoveryPodcast({
       id: `discovery-${i + 1}`,
@@ -33,10 +31,6 @@ export const createMockDiscoveryPodcasts = (count: number): DiscoveryPodcast[] =
       feedUrl: `https://example.com/feed${i + 1}.xml`,
     }),
   );
-
-// =============================================================================
-// iTunes API Response Mocks
-// =============================================================================
 
 /**
  * Mock iTunes Search API response with multiple podcasts

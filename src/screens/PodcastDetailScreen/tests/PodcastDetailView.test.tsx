@@ -5,12 +5,8 @@ import { PodcastDetailView } from "../PodcastDetailView";
 import { podcastStore, queueStore } from "../../../stores";
 import { createMockEpisode, createMockPodcast } from "../../../__mocks__";
 
-// Mock Alert
 jest.spyOn(Alert, "alert");
 
-// =============================================================================
-// Test Setup
-// =============================================================================
 describe("PodcastDetailView", () => {
   const mockOnEpisodePress = jest.fn();
   const mockOnPlayEpisode = jest.fn();
@@ -39,9 +35,6 @@ describe("PodcastDetailView", () => {
       />,
     );
 
-  // ===========================================================================
-  // Not Found State Tests
-  // ===========================================================================
   describe("Not Found State", () => {
     it("should display not found when podcast doesn't exist", () => {
       const { getByText } = renderPodcastDetailView("nonexistent");
@@ -50,9 +43,6 @@ describe("PodcastDetailView", () => {
     });
   });
 
-  // ===========================================================================
-  // Loading State Tests
-  // ===========================================================================
   describe("Loading State", () => {
     it("should display loading state when loading with no podcast", () => {
       podcastStore.setState({ loading: true, podcasts: [] });
@@ -63,9 +53,6 @@ describe("PodcastDetailView", () => {
     });
   });
 
-  // ===========================================================================
-  // Podcast Header Tests
-  // ===========================================================================
   describe("Podcast Header", () => {
     it("should display podcast title and author", () => {
       const podcast = createMockPodcast({
@@ -100,9 +87,6 @@ describe("PodcastDetailView", () => {
     });
   });
 
-  // ===========================================================================
-  // Episode List Tests
-  // ===========================================================================
   describe("Episode List", () => {
     it("should display episodes section header", () => {
       podcastStore.setState({ podcasts: [createMockPodcast()] });
@@ -151,9 +135,6 @@ describe("PodcastDetailView", () => {
     });
   });
 
-  // ===========================================================================
-  // Unsubscribe Tests
-  // ===========================================================================
   describe("Unsubscribe", () => {
     it("should show confirmation alert when unsubscribe is pressed", () => {
       podcastStore.setState({
@@ -172,9 +153,6 @@ describe("PodcastDetailView", () => {
     });
   });
 
-  // ===========================================================================
-  // Queue Tests
-  // ===========================================================================
   describe("Add to Queue", () => {
     it("should show alert when episode is already in queue", async () => {
       const episode = createMockEpisode({ id: "ep-1" });

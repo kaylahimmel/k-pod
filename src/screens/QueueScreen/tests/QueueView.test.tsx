@@ -8,10 +8,6 @@ import {
   createMockQueueItem,
 } from "../../../__mocks__";
 
-// =============================================================================
-// Tests
-// =============================================================================
-
 describe("QueueView", () => {
   const mockOnEpisodePress = jest.fn();
 
@@ -33,9 +29,6 @@ describe("QueueView", () => {
   const renderQueueView = () =>
     render(<QueueView onEpisodePress={mockOnEpisodePress} />);
 
-  // ===========================================================================
-  // Empty State Tests
-  // ===========================================================================
   describe("Empty State", () => {
     it("should display empty state when queue is empty", () => {
       const { getByText } = renderQueueView();
@@ -55,9 +48,6 @@ describe("QueueView", () => {
     });
   });
 
-  // ===========================================================================
-  // Currently Playing Tests
-  // ===========================================================================
   describe("Currently Playing", () => {
     it("should display currently playing episode", () => {
       queueStore.setState({
@@ -116,9 +106,6 @@ describe("QueueView", () => {
     });
   });
 
-  // ===========================================================================
-  // Up Next / Queue List Tests
-  // ===========================================================================
   describe("Up Next List", () => {
     it("should display upcoming episodes", () => {
       queueStore.setState({
@@ -174,9 +161,6 @@ describe("QueueView", () => {
     });
   });
 
-  // ===========================================================================
-  // Header / Stats Tests
-  // ===========================================================================
   describe("Header Stats", () => {
     it("should display episode count", () => {
       queueStore.setState({
@@ -228,9 +212,6 @@ describe("QueueView", () => {
     });
   });
 
-  // ===========================================================================
-  // Actions Tests
-  // ===========================================================================
   describe("Actions", () => {
     it("should remove item from queue when remove button is pressed", () => {
       queueStore.setState({
@@ -290,9 +271,6 @@ describe("QueueView", () => {
     });
   });
 
-  // ===========================================================================
-  // Reorder Tests
-  // ===========================================================================
   describe("Reorder", () => {
     it("should reorder queue items", () => {
       queueStore.setState({
@@ -315,9 +293,6 @@ describe("QueueView", () => {
     });
   });
 
-  // ===========================================================================
-  // Episode Artwork Tests
-  // ===========================================================================
   describe("Episode Artwork", () => {
     it("should display podcast artwork when available", () => {
       queueStore.setState({

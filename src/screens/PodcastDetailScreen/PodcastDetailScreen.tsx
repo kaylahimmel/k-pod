@@ -4,10 +4,6 @@ import { PodcastDetailView } from "./PodcastDetailView";
 import { usePodcastStore } from "../../hooks/usePodcastStore";
 import type { Episode, Podcast } from "../../models";
 
-// =============================================================================
-// Podcast Detail Screen - Navigation Wrapper
-// =============================================================================
-
 export const PodcastDetailScreen = ({
   navigation,
   route,

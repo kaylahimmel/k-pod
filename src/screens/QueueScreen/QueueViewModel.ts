@@ -7,8 +7,8 @@ import {
   getCurrentlyPlayingItem,
   getUpcomingItems,
   getQueueStats,
-  type FormattedQueueItem,
 } from "./QueuePresenter";
+import { FormattedQueueItem } from "./Queue.types";
 
 export const useQueueViewModel = (
   onEpisodePress?: (episodeId: string, podcastId: string) => void,
@@ -103,7 +103,6 @@ export const useQueueViewModel = (
   );
 
   return {
-    // Data
     queue,
     formattedQueue,
     currentlyPlaying,
@@ -111,13 +110,9 @@ export const useQueueViewModel = (
     queueStats,
     currentIndex,
     isPlaying,
-
-    // State flags
     isEmpty,
     hasUpcoming,
     hasCurrentlyPlaying,
-
-    // Actions
     handleRemoveFromQueue,
     handleReorder,
     handleClearQueue,
@@ -127,7 +122,4 @@ export const useQueueViewModel = (
   };
 };
 
-// =============================================================================
-// Types
-// =============================================================================
 export type QueueViewModel = ReturnType<typeof useQueueViewModel>;

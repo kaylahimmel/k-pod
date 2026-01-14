@@ -17,10 +17,6 @@ import {
   getQueueStats,
 } from "../QueuePresenter";
 
-// =============================================================================
-// formatDuration Tests
-// =============================================================================
-
 describe("formatDuration", () => {
   it("should return 0:00 for 0 seconds", () => {
     expect(formatDuration(0)).toBe("0:00");

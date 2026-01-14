@@ -1,19 +1,18 @@
 import React from "react";
-import { StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import type { BottomTabParamList } from "./types";
-import { LibraryStackNavigator } from "./LibraryStackNavigator";
-import { DiscoverStackNavigator } from "./DiscoverStackNavigator";
-import { QueueStackNavigator } from "./QueueStackNavigator";
-import { ProfileStackNavigator } from "./ProfileStackNavigator";
-import { SettingsStackNavigator } from "./SettingsStackNavigator";
+import {
+  LibraryStackNavigator,
+  DiscoverStackNavigator,
+  SettingsStackNavigator,
+  ProfileStackNavigator,
+  QueueStackNavigator,
+} from "./";
+import { styles } from "./TabNavigator.styles";
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-// =============================================================================
-// Tab Icon Configuration
-// =============================================================================
 type TabIconName = keyof typeof Ionicons.glyphMap;
 
 interface TabIconConfig {
@@ -44,9 +43,6 @@ const TAB_ICONS: Record<keyof BottomTabParamList, TabIconConfig> = {
   },
 };
 
-// =============================================================================
-// Tab Navigator Component
-// =============================================================================
 export const TabNavigator = () => {
   return (
     <Tab.Navigator
@@ -91,21 +87,5 @@ export const TabNavigator = () => {
     </Tab.Navigator>
   );
 };
-
-// =============================================================================
-// Styles
-// =============================================================================
-const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: "#FFFFFF",
-    borderTopWidth: 1,
-    borderTopColor: "#E5E5EA",
-    paddingTop: 8,
-  },
-  tabBarLabel: {
-    fontSize: 10,
-    fontWeight: "500",
-  },
-});
 
 export default TabNavigator;

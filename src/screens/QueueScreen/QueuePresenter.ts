@@ -1,24 +1,6 @@
 import type { QueueItem } from "../../models";
+import { FormattedQueueItem } from "./Queue.types";
 
-// =============================================================================
-// Types
-// =============================================================================
-export interface FormattedQueueItem {
-  id: string;
-  episodeId: string;
-  episodeTitle: string;
-  displayTitle: string;
-  podcastTitle: string;
-  podcastArtworkUrl: string;
-  duration: number;
-  formattedDuration: string;
-  position: number;
-  positionLabel: string;
-}
-
-// =============================================================================
-// Duration Formatting
-// =============================================================================
 /**
  * Formats duration in seconds to HH:MM:SS or MM:SS format
  */
@@ -66,9 +48,6 @@ export function formatRemainingTime(seconds: number): string {
   return `${minutes}m remaining`;
 }
 
-// =============================================================================
-// Text Formatting
-// =============================================================================
 /**
  * Truncates text to a maximum length with ellipsis
  */
@@ -92,9 +71,6 @@ export function formatPositionLabel(
   return `#${index + 1}`;
 }
 
-// =============================================================================
-// Queue Item Formatting
-// =============================================================================
 /**
  * Transforms a QueueItem into a view-friendly format
  */
@@ -155,9 +131,6 @@ export function getUpcomingItems(
   );
 }
 
-// =============================================================================
-// Queue Statistics
-// =============================================================================
 /**
  * Formats queue count for display
  */
