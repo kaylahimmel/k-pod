@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./EpisodeCard.styles";
 import { COLORS } from "../../constants/Colors";
-import { FormattedEpisode } from "../../screens/PodcastDetailScreen/PodcastDetailPresenter";
+import { FormattedEpisode } from "../../screens/PodcastDetailScreen/PodcastDetail.types";
 import type { Podcast } from "../../models";
 
 interface EpisodeCardProps {

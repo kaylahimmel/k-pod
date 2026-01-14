@@ -1,15 +1,15 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import type { DiscoverStackParamList } from "./types";
-import { defaultScreenOptions } from "./screenOptions";
-import { DiscoverScreen } from "../screens/DiscoverScreen";
+import type { DiscoverStackParamList } from "../types";
+import { defaultScreenOptions } from "../screenOptions";
+import { DiscoverScreen } from "../../screens/DiscoverScreen";
+import { styles } from "../StackNavigator.styles";
 
 const Stack = createNativeStackNavigator<DiscoverStackParamList>();
 
-// =============================================================================
-// Placeholder Screens (to be replaced with actual Screen components)
-// =============================================================================
+/**  Placeholder Screens (to be replaced with actual Screen components)
+ */
 const PlaceholderScreen = ({ name }: { name: string }) => (
   <View style={styles.placeholder}>
     <Text style={styles.placeholderText}>{name}</Text>
@@ -28,9 +28,6 @@ const PodcastPreviewScreenPlaceholder = () => (
   <PlaceholderScreen name="Podcast Preview" />
 );
 
-// =============================================================================
-// Discover Stack Navigator
-// =============================================================================
 export const DiscoverStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={defaultScreenOptions}>
@@ -52,27 +49,5 @@ export const DiscoverStackNavigator = () => {
     </Stack.Navigator>
   );
 };
-
-// =============================================================================
-// Styles
-// =============================================================================
-const styles = StyleSheet.create({
-  placeholder: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F2F2F7",
-  },
-  placeholderText: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#1C1C1E",
-  },
-  placeholderSubtext: {
-    fontSize: 14,
-    color: "#8E8E93",
-    marginTop: 8,
-  },
-});
 
 export default DiscoverStackNavigator;

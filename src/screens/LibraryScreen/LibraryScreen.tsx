@@ -7,7 +7,7 @@ import { COLORS } from "../../constants/Colors";
 
 export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
   // Navigation handler: Navigate to podcast detail
-  const handlePodcastPress = useCallback(
+  const handlePodcastPressNav = useCallback(
     (podcastId: string) => {
       navigation.navigate("PodcastDetail", { podcastId });
     },
@@ -15,7 +15,7 @@ export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
   );
 
   // Navigation handler: Open add podcast modal
-  const handleAddPodcastPress = useCallback(() => {
+  const handleAddPodcastPressNav = useCallback(() => {
     navigation.navigate("AddPodcastModal");
   }, [navigation]);
 
@@ -24,7 +24,7 @@ export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity
-          onPress={handleAddPodcastPress}
+          onPress={handleAddPodcastPressNav}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Ionicons
@@ -35,12 +35,12 @@ export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, handleAddPodcastPress]);
+  }, [navigation, handleAddPodcastPressNav]);
 
   return (
     <LibraryView
-      onPodcastPress={handlePodcastPress}
-      onAddPodcastPress={handleAddPodcastPress}
+      onPodcastPress={handlePodcastPressNav}
+      onAddPodcastPress={handleAddPodcastPressNav}
     />
   );
 };

@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor } from "@testing-library/react-native";
 import { DiscoverView } from "../DiscoverView";
 import { podcastStore } from "../../../stores";
 import { DiscoveryService } from "../../../services/DiscoveryService";
-import type { DiscoveryPodcast } from "../../../models";
+import { createMockDiscoveryPodcast } from "../../../__mocks__";
 
 // Mock DiscoveryService
 jest.mock("../../../services/DiscoveryService", () => ({
@@ -12,27 +12,6 @@ jest.mock("../../../services/DiscoveryService", () => ({
     getTrendingPodcasts: jest.fn(),
   },
 }));
-
-// =============================================================================
-// Test Data
-// =============================================================================
-
-const createMockDiscoveryPodcast = (
-  overrides: Partial<DiscoveryPodcast> = {}
-): DiscoveryPodcast => ({
-  id: "123",
-  title: "Test Podcast",
-  author: "Test Author",
-  feedUrl: "https://example.com/feed.xml",
-  artworkUrl: "https://example.com/artwork.jpg",
-  genre: "Technology",
-  episodeCount: 100,
-  ...overrides,
-});
-
-// =============================================================================
-// Test Setup
-// =============================================================================
 
 describe("DiscoverView", () => {
   const mockOnPodcastPress = jest.fn();
@@ -75,7 +54,7 @@ describe("DiscoverView", () => {
       <DiscoverView
         onPodcastPress={mockOnPodcastPress}
         onSubscribe={mockOnSubscribe}
-      />
+      />,
     );
 
   // ===========================================================================
@@ -96,7 +75,7 @@ describe("DiscoverView", () => {
       await waitFor(() => {
         expect(DiscoveryService.getTrendingPodcasts).toHaveBeenCalledWith(
           "ALL",
-          20
+          20,
         );
       });
     });
@@ -250,7 +229,7 @@ describe("DiscoverView", () => {
     it("should display loading state while fetching trending", async () => {
       // Make getTrendingPodcasts hang
       (DiscoveryService.getTrendingPodcasts as jest.Mock).mockImplementation(
-        () => new Promise(() => {})
+        () => new Promise(() => {}),
       );
 
       const { getByText } = renderDiscoverView();

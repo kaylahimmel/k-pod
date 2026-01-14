@@ -1,23 +1,23 @@
-import { FormattedPodcastDetail } from "../../screens/PodcastDetailScreen/PodcastDetailPresenter";
 import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { styles } from "./PodcastHeader.styles";
 import { COLORS } from "../../constants/Colors";
+import { FormattedPodcastDetail } from "../../screens/PodcastDetailScreen/PodcastDetail.types";
+import { styles } from "./HeaderPodcast.styles";
 
-interface PodcastHeaderProps {
+interface HeaderPodcastProps {
   podcast: FormattedPodcastDetail;
   onUnsubscribe: () => void;
   showFullDescription: boolean;
   onToggleDescription: () => void;
 }
 
-export const PodcastHeader = ({
+export const HeaderPodcast = ({
   podcast,
   onUnsubscribe,
   showFullDescription,
   onToggleDescription,
-}: PodcastHeaderProps) => (
+}: HeaderPodcastProps) => (
   <View style={styles.header}>
     <View style={styles.headerTop}>
       <Image

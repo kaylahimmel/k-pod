@@ -1,6 +1,5 @@
-import { Podcast } from "../../../models";
+import { createMockPodcast } from "../../../__mocks__";
 import {
-  truncateText,
   formatRelativeDate,
   formatEpisodeCount,
   formatPodcast,
@@ -9,27 +8,7 @@ import {
   filterPodcasts,
   preparePodcastsForDisplay,
 } from "../LibraryPresenter";
-
-// =============================================================================
-// Test Data
-// =============================================================================
-
-const createMockPodcast = (overrides: Partial<Podcast> = {}): Podcast => ({
-  id: "podcast-1",
-  title: "Test Podcast",
-  author: "Test Author",
-  rssUrl: "https://example.com/rss",
-  artworkUrl: "https://example.com/artwork.jpg",
-  description: "A test podcast description",
-  subscribeDate: new Date().toISOString(),
-  lastUpdated: new Date().toISOString(),
-  episodes: [],
-  ...overrides,
-});
-
-// =============================================================================
-// truncateText Tests
-// =============================================================================
+import { truncateText } from "../../../utils";
 
 describe("truncateText", () => {
   it("should return the original text if shorter than maxLength", () => {
@@ -52,10 +31,6 @@ describe("truncateText", () => {
     expect(truncateText("Hello    World", 7)).toBe("Hello…");
   });
 });
-
-// =============================================================================
-// formatRelativeDate Tests
-// =============================================================================
 
 describe("formatRelativeDate", () => {
   const now = new Date();
@@ -97,10 +72,6 @@ describe("formatRelativeDate", () => {
   });
 });
 
-// =============================================================================
-// formatEpisodeCount Tests
-// =============================================================================
-
 describe("formatEpisodeCount", () => {
   it("should return 'No episodes' for 0 episodes", () => {
     expect(formatEpisodeCount(0)).toBe("No episodes");
@@ -116,14 +87,11 @@ describe("formatEpisodeCount", () => {
   });
 });
 
-// =============================================================================
-// formatPodcast Tests
-// =============================================================================
-
 describe("formatPodcast", () => {
   it("should transform podcast to formatted podcast", () => {
     const podcast = createMockPodcast({
       title: "My Amazing Podcast",
+      subscribeDate: new Date().toISOString(),
       episodes: [
         {
           id: "1",
@@ -163,10 +131,6 @@ describe("formatPodcast", () => {
   });
 });
 
-// =============================================================================
-// formatPodcasts Tests
-// =============================================================================
-
 describe("formatPodcasts", () => {
   it("should format an array of podcasts", () => {
     const podcasts = [
@@ -185,10 +149,6 @@ describe("formatPodcasts", () => {
     expect(formatPodcasts([])).toEqual([]);
   });
 });
-
-// =============================================================================
-// sortPodcasts Tests
-// =============================================================================
 
 describe("sortPodcasts", () => {
   const podcasts = [
@@ -244,10 +204,6 @@ describe("sortPodcasts", () => {
   });
 });
 
-// =============================================================================
-// filterPodcasts Tests
-// =============================================================================
-
 describe("filterPodcasts", () => {
   const podcasts = [
     createMockPodcast({ id: "1", title: "Tech Talk", author: "John Smith" }),
@@ -295,10 +251,6 @@ describe("filterPodcasts", () => {
   });
 });
 
-// =============================================================================
-// preparePodcastsForDisplay Tests
-// =============================================================================
-
 describe("preparePodcastsForDisplay", () => {
   const podcasts = [
     createMockPodcast({
@@ -331,11 +283,7 @@ describe("preparePodcastsForDisplay", () => {
   });
 
   it("should return empty array when filter matches nothing", () => {
-    const result = preparePodcastsForDisplay(
-      podcasts,
-      "nonexistent",
-      "recent"
-    );
+    const result = preparePodcastsForDisplay(podcasts, "nonexistent", "recent");
 
     expect(result).toHaveLength(0);
   });

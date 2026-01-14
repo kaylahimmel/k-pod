@@ -1,6 +1,5 @@
-import { DiscoveryPodcast } from "../../../models";
+import { createMockDiscoveryPodcast } from "../../../__mocks__";
 import {
-  truncateText,
   formatEpisodeCount,
   formatDiscoveryPodcast,
   formatDiscoveryPodcasts,
@@ -10,27 +9,7 @@ import {
   filterOutSubscribed,
   isSubscribed,
 } from "../DiscoverPresenter";
-
-// =============================================================================
-// Test Data
-// =============================================================================
-
-const createMockDiscoveryPodcast = (
-  overrides: Partial<DiscoveryPodcast> = {}
-): DiscoveryPodcast => ({
-  id: "123",
-  title: "Test Podcast",
-  author: "Test Author",
-  feedUrl: "https://example.com/feed.xml",
-  artworkUrl: "https://example.com/artwork.jpg",
-  genre: "Technology",
-  episodeCount: 100,
-  ...overrides,
-});
-
-// =============================================================================
-// truncateText Tests
-// =============================================================================
+import { truncateText } from "../../../utils";
 
 describe("truncateText", () => {
   it("should return original text if shorter than max length", () => {
@@ -55,10 +34,6 @@ describe("truncateText", () => {
   });
 });
 
-// =============================================================================
-// formatEpisodeCount Tests
-// =============================================================================
-
 describe("formatEpisodeCount", () => {
   it("should return 'No episodes' for 0", () => {
     expect(formatEpisodeCount(0)).toBe("No episodes");
@@ -73,10 +48,6 @@ describe("formatEpisodeCount", () => {
     expect(formatEpisodeCount(100)).toBe("100 episodes");
   });
 });
-
-// =============================================================================
-// formatDiscoveryPodcast Tests
-// =============================================================================
 
 describe("formatDiscoveryPodcast", () => {
   it("should format podcast with all fields", () => {
@@ -108,10 +79,6 @@ describe("formatDiscoveryPodcast", () => {
   });
 });
 
-// =============================================================================
-// formatDiscoveryPodcasts Tests
-// =============================================================================
-
 describe("formatDiscoveryPodcasts", () => {
   it("should format array of podcasts", () => {
     const podcasts = [
@@ -130,10 +97,6 @@ describe("formatDiscoveryPodcasts", () => {
     expect(formatDiscoveryPodcasts([])).toEqual([]);
   });
 });
-
-// =============================================================================
-// groupPodcastsByGenre Tests
-// =============================================================================
 
 describe("groupPodcastsByGenre", () => {
   it("should group podcasts by genre", () => {
@@ -171,10 +134,6 @@ describe("groupPodcastsByGenre", () => {
   });
 });
 
-// =============================================================================
-// getUniqueGenres Tests
-// =============================================================================
-
 describe("getUniqueGenres", () => {
   it("should return unique genres sorted alphabetically", () => {
     const podcasts = [
@@ -205,10 +164,6 @@ describe("getUniqueGenres", () => {
   });
 });
 
-// =============================================================================
-// filterByGenre Tests
-// =============================================================================
-
 describe("filterByGenre", () => {
   const podcasts = [
     createMockDiscoveryPodcast({ id: "1", genre: "Technology" }),
@@ -235,10 +190,6 @@ describe("filterByGenre", () => {
     expect(filtered).toHaveLength(3);
   });
 });
-
-// =============================================================================
-// filterOutSubscribed Tests
-// =============================================================================
 
 describe("filterOutSubscribed", () => {
   it("should filter out subscribed podcasts by feed URL", () => {
@@ -277,10 +228,6 @@ describe("filterOutSubscribed", () => {
     expect(filtered).toHaveLength(2);
   });
 });
-
-// =============================================================================
-// isSubscribed Tests
-// =============================================================================
 
 describe("isSubscribed", () => {
   it("should return true if feed URL is in subscribed list", () => {

@@ -3,42 +3,10 @@ import { render, fireEvent, waitFor } from "@testing-library/react-native";
 import { Alert } from "react-native";
 import { PodcastDetailView } from "../PodcastDetailView";
 import { podcastStore, queueStore } from "../../../stores";
-import { Podcast, Episode } from "../../../models";
+import { createMockEpisode, createMockPodcast } from "../../../__mocks__";
 
-// Mock Alert
 jest.spyOn(Alert, "alert");
 
-// =============================================================================
-// Test Data
-// =============================================================================
-const createMockEpisode = (overrides: Partial<Episode> = {}): Episode => ({
-  id: "episode-1",
-  podcastId: "podcast-1",
-  title: "Test Episode",
-  description: "A test episode description",
-  audioUrl: "https://example.com/audio.mp3",
-  duration: 3600,
-  publishDate: new Date().toISOString(),
-  played: false,
-  ...overrides,
-});
-
-const createMockPodcast = (overrides: Partial<Podcast> = {}): Podcast => ({
-  id: "podcast-1",
-  title: "Test Podcast",
-  author: "Test Author",
-  rssUrl: "https://example.com/rss",
-  artworkUrl: "https://example.com/artwork.jpg",
-  description: "A test podcast description",
-  subscribeDate: new Date().toISOString(),
-  lastUpdated: new Date().toISOString(),
-  episodes: [],
-  ...overrides,
-});
-
-// =============================================================================
-// Test Setup
-// =============================================================================
 describe("PodcastDetailView", () => {
   const mockOnEpisodePress = jest.fn();
   const mockOnPlayEpisode = jest.fn();
@@ -67,9 +35,6 @@ describe("PodcastDetailView", () => {
       />,
     );
 
-  // ===========================================================================
-  // Not Found State Tests
-  // ===========================================================================
   describe("Not Found State", () => {
     it("should display not found when podcast doesn't exist", () => {
       const { getByText } = renderPodcastDetailView("nonexistent");
@@ -78,9 +43,6 @@ describe("PodcastDetailView", () => {
     });
   });
 
-  // ===========================================================================
-  // Loading State Tests
-  // ===========================================================================
   describe("Loading State", () => {
     it("should display loading state when loading with no podcast", () => {
       podcastStore.setState({ loading: true, podcasts: [] });
@@ -91,9 +53,6 @@ describe("PodcastDetailView", () => {
     });
   });
 
-  // ===========================================================================
-  // Podcast Header Tests
-  // ===========================================================================
   describe("Podcast Header", () => {
     it("should display podcast title and author", () => {
       const podcast = createMockPodcast({
@@ -128,9 +87,6 @@ describe("PodcastDetailView", () => {
     });
   });
 
-  // ===========================================================================
-  // Episode List Tests
-  // ===========================================================================
   describe("Episode List", () => {
     it("should display episodes section header", () => {
       podcastStore.setState({ podcasts: [createMockPodcast()] });
@@ -179,9 +135,6 @@ describe("PodcastDetailView", () => {
     });
   });
 
-  // ===========================================================================
-  // Unsubscribe Tests
-  // ===========================================================================
   describe("Unsubscribe", () => {
     it("should show confirmation alert when unsubscribe is pressed", () => {
       podcastStore.setState({
@@ -200,9 +153,6 @@ describe("PodcastDetailView", () => {
     });
   });
 
-  // ===========================================================================
-  // Queue Tests
-  // ===========================================================================
   describe("Add to Queue", () => {
     it("should show alert when episode is already in queue", async () => {
       const episode = createMockEpisode({ id: "ep-1" });

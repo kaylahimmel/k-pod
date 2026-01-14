@@ -167,8 +167,4 @@ export const useDiscoverViewModel = (
   };
 };
 
-// =============================================================================
-// Types
-// =============================================================================
-
 export type DiscoverViewModel = ReturnType<typeof useDiscoverViewModel>;

@@ -9,44 +9,29 @@ import type { Episode, Podcast, DiscoveryPodcast } from "../models";
 // =============================================================================
 // Stack Navigator Param Lists
 // =============================================================================
-/**
- * Library Stack - For browsing subscribed podcasts and their episodes
- */
 export type LibraryStackParamList = {
   Library: undefined;
   PodcastDetail: { podcastId: string };
   EpisodeDetail: { episodeId: string; podcastId: string };
 };
 
-/**
- * Discover Stack - For searching and previewing new podcasts
- */
 export type DiscoverStackParamList = {
   Discover: undefined;
   SearchResults: { query: string };
   PodcastPreview: { podcast: DiscoveryPodcast };
 };
 
-/**
- * Queue Stack - For managing the up next queue
- */
 export type QueueStackParamList = {
   Queue: undefined;
   EpisodeDetail: { episodeId: string; podcastId: string };
 };
 
-/**
- * Profile Stack - For user profile and listening history
- */
 export type ProfileStackParamList = {
   Profile: undefined;
   ListeningHistory: undefined;
   ChangePassword: undefined;
 };
 
-/**
- * Settings Stack - For app settings
- */
 export type SettingsStackParamList = {
   Settings: undefined;
 };
@@ -54,9 +39,6 @@ export type SettingsStackParamList = {
 // =============================================================================
 // Bottom Tab Navigator Param List
 // =============================================================================
-/**
- * Bottom Tab Navigator - Main tab bar with 5 tabs
- */
 export type BottomTabParamList = {
   LibraryTab: NavigatorScreenParams<LibraryStackParamList>;
   DiscoverTab: NavigatorScreenParams<DiscoverStackParamList>;
@@ -68,9 +50,6 @@ export type BottomTabParamList = {
 // =============================================================================
 // Root Stack Param List
 // =============================================================================
-/**
- * Root Stack - Contains the main tab navigator and modal screens
- */
 export type RootStackParamList = {
   Main: NavigatorScreenParams<BottomTabParamList>;
   FullPlayer: { episode: Episode; podcast: Podcast };

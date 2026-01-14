@@ -4,10 +4,6 @@ import { PodcastDetailView } from "./PodcastDetailView";
 import { usePodcastStore } from "../../hooks/usePodcastStore";
 import type { Episode, Podcast } from "../../models";
 
-// =============================================================================
-// Podcast Detail Screen - Navigation Wrapper
-// =============================================================================
-
 export const PodcastDetailScreen = ({
   navigation,
   route,
@@ -16,23 +12,23 @@ export const PodcastDetailScreen = ({
   const { removePodcast } = usePodcastStore();
 
   // Navigation handler: Navigate to episode detail
-  const handleEpisodePress = useCallback(
+  const handleEpisodePressNav = useCallback(
     (episodeId: string) => {
       navigation.navigate("EpisodeDetail", { episodeId, podcastId });
     },
     [navigation, podcastId],
   );
 
-  // Play handler: Open full player with episode
-  const handlePlayEpisode = useCallback(
+  // Navigation handler: Open full player with episode
+  const handlePlayEpisodeNav = useCallback(
     (episode: Episode, podcast: Podcast) => {
       navigation.navigate("FullPlayer", { episode, podcast });
     },
     [navigation],
   );
 
-  // Unsubscribe handler: Remove podcast and go back
-  const handleUnsubscribe = useCallback(() => {
+  // Navigation handler: Remove podcast and go back
+  const handleUnsubscribeNav = useCallback(() => {
     removePodcast(podcastId);
     navigation.goBack();
   }, [removePodcast, podcastId, navigation]);
@@ -40,9 +36,9 @@ export const PodcastDetailScreen = ({
   return (
     <PodcastDetailView
       podcastId={podcastId}
-      onEpisodePress={handleEpisodePress}
-      onPlayEpisode={handlePlayEpisode}
-      onUnsubscribe={handleUnsubscribe}
+      onEpisodePress={handleEpisodePressNav}
+      onPlayEpisode={handlePlayEpisodeNav}
+      onUnsubscribe={handleUnsubscribeNav}
     />
   );
 };
