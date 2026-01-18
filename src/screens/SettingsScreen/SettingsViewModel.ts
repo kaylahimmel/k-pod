@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { Alert, Linking } from 'react-native';
-import { useSettingsStore } from '../../hooks/useSettingsStore';
+import { useSettingsStore } from '../../hooks';
 import {
   formatSettings,
   getAppVersion,

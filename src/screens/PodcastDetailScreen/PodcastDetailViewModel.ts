@@ -2,8 +2,7 @@ import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { formatPodcastDetail } from './PodcastDetailPresenter';
 import { Episode, Podcast, QueueItem } from '../../models';
-import { usePodcastStore } from '../../hooks/usePodcastStore';
-import { useQueueStore } from '../../hooks/useQueueStore';
+import { usePodcastStore, useQueueStore } from '../../hooks';
 
 // ViewModel: Manages state and logic
 export const usePodcastDetailViewModel = (

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { usePodcastStore } from '../../hooks/usePodcastStore';
-import { DiscoveryService } from '../../services/DiscoveryService';
+import { usePodcastStore } from '../../hooks';
+import { DiscoveryService } from '../../services';
 import { DiscoveryPodcast, Podcast } from '../../models';
 import { now } from '../../constants/NowDate';
 import {

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { usePodcastStore } from '../../hooks/usePodcastStore';
+import { usePodcastStore } from '../../hooks';
 import { preparePodcastsForDisplay } from './LibraryPresenter';
 import { SortOption } from './Library.types';
 

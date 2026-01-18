@@ -3,11 +3,11 @@ import { render, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { DiscoverScreen } from '../DiscoverScreen';
 import { podcastStore } from '../../../stores';
-import { DiscoveryService } from '../../../services/DiscoveryService';
+import { DiscoveryService } from '../../../services';
 import { createMockDiscoveryPodcast } from '../../../__mocks__';
 
 // Mock DiscoveryService
-jest.mock('../../../services/DiscoveryService', () => ({
+jest.mock('../../../services', () => ({
   DiscoveryService: {
     searchPodcasts: jest.fn(),
     getTrendingPodcasts: jest.fn(),
@@ -68,8 +68,7 @@ describe('DiscoverScreen', () => {
         expect(getByText('Trending Podcast')).toBeTruthy();
       });
 
-      // The navigation is handled internally by DiscoverView callbacks
-      // We're testing that the screen renders correctly
+      // Note: The navigation is handled internally by DiscoverView callbacks
     });
   });
 

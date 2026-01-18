@@ -2,11 +2,11 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { DiscoverView } from '../DiscoverView';
 import { podcastStore } from '../../../stores';
-import { DiscoveryService } from '../../../services/DiscoveryService';
+import { DiscoveryService } from '../../../services';
 import { createMockDiscoveryPodcast } from '../../../__mocks__';
 
 // Mock DiscoveryService
-jest.mock('../../../services/DiscoveryService', () => ({
+jest.mock('../../../services', () => ({
   DiscoveryService: {
     searchPodcasts: jest.fn(),
     getTrendingPodcasts: jest.fn(),
@@ -51,9 +51,6 @@ describe('DiscoverView', () => {
   const renderDiscoverView = () =>
     render(<DiscoverView onPodcastPress={mockOnPodcastPress} />);
 
-  // ===========================================================================
-  // Initial State Tests
-  // ===========================================================================
   describe('Initial State', () => {
     it('should display search bar', async () => {
       const { getByPlaceholderText } = renderDiscoverView();
@@ -84,9 +81,6 @@ describe('DiscoverView', () => {
     });
   });
 
-  // ===========================================================================
-  // Search Tests
-  // ===========================================================================
   describe('Search', () => {
     it('should search when user submits query', async () => {
       (DiscoveryService.searchPodcasts as jest.Mock).mockResolvedValue({
@@ -158,9 +152,6 @@ describe('DiscoverView', () => {
     });
   });
 
-  // ===========================================================================
-  // Podcast Card Tests
-  // ===========================================================================
   describe('Podcast Card', () => {
     it('should call onPodcastPress when podcast card is pressed', async () => {
       const { getByText } = renderDiscoverView();
@@ -216,9 +207,6 @@ describe('DiscoverView', () => {
     });
   });
 
-  // ===========================================================================
-  // Loading State Tests
-  // ===========================================================================
   describe('Loading State', () => {
     it('should display loading state while fetching trending', async () => {
       // Make getTrendingPodcasts hang

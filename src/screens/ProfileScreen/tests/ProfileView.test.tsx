@@ -3,14 +3,14 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { ProfileView } from '../ProfileView';
 import { podcastStore } from '../../../stores';
-import { StorageService } from '../../../services/StorageService';
+import { StorageService } from '../../../services';
 import {
   createMockPodcasts,
   createMockListeningHistoryItems,
 } from '../../../__mocks__';
 
 // Mock StorageService
-jest.mock('../../../services/StorageService', () => ({
+jest.mock('../../../services', () => ({
   StorageService: {
     loadHistory: jest.fn().mockResolvedValue([]),
   },

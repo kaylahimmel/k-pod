@@ -2,19 +2,16 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ProfileScreen } from '../ProfileScreen';
 import { podcastStore } from '../../../stores';
-import { StorageService } from '../../../services/StorageService';
+import { StorageService } from '../../../services';
 import { createMockPodcasts } from '../../../__mocks__';
 
 // Mock StorageService
-jest.mock('../../../services/StorageService', () => ({
+jest.mock('../../../services', () => ({
   StorageService: {
     loadHistory: jest.fn().mockResolvedValue([]),
   },
 }));
 
-// =============================================================================
-// Test Setup
-// =============================================================================
 const mockNavigation = {
   navigate: jest.fn(),
   setOptions: jest.fn(),
@@ -26,10 +23,6 @@ const mockRoute = {
   name: 'Profile' as const,
   params: undefined,
 } as Parameters<typeof ProfileScreen>[0]['route'];
-
-// =============================================================================
-// Tests
-// =============================================================================
 
 describe('ProfileScreen', () => {
   beforeEach(() => {
@@ -78,7 +71,7 @@ describe('ProfileScreen', () => {
   describe('Navigation', () => {
     it('should navigate to ListeningHistory when View All History is pressed', async () => {
       // Note: Since there's no history, the button won't be shown
-      // This would need history to be set up to test
+      // TO-DO: Make a mock of the history and add test
       const { queryByText } = renderProfileScreen();
 
       // Empty state shows no "View All History" button

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
-import { usePodcastStore } from '../../hooks/usePodcastStore';
-import { StorageService } from '../../services/StorageService';
+import { usePodcastStore } from '../../hooks';
+import { StorageService } from '../../services';
 import { ListeningHistory, User } from '../../models';
 import {
   formatUser,

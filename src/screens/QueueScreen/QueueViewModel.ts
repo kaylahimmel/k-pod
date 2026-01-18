@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useQueueStore } from '../../hooks/useQueueStore';
-import { usePlayerStore } from '../../hooks/usePlayerStore';
+import { useQueueStore, usePlayerStore } from '../../hooks';
 import { QueueItem } from '../../models';
 import {
   formatQueueItems,

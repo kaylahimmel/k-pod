@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { PodcastDetailScreenProps } from '../../navigation/types';
 import { PodcastDetailView } from './PodcastDetailView';
-import { usePodcastStore } from '../../hooks/usePodcastStore';
+import { usePodcastStore } from '../../hooks';
 import { Episode, Podcast } from '../../models';
 
 export const PodcastDetailScreen = ({

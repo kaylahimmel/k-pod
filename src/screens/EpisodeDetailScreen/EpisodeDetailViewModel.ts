@@ -2,8 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { formatEpisodeDetail } from './EpisodeDetailPresenter';
 import { Episode, Podcast, QueueItem } from '../../models';
-import { usePodcastStore } from '../../hooks/usePodcastStore';
-import { useQueueStore } from '../../hooks/useQueueStore';
+import { usePodcastStore, useQueueStore } from '../../hooks';
 
 /**
  * ViewModel for EpisodeDetailScreen
