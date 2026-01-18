@@ -1,11 +1,3 @@
-// Library mocks (Podcast, Episode)
-export {
-  createMockPodcast,
-  createMockEpisode,
-  createMockPodcasts,
-  createMockEpisodes,
-} from './mockLibrary';
-
 // Discovery mocks (DiscoveryPodcast, iTunes API responses)
 export {
   createMockDiscoveryPodcast,
@@ -16,10 +8,15 @@ export {
   MOCK_ITUNES_LOOKUP_RESPONSE,
 } from './mockDiscovery';
 
-// Queue mocks (QueueItem)
-export { createMockQueueItem, createMockQueueItems } from './mockQueue';
+// Library mocks (Podcast, Episode)
+export {
+  createMockPodcast,
+  createMockEpisode,
+  createMockPodcasts,
+  createMockEpisodes,
+} from './mockLibrary';
 
-// RSS/Podcast feed mocks
+// Podcast RSS feed mocks
 export {
   MOCK_RSS_XML,
   MOCK_SINGLE_EPISODE_RSS,
@@ -33,3 +30,6 @@ export {
   createMockListeningHistory,
   createMockListeningHistoryItems,
 } from './mockProfile';
+
+// Queue mocks (QueueItem)
+export { createMockQueueItem, createMockQueueItems } from './mockQueue';
