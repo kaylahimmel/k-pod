@@ -1,4 +1,4 @@
-import type { NativeStackNavigationOptions } from "@react-navigation/native-stack";
+import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 
 /**
  * Default screen options for all stack navigators

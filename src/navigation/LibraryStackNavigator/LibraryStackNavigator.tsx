@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import type { LibraryStackParamList } from "../types";
+import { LibraryStackParamList } from "../types";
 import { defaultScreenOptions } from "../screenOptions";
 import { LibraryScreen, PodcastDetailScreen } from "../../screens";
 import { styles } from "../StackNavigator.styles";

@@ -1,5 +1,5 @@
-import type { ListeningHistory, User, Podcast } from "../../models";
-import type {
+import { ListeningHistory, User, Podcast } from "../../models";
+import {
   FormattedHistoryItem,
   FormattedUser,
   ProfileStats,

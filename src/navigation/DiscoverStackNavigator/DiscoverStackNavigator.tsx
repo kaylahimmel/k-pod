@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import type { DiscoverStackParamList } from "../types";
+import { DiscoverStackParamList } from "../types";
 import { defaultScreenOptions } from "../screenOptions";
 import { DiscoverScreen } from "../../screens/DiscoverScreen";
 import { styles } from "../StackNavigator.styles";

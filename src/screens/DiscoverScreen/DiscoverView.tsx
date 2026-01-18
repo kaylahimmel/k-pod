@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, FlatList, SectionList } from "react-native";
-import type { DiscoveryPodcast } from "../../models";
+import { DiscoveryPodcast } from "../../models";
 import { FormattedDiscoveryPodcast } from "./Discover.types";
 import { useDiscoverViewModel } from "./DiscoverViewModel";
 import {

@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import type { QueueScreenProps } from "../../navigation/types";
+import { QueueScreenProps } from "../../navigation/types";
 import { QueueView } from "./QueueView";
 
 export const QueueScreen = ({ navigation }: QueueScreenProps) => {

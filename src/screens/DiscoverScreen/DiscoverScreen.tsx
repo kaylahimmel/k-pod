@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
-import type { DiscoverScreenProps } from "../../navigation/types";
-import type { DiscoveryPodcast } from "../../models";
+import { DiscoverScreenProps } from "../../navigation/types";
+import { DiscoveryPodcast } from "../../models";
 import { DiscoverView } from "./DiscoverView";
 
 export const DiscoverScreen = ({ navigation }: DiscoverScreenProps) => {

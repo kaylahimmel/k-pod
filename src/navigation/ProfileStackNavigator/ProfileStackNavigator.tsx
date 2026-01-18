@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import type { ProfileStackParamList } from "../types";
+import { ProfileStackParamList } from "../types";
 import { defaultScreenOptions } from "../screenOptions";
 import { styles } from "../StackNavigator.styles";
 import { ProfileScreen } from "../../screens/ProfileScreen";

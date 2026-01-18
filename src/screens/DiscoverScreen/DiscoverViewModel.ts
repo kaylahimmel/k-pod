@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { usePodcastStore } from "../../hooks/usePodcastStore";
 import { DiscoveryService } from "../../services/DiscoveryService";
-import type { DiscoveryPodcast, Podcast } from "../../models";
+import { DiscoveryPodcast, Podcast } from "../../models";
 import { now } from "../../constants/NowDate";
 import {
   formatDiscoveryPodcasts,

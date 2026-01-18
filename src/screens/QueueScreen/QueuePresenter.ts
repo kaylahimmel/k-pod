@@ -1,4 +1,4 @@
-import type { QueueItem } from "../../models";
+import { QueueItem } from "../../models";
 import { FormattedQueueItem } from "./Queue.types";
 import { truncateText } from "../../utils";
 

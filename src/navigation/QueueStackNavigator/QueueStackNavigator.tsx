@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import type { QueueStackParamList } from "../types";
+import { QueueStackParamList } from "../types";
 import { defaultScreenOptions } from "../screenOptions";
 import { QueueScreen } from "../../screens";
 import { styles } from "../StackNavigator.styles";

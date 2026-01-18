@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "./types";
+import { RootStackParamList } from "./types";
 import { TabNavigator } from "./TabNavigator";
 import { modalScreenOptions } from "./screenOptions";
 
