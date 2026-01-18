@@ -26,3 +26,10 @@ export {
   MOCK_INVALID_RSS,
   MOCK_COMPLEX_GUID_RSS,
 } from "./mockPodcasts";
+
+// Profile mocks (User, ListeningHistory)
+export {
+  createMockUser,
+  createMockListeningHistory,
+  createMockListeningHistoryItems,
+} from "./mockProfile";
