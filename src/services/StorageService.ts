@@ -112,7 +112,7 @@ async function clearAllData(): Promise<void> {
   await AsyncStorage.multiRemove(appKeys);
 }
 
-Yexport const StorageService = {
+export const StorageService = {
   saveData,
   loadData,
   removeData,
