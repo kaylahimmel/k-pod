@@ -1,15 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { TabNavigator } from './TabNavigator';
 import { modalScreenOptions } from './screenOptions';
+import { styles } from './RootNavigator.styles';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-// =============================================================================
-// Placeholder Modal Screens (to be replaced with actual components)
-// =============================================================================
 const PlaceholderModal = ({ title }: { title: string }) => (
   <View style={styles.placeholder}>
     <Text style={styles.placeholderText}>{title}</Text>
@@ -26,9 +24,6 @@ const AddPodcastModalPlaceholder = () => (
   <PlaceholderModal title='Add Podcast' />
 );
 
-// =============================================================================
-// Root Navigator
-// =============================================================================
 export const RootNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -48,27 +43,5 @@ export const RootNavigator = () => {
     </Stack.Navigator>
   );
 };
-
-// =============================================================================
-// Styles
-// =============================================================================
-const styles = StyleSheet.create({
-  placeholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F2F2F7',
-  },
-  placeholderText: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#1C1C1E',
-  },
-  placeholderSubtext: {
-    fontSize: 14,
-    color: '#8E8E93',
-    marginTop: 8,
-  },
-});
 
 export default RootNavigator;

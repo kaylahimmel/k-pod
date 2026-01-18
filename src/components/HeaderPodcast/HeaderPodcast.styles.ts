@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../constants/Colors';
 
 export const styles = StyleSheet.create({
   header: {
@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   headerTop: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginBottom: 16,
   },
   artwork: {
@@ -20,11 +20,11 @@ export const styles = StyleSheet.create({
   headerInfo: {
     flex: 1,
     marginLeft: 16,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   title: {
     fontSize: 20,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.textPrimary,
     marginBottom: 4,
   },
@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
   episodeCount: {
     fontSize: 14,
     color: COLORS.primary,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   description: {
     fontSize: 14,
@@ -47,13 +47,13 @@ export const styles = StyleSheet.create({
   showMoreText: {
     fontSize: 14,
     color: COLORS.primary,
-    fontWeight: "500",
+    fontWeight: '500',
     marginBottom: 16,
   },
   unsubscribeButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
@@ -64,7 +64,7 @@ export const styles = StyleSheet.create({
   unsubscribeText: {
     fontSize: 14,
     color: COLORS.success,
-    fontWeight: "500",
+    fontWeight: '500',
     marginLeft: 6,
   },
   sectionHeader: {
@@ -74,7 +74,7 @@ export const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS.textPrimary,
   },
 });

@@ -21,7 +21,7 @@ export const CardNowPlaying = ({
       <Ionicons
         name={isPlaying ? 'volume-high' : 'pause'}
         size={14}
-        color='#FFFFFF'
+        color='COLORS.cardBackground'
       />
       <Text style={styles.nowPlayingLabel}>
         {isPlaying ? 'NOW PLAYING' : 'PAUSED'}

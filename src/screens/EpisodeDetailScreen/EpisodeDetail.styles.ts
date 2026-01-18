@@ -82,7 +82,7 @@ export const styles = StyleSheet.create({
   actionButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: 'COLORS.cardBackground',
   },
   actionButtonTextSecondary: {
     color: COLORS.textPrimary,

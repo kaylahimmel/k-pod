@@ -1,11 +1,11 @@
-import { StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../constants/Colors';
 
 export const styles = StyleSheet.create({
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.searchBackground,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.border,
     borderRadius: 10,
     marginHorizontal: 16,
     marginVertical: 12,

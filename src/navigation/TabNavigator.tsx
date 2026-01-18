@@ -52,8 +52,8 @@ export const TabNavigator = () => {
           const iconName = focused ? iconConfig.focused : iconConfig.unfocused;
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#8E8E93',
+        tabBarActiveTintColor: 'COLORS.primary',
+        tabBarInactiveTintColor: 'COLORS.textSecondary',
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabBarLabel,
         headerShown: false,

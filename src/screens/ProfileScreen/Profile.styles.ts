@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../constants/Colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   // User Header Section
   headerSection: {
     backgroundColor: COLORS.cardBackground,
-    alignItems: "center",
+    alignItems: 'center',
     paddingVertical: 24,
     paddingHorizontal: 16,
     marginBottom: 16,
@@ -22,13 +22,13 @@ export const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     backgroundColor: COLORS.primary,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 12,
   },
   avatarText: {
     fontSize: 32,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.cardBackground,
   },
   userEmail: {
@@ -43,23 +43,23 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   statsRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   statItem: {
-    alignItems: "center",
+    alignItems: 'center',
     flex: 1,
   },
   statValue: {
     fontSize: 24,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.textPrimary,
   },
   statLabel: {
     fontSize: 12,
     color: COLORS.textSecondary,
     marginTop: 4,
-    textAlign: "center",
+    textAlign: 'center',
   },
   statDivider: {
     width: 1,
@@ -74,7 +74,7 @@ export const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.textPrimary,
   },
   // Recent History Section
@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   historyItem: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
@@ -101,11 +101,11 @@ export const styles = StyleSheet.create({
   historyInfo: {
     flex: 1,
     marginLeft: 12,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   historyEpisodeTitle: {
     fontSize: 15,
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
@@ -120,13 +120,13 @@ export const styles = StyleSheet.create({
   },
   viewAllButton: {
     paddingVertical: 14,
-    alignItems: "center",
+    alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
   },
   viewAllText: {
     fontSize: 15,
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS.primary,
   },
   // Actions Section
@@ -135,9 +135,9 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   actionItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
@@ -158,17 +158,17 @@ export const styles = StyleSheet.create({
   emptyContainer: {
     paddingVertical: 24,
     paddingHorizontal: 16,
-    alignItems: "center",
+    alignItems: 'center',
   },
   emptyText: {
     fontSize: 15,
     color: COLORS.textSecondary,
-    textAlign: "center",
+    textAlign: 'center',
   },
   // Loading State
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

@@ -1,15 +1,15 @@
-import { StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../constants/Colors';
 
 export const styles = StyleSheet.create({
   podcastCard: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: COLORS.cardBackground,
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
-    shadowColor: "#000",
+    shadowColor: COLORS.textPrimary,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
   },
   podcastTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
@@ -38,8 +38,8 @@ export const styles = StyleSheet.create({
     marginBottom: 4,
   },
   podcastMeta: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   podcastGenre: {
     fontSize: 12,
@@ -55,8 +55,8 @@ export const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
     backgroundColor: COLORS.background,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.primary,
   },

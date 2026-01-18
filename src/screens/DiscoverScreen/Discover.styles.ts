@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../constants/Colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -7,9 +7,9 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.searchBackground,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.border,
     borderRadius: 10,
     marginHorizontal: 16,
     marginVertical: 12,
@@ -36,19 +36,19 @@ export const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.textPrimary,
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 32,
     backgroundColor: COLORS.background,
   },
   emptyTitle: {
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS.textPrimary,
     marginTop: 16,
     marginBottom: 8,
@@ -56,13 +56,13 @@ export const styles = StyleSheet.create({
   emptyMessage: {
     fontSize: 16,
     color: COLORS.textSecondary,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 24,
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: COLORS.background,
   },
   loadingText: {
@@ -71,8 +71,8 @@ export const styles = StyleSheet.create({
     marginTop: 12,
   },
   retryButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: COLORS.primary,
     paddingHorizontal: 20,
     paddingVertical: 12,
@@ -80,8 +80,8 @@ export const styles = StyleSheet.create({
   },
   retryButtonText: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
+    fontWeight: '600',
+    color: 'COLORS.cardBackground',
     marginLeft: 8,
   },
 });
