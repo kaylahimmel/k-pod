@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 import { styles } from './SearchBar.styles';
 
 interface SearchBarProps {

@@ -6,7 +6,7 @@ import {
 } from './PodcastDetail.types';
 import { usePodcastDetailViewModel } from './PodcastDetailViewModel';
 import { styles } from './PodcastDetail.styles';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 import {
   EpisodeCard,
   HeaderPodcast,

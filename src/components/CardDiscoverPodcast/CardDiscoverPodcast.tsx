@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './CardDiscoverPodcast.styles';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 import { FormattedDiscoveryPodcast } from '../../screens/DiscoverScreen/Discover.types';
 
 interface DiscoveryPodcastCardProps {

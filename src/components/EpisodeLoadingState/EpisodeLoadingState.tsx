@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 import { styles } from './EpisodeLoadingState.styles';
 
 export const EpisodeLoadingState = () => {

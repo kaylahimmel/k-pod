@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 import { FormattedQueueItem } from '../../screens/QueueScreen/Queue.types';
 import { styles } from './CardQueueItem.styles';
 import { ScaleDecorator } from 'react-native-draggable-flatlist';

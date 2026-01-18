@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './HeaderQueue.styles';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 
 interface HeaderQueueProps {
   count: string;

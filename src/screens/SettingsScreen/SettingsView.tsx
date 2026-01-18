@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { useSettingsViewModel } from './SettingsViewModel';
 import { styles } from './Settings.styles';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 import {
   SettingToggleRow,
   SettingOptionSelector,

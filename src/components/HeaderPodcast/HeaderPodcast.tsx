@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 import { FormattedPodcastDetail } from '../../screens/PodcastDetailScreen/PodcastDetail.types';
 import { styles } from './HeaderPodcast.styles';
 

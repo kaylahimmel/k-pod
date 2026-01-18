@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Switch, StyleSheet } from 'react-native';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 
 interface SettingToggleRowProps {
   label: string;

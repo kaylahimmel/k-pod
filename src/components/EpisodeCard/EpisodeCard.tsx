@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './EpisodeCard.styles';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 import { FormattedEpisode } from '../../screens/PodcastDetailScreen/PodcastDetail.types';
 import { Podcast } from '../../models';
 

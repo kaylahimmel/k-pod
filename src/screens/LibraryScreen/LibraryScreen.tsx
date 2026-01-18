@@ -3,7 +3,7 @@ import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LibraryScreenProps } from '../../navigation/types';
 import { LibraryView } from './LibraryView';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 
 export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
   // Navigation handler: Navigate to podcast detail

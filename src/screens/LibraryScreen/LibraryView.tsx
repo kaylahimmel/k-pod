@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, FlatList, RefreshControl } from 'react-native';
 import { useLibraryViewModel } from './LibraryViewModel';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 import { LibraryViewProps, FormattedPodcast } from './Library.types';
 import {
   SearchBar,

@@ -9,7 +9,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useProfileViewModel } from './ProfileViewModel';
 import { styles } from './Profile.styles';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 import { CardHistoryItem } from '../../components';
 import { ProfileViewProps } from './Profile.types';
 

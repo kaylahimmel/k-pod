@@ -5,7 +5,7 @@ import { EpisodeDetailViewProps } from './EpisodeDetail.types';
 import { useEpisodeDetailViewModel } from './EpisodeDetailViewModel';
 import { styles } from './EpisodeDetail.styles';
 import { StateLoading, EpisodeNotFoundState } from '../../components';
-import { COLORS } from '../../constants/Colors';
+import { COLORS } from '../../constants';
 
 export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
   const viewModel = useEpisodeDetailViewModel(

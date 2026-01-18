@@ -5,7 +5,7 @@ import {
   SearchParams,
   ServiceResult,
 } from '../models';
-import { PODCAST_GENRES, PodcastGenre } from '../constants/PodcastGenres';
+import { PODCAST_GENRES, PodcastGenre } from '../constants';
 
 // ============================================
 // CONSTANTS
