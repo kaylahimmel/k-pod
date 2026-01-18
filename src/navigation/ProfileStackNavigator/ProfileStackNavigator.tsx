@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import type { ProfileStackParamList } from "../types";
 import { defaultScreenOptions } from "../screenOptions";
 import { styles } from "../StackNavigator.styles";
+import { ProfileScreen } from "../../screens/ProfileScreen";
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
@@ -16,12 +17,10 @@ const PlaceholderScreen = ({ name }: { name: string }) => (
   </View>
 );
 
-// TODO: Replace with actual screen imports
-// import { ProfileScreen } from "../screens/ProfileScreen/ProfileScreen";
-// import { ListeningHistoryScreen } from "../screens/ListeningHistoryScreen/ListeningHistoryScreen";
-// import { ChangePasswordScreen } from "../screens/ChangePasswordScreen/ChangePasswordScreen";
+// TODO: Replace with actual screen imports when implemented
+// import { ListeningHistoryScreen } from "../../screens/ListeningHistoryScreen";
+// import { ChangePasswordScreen } from "../../screens/ChangePasswordScreen";
 
-const ProfileScreenPlaceholder = () => <PlaceholderScreen name="Profile" />;
 const ListeningHistoryScreenPlaceholder = () => (
   <PlaceholderScreen name="Listening History" />
 );
@@ -34,7 +33,7 @@ export const ProfileStackNavigator = () => {
     <Stack.Navigator screenOptions={defaultScreenOptions}>
       <Stack.Screen
         name="Profile"
-        component={ProfileScreenPlaceholder}
+        component={ProfileScreen}
         options={{ title: "Profile" }}
       />
       <Stack.Screen

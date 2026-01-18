@@ -42,8 +42,8 @@ Screens follow a layered architecture when complexity warrants it:
 
 1. **Screen** (`*Screen.tsx`) - Navigation container, handles nav actions
 2. **View** (`*View.tsx`) - Pure presentational component
-3. **ViewModel** (`*ViewModel.ts` or `useViewModel.ts`) - Business logic, state, handlers
-4. **Presenter** (`*Presenter.ts`) - Pure functions for data formatting
+3. **ViewModel** (`*ViewModel.ts` or `useViewModel.ts`) - Business logic, state, and handlers that call the Presenter functions and return the formatted data and handlers to the View
+4. **Presenter** (`*Presenter.ts`) - Pure functions that format data (ex. formatDuration(), getQueueStats())
 
 **Use this pattern for all screens.** Subcomponents used on those screens can be a single component with the interface in the same file as the component.
 
@@ -106,7 +106,8 @@ export const exampleStore = create<ExampleStore>((set) => ({
 
 ### Components
 
-- Prefer functional components with hooks
+- All components (and subcomponents) should be housed in the `src/components/` folder. Each component gets its own folder with `ComponentName.tsx` and `ComponentName.styles.ts`. Components are then exported from the `src/components/index.ts`.
+- Prefer functional components with hooks and prop-drilling with handlers defined in the view's (where the component is used) viewModel
 - Use `useMemo` for derived state, `useCallback` for handlers
 - Keep components focused on single responsibility
 
@@ -133,13 +134,19 @@ RootNavigator
 
 ## Testing
 
-- Test files: `__tests__/*.test.ts(x)`
+- Test files: `src/screens/*/__tests__/*.test.ts(x)` and `src/utils/__tests__/*.test.ts(x)`
 - Achieve at least 75% line coverage in test files, or if not possible, leave // TO-DO comments to circle back on to add once the needed UI, logic, or service has been implemented
 - Run all tests: `yarn test`
 - Watch mode: `yarn run test:watch`
 - Mocks configured in `jest.setup.ts`
 - Look for existing mocks in local test files that can be reused, and move them to the `jest.setup.ts` if so
 - Point out to user any linting or test failures and how to mediate them in the future
+
+### Test Mocks
+
+- Mock factory functions live in `src/__mocks__/` (e.g., `mockLibrary.ts`, `mockProfile.ts`)
+- Export all mocks from `src/__mocks__/index.ts`
+- Pattern: `createMockXxx(overrides?: Partial<Xxx>): Xxx`
 
 ## Common Commands
 

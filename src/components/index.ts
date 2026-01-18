@@ -13,3 +13,4 @@ export * from "./StateEmpty/StateEmpty";
 export * from "./StateLoading/StateLoading";
 export * from "./StateError/StateError";
 export * from "./StateNoResults/StateNoResults";
+export * from "./CardHistoryItem/CardHistoryItem";
