@@ -2,13 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
 import { usePodcastStore } from "../../hooks/usePodcastStore";
 import { StorageService } from "../../services/StorageService";
-import type { ListeningHistory, User } from "../../models";
+import { ListeningHistory, User } from "../../models";
 import {
   formatUser,
   getRecentHistory,
   getProfileStats,
 } from "./ProfilePresenter";
-import type { ProfileViewModelReturn } from "./Profile.types";
+import { ProfileViewModelReturn } from "./Profile.types";
 
 /**
  * ViewModel hook for the Profile screen

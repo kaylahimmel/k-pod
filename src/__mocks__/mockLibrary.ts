@@ -1,4 +1,4 @@
-import type { Podcast, Episode } from "../models";
+import { Podcast, Episode } from "../models";
 
 /**
  * Creates a mock Podcast object for testing

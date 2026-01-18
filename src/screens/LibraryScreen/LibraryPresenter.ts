@@ -1,4 +1,4 @@
-import type { Podcast } from "../../models";
+import { Podcast } from "../../models";
 import { FormattedPodcast, SortOption } from "./Library.types";
 import { truncateText } from "../../utils";
 

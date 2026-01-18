@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useQueueStore } from "../../hooks/useQueueStore";
 import { usePlayerStore } from "../../hooks/usePlayerStore";
-import type { QueueItem } from "../../models";
+import { QueueItem } from "../../models";
 import {
   formatQueueItems,
   getCurrentlyPlayingItem,

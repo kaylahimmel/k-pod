@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { Alert } from "react-native";
-import type { ProfileScreenProps } from "../../navigation/types";
+import { ProfileScreenProps } from "../../navigation/types";
 import { ProfileView } from "./ProfileView";
 
 export const ProfileScreen = ({ navigation }: ProfileScreenProps) => {

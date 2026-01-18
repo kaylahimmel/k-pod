@@ -1,10 +1,10 @@
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import type {
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import {
   CompositeScreenProps,
   NavigatorScreenParams,
 } from "@react-navigation/native";
-import type { Episode, Podcast, DiscoveryPodcast } from "../models";
+import { Episode, Podcast, DiscoveryPodcast } from "../models";
 
 // =============================================================================
 // Stack Navigator Param Lists

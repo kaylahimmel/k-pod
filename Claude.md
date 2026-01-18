@@ -81,6 +81,7 @@ Screens follow a layered architecture when complexity warrants it:
 - No `any` types should be used ever
 - Keep solutions focused on what was asked
 - Don't add features or refactoring beyond the request
+- **Import style** - Use regular imports for types (e.g., `import { AppSettings } from ...`), not `import type { ... }` syntax
 
 ## Patterns & Conventions
 

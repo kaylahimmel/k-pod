@@ -1,4 +1,4 @@
-import type { Episode, Podcast } from "../../models";
+import { Episode, Podcast } from "../../models";
 import {
   FormattedEpisode,
   FormattedPodcastDetail,

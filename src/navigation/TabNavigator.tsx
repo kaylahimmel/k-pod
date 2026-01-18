@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import type { BottomTabParamList } from "./types";
+import { BottomTabParamList } from "./types";
 import {
   LibraryStackNavigator,
   DiscoverStackNavigator,

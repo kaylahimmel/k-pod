@@ -11,7 +11,7 @@ import { useProfileViewModel } from "./ProfileViewModel";
 import { styles } from "./Profile.styles";
 import { COLORS } from "../../constants/Colors";
 import { CardHistoryItem } from "../../components";
-import type { ProfileViewProps } from "./Profile.types";
+import { ProfileViewProps } from "./Profile.types";
 
 export const ProfileView = ({
   onViewHistoryPress,

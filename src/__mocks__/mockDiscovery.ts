@@ -1,4 +1,4 @@
-import type { ITunesSearchResponse, DiscoveryPodcast } from "../models";
+import { ITunesSearchResponse, DiscoveryPodcast } from "../models";
 
 /**
  * Creates a mock DiscoveryPodcast object for testing

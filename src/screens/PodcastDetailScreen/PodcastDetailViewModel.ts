@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { Alert } from "react-native";
 import { formatPodcastDetail } from "./PodcastDetailPresenter";
-import type { Episode, Podcast, QueueItem } from "../../models";
+import { Episode, Podcast, QueueItem } from "../../models";
 import { usePodcastStore } from "../../hooks/usePodcastStore";
 import { useQueueStore } from "../../hooks/useQueueStore";
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useLayoutEffect } from "react";
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import type { LibraryScreenProps } from "../../navigation/types";
+import { LibraryScreenProps } from "../../navigation/types";
 import { LibraryView } from "./LibraryView";
 import { COLORS } from "../../constants/Colors";
 

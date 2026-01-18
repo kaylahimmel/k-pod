@@ -1,4 +1,4 @@
-import type { ListeningHistory, User } from "../models";
+import { ListeningHistory, User } from "../models";
 import { createMockPodcast, createMockEpisode } from "./mockLibrary";
 
 /**

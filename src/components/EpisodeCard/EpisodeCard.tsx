@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./EpisodeCard.styles";
 import { COLORS } from "../../constants/Colors";
 import { FormattedEpisode } from "../../screens/PodcastDetailScreen/PodcastDetail.types";
-import type { Podcast } from "../../models";
+import { Podcast } from "../../models";
 
 interface EpisodeCardProps {
   episode: FormattedEpisode;

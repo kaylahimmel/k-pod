@@ -1,5 +1,5 @@
-import type { DiscoveryPodcast } from "../../models";
-import type { FormattedDiscoveryPodcast } from "./Discover.types";
+import { DiscoveryPodcast } from "../../models";
+import { FormattedDiscoveryPodcast } from "./Discover.types";
 import { truncateText } from "../../utils";
 
 export interface PodcastsByGenre {
