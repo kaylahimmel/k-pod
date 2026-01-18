@@ -1,7 +1,7 @@
-import React from "react";
-import { View, Text, Image } from "react-native";
-import { FormattedHistoryItem } from "../../screens/ProfileScreen/Profile.types";
-import { styles } from "./CardHistoryItem.styles";
+import React from 'react';
+import { View, Text, Image } from 'react-native';
+import { FormattedHistoryItem } from '../../screens/ProfileScreen/Profile.types';
+import { styles } from './CardHistoryItem.styles';
 
 interface CardHistoryItemProps {
   item: FormattedHistoryItem;

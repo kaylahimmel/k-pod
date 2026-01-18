@@ -1,4 +1,4 @@
-import { Episode } from "./Episode.types";
+import { Episode } from './Episode.types';
 
 // Podcast (not episode) data model
 export interface Podcast {

@@ -1,9 +1,9 @@
-import { StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../constants/Colors';
 
 export const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
@@ -21,11 +21,11 @@ export const styles = StyleSheet.create({
   info: {
     flex: 1,
     marginLeft: 12,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   episodeTitle: {
     fontSize: 15,
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS.textPrimary,
     marginBottom: 2,
   },

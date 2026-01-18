@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { styles } from "./CardDiscoverPodcast.styles";
-import { COLORS } from "../../constants/Colors";
-import { FormattedDiscoveryPodcast } from "../../screens/DiscoverScreen/Discover.types";
+import React from 'react';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { styles } from './CardDiscoverPodcast.styles';
+import { COLORS } from '../../constants/Colors';
+import { FormattedDiscoveryPodcast } from '../../screens/DiscoverScreen/Discover.types';
 
 interface DiscoveryPodcastCardProps {
   podcast: FormattedDiscoveryPodcast;
@@ -22,7 +22,7 @@ export const DiscoveryPodcastCard = ({
     <Image
       source={{ uri: podcast.artworkUrl }}
       style={styles.podcastArtwork}
-      defaultSource={require("../../../assets/icon.png")}
+      defaultSource={require('../../../assets/icon.png')}
     />
     <View style={styles.podcastInfo}>
       <Text style={styles.podcastTitle} numberOfLines={2}>
@@ -42,9 +42,9 @@ export const DiscoveryPodcastCard = ({
       disabled={subscribed}
     >
       {subscribed ? (
-        <Ionicons name="checkmark" size={16} color={COLORS.success} />
+        <Ionicons name='checkmark' size={16} color={COLORS.success} />
       ) : (
-        <Ionicons name="add" size={16} color={COLORS.primary} />
+        <Ionicons name='add' size={16} color={COLORS.primary} />
       )}
     </TouchableOpacity>
   </TouchableOpacity>

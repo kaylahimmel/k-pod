@@ -1,21 +1,20 @@
-import React from "react";
-import { render, fireEvent, waitFor } from "@testing-library/react-native";
-import { DiscoverView } from "../DiscoverView";
-import { podcastStore } from "../../../stores";
-import { DiscoveryService } from "../../../services/DiscoveryService";
-import { createMockDiscoveryPodcast } from "../../../__mocks__";
+import React from 'react';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { DiscoverView } from '../DiscoverView';
+import { podcastStore } from '../../../stores';
+import { DiscoveryService } from '../../../services/DiscoveryService';
+import { createMockDiscoveryPodcast } from '../../../__mocks__';
 
 // Mock DiscoveryService
-jest.mock("../../../services/DiscoveryService", () => ({
+jest.mock('../../../services/DiscoveryService', () => ({
   DiscoveryService: {
     searchPodcasts: jest.fn(),
     getTrendingPodcasts: jest.fn(),
   },
 }));
 
-describe("DiscoverView", () => {
+describe('DiscoverView', () => {
   const mockOnPodcastPress = jest.fn();
-  const mockOnSubscribe = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -30,14 +29,14 @@ describe("DiscoverView", () => {
       success: true,
       data: [
         createMockDiscoveryPodcast({
-          id: "1",
-          title: "Trending Podcast 1",
-          feedUrl: "https://example.com/feed1.xml",
+          id: '1',
+          title: 'Trending Podcast 1',
+          feedUrl: 'https://example.com/feed1.xml',
         }),
         createMockDiscoveryPodcast({
-          id: "2",
-          title: "Trending Podcast 2",
-          feedUrl: "https://example.com/feed2.xml",
+          id: '2',
+          title: 'Trending Podcast 2',
+          feedUrl: 'https://example.com/feed2.xml',
         }),
       ],
     });
@@ -50,42 +49,37 @@ describe("DiscoverView", () => {
   });
 
   const renderDiscoverView = () =>
-    render(
-      <DiscoverView
-        onPodcastPress={mockOnPodcastPress}
-        onSubscribe={mockOnSubscribe}
-      />,
-    );
+    render(<DiscoverView onPodcastPress={mockOnPodcastPress} />);
 
   // ===========================================================================
   // Initial State Tests
   // ===========================================================================
-  describe("Initial State", () => {
-    it("should display search bar", async () => {
+  describe('Initial State', () => {
+    it('should display search bar', async () => {
       const { getByPlaceholderText } = renderDiscoverView();
 
       await waitFor(() => {
-        expect(getByPlaceholderText("Search podcasts...")).toBeTruthy();
+        expect(getByPlaceholderText('Search podcasts...')).toBeTruthy();
       });
     });
 
-    it("should load trending podcasts on mount", async () => {
+    it('should load trending podcasts on mount', async () => {
       renderDiscoverView();
 
       await waitFor(() => {
         expect(DiscoveryService.getTrendingPodcasts).toHaveBeenCalledWith(
-          "ALL",
+          'ALL',
           20,
         );
       });
     });
 
-    it("should display trending podcasts after loading", async () => {
+    it('should display trending podcasts after loading', async () => {
       const { getByText } = renderDiscoverView();
 
       await waitFor(() => {
-        expect(getByText("Trending Podcast 1")).toBeTruthy();
-        expect(getByText("Trending Podcast 2")).toBeTruthy();
+        expect(getByText('Trending Podcast 1')).toBeTruthy();
+        expect(getByText('Trending Podcast 2')).toBeTruthy();
       });
     });
   });
@@ -93,34 +87,34 @@ describe("DiscoverView", () => {
   // ===========================================================================
   // Search Tests
   // ===========================================================================
-  describe("Search", () => {
-    it("should search when user submits query", async () => {
+  describe('Search', () => {
+    it('should search when user submits query', async () => {
       (DiscoveryService.searchPodcasts as jest.Mock).mockResolvedValue({
         success: true,
         data: [
-          createMockDiscoveryPodcast({ id: "s1", title: "Search Result 1" }),
+          createMockDiscoveryPodcast({ id: 's1', title: 'Search Result 1' }),
         ],
       });
 
       const { getByPlaceholderText, getByText } = renderDiscoverView();
 
       await waitFor(() => {
-        expect(getByPlaceholderText("Search podcasts...")).toBeTruthy();
+        expect(getByPlaceholderText('Search podcasts...')).toBeTruthy();
       });
 
-      const searchInput = getByPlaceholderText("Search podcasts...");
-      fireEvent.changeText(searchInput, "test query");
-      fireEvent(searchInput, "submitEditing");
+      const searchInput = getByPlaceholderText('Search podcasts...');
+      fireEvent.changeText(searchInput, 'test query');
+      fireEvent(searchInput, 'submitEditing');
 
       await waitFor(() => {
         expect(DiscoveryService.searchPodcasts).toHaveBeenCalledWith({
-          query: "test query",
+          query: 'test query',
         });
-        expect(getByText("Search Result 1")).toBeTruthy();
+        expect(getByText('Search Result 1')).toBeTruthy();
       });
     });
 
-    it("should display no results message when search returns empty", async () => {
+    it('should display no results message when search returns empty', async () => {
       (DiscoveryService.searchPodcasts as jest.Mock).mockResolvedValue({
         success: true,
         data: [],
@@ -129,37 +123,37 @@ describe("DiscoverView", () => {
       const { getByPlaceholderText, getByText } = renderDiscoverView();
 
       await waitFor(() => {
-        expect(getByPlaceholderText("Search podcasts...")).toBeTruthy();
+        expect(getByPlaceholderText('Search podcasts...')).toBeTruthy();
       });
 
-      const searchInput = getByPlaceholderText("Search podcasts...");
-      fireEvent.changeText(searchInput, "nonexistent");
-      fireEvent(searchInput, "submitEditing");
+      const searchInput = getByPlaceholderText('Search podcasts...');
+      fireEvent.changeText(searchInput, 'nonexistent');
+      fireEvent(searchInput, 'submitEditing');
 
       await waitFor(() => {
-        expect(getByText("No Results")).toBeTruthy();
+        expect(getByText('No Results')).toBeTruthy();
       });
     });
 
-    it("should display error state on search failure", async () => {
+    it('should display error state on search failure', async () => {
       (DiscoveryService.searchPodcasts as jest.Mock).mockResolvedValue({
         success: false,
-        error: "Network error",
+        error: 'Network error',
       });
 
       const { getByPlaceholderText, getByText } = renderDiscoverView();
 
       await waitFor(() => {
-        expect(getByPlaceholderText("Search podcasts...")).toBeTruthy();
+        expect(getByPlaceholderText('Search podcasts...')).toBeTruthy();
       });
 
-      const searchInput = getByPlaceholderText("Search podcasts...");
-      fireEvent.changeText(searchInput, "test");
-      fireEvent(searchInput, "submitEditing");
+      const searchInput = getByPlaceholderText('Search podcasts...');
+      fireEvent.changeText(searchInput, 'test');
+      fireEvent(searchInput, 'submitEditing');
 
       await waitFor(() => {
-        expect(getByText("Something went wrong")).toBeTruthy();
-        expect(getByText("Network error")).toBeTruthy();
+        expect(getByText('Something went wrong')).toBeTruthy();
+        expect(getByText('Network error')).toBeTruthy();
       });
     });
   });
@@ -167,41 +161,41 @@ describe("DiscoverView", () => {
   // ===========================================================================
   // Podcast Card Tests
   // ===========================================================================
-  describe("Podcast Card", () => {
-    it("should call onPodcastPress when podcast card is pressed", async () => {
+  describe('Podcast Card', () => {
+    it('should call onPodcastPress when podcast card is pressed', async () => {
       const { getByText } = renderDiscoverView();
 
       await waitFor(() => {
-        expect(getByText("Trending Podcast 1")).toBeTruthy();
+        expect(getByText('Trending Podcast 1')).toBeTruthy();
       });
 
-      fireEvent.press(getByText("Trending Podcast 1"));
+      fireEvent.press(getByText('Trending Podcast 1'));
 
       expect(mockOnPodcastPress).toHaveBeenCalled();
     });
 
-    it("should not have called onSubscribe before user interaction", async () => {
+    it('should not have added any podcasts to store before user interaction', async () => {
       const { getByText } = renderDiscoverView();
 
       await waitFor(() => {
-        expect(getByText("Trending Podcast 1")).toBeTruthy();
+        expect(getByText('Trending Podcast 1')).toBeTruthy();
       });
 
-      // Verify onSubscribe hasn't been called yet (no user interaction)
-      expect(mockOnSubscribe).not.toHaveBeenCalled();
+      // Verify no podcasts have been added to the store yet (no user interaction)
+      expect(podcastStore.getState().podcasts).toHaveLength(0);
     });
 
-    it("should filter out already subscribed podcasts from trending", async () => {
+    it('should filter out already subscribed podcasts from trending', async () => {
       // When a user is subscribed to a podcast, it should be filtered out from trending
       podcastStore.setState({
         podcasts: [
           {
-            id: "1",
-            title: "Trending Podcast 1",
-            author: "Test Author",
-            rssUrl: "https://example.com/feed1.xml", // Matches trending podcast 1's feedUrl
-            artworkUrl: "https://example.com/artwork.jpg",
-            description: "",
+            id: '1',
+            title: 'Trending Podcast 1',
+            author: 'Test Author',
+            rssUrl: 'https://example.com/feed1.xml', // Matches trending podcast 1's feedUrl
+            artworkUrl: 'https://example.com/artwork.jpg',
+            description: '',
             subscribeDate: new Date().toISOString(),
             lastUpdated: new Date().toISOString(),
             episodes: [],
@@ -215,9 +209,9 @@ describe("DiscoverView", () => {
 
       await waitFor(() => {
         // Trending Podcast 1 should be filtered out since user is subscribed
-        expect(queryByText("Trending Podcast 1")).toBeNull();
+        expect(queryByText('Trending Podcast 1')).toBeNull();
         // Trending Podcast 2 should still show (different feed URL)
-        expect(getByText("Trending Podcast 2")).toBeTruthy();
+        expect(getByText('Trending Podcast 2')).toBeTruthy();
       });
     });
   });
@@ -225,8 +219,8 @@ describe("DiscoverView", () => {
   // ===========================================================================
   // Loading State Tests
   // ===========================================================================
-  describe("Loading State", () => {
-    it("should display loading state while fetching trending", async () => {
+  describe('Loading State', () => {
+    it('should display loading state while fetching trending', async () => {
       // Make getTrendingPodcasts hang
       (DiscoveryService.getTrendingPodcasts as jest.Mock).mockImplementation(
         () => new Promise(() => {}),
@@ -234,7 +228,7 @@ describe("DiscoverView", () => {
 
       const { getByText } = renderDiscoverView();
 
-      expect(getByText("Searching...")).toBeTruthy();
+      expect(getByText('Searching...')).toBeTruthy();
     });
   });
 });

@@ -1,10 +1,10 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import {
   CompositeScreenProps,
   NavigatorScreenParams,
-} from "@react-navigation/native";
-import { Episode, Podcast, DiscoveryPodcast } from "../models";
+} from '@react-navigation/native';
+import { Episode, Podcast, DiscoveryPodcast } from '../models';
 
 // =============================================================================
 // Stack Navigator Param Lists
@@ -60,25 +60,25 @@ export type RootStackParamList = {
 // Screen Props Types - Library Stack
 // =============================================================================
 export type LibraryScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<LibraryStackParamList, "Library">,
+  NativeStackScreenProps<LibraryStackParamList, 'Library'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "LibraryTab">,
+    BottomTabScreenProps<BottomTabParamList, 'LibraryTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
 
 export type PodcastDetailScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<LibraryStackParamList, "PodcastDetail">,
+  NativeStackScreenProps<LibraryStackParamList, 'PodcastDetail'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "LibraryTab">,
+    BottomTabScreenProps<BottomTabParamList, 'LibraryTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
 
 export type EpisodeDetailScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<LibraryStackParamList, "EpisodeDetail">,
+  NativeStackScreenProps<LibraryStackParamList, 'EpisodeDetail'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "LibraryTab">,
+    BottomTabScreenProps<BottomTabParamList, 'LibraryTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
@@ -87,25 +87,25 @@ export type EpisodeDetailScreenProps = CompositeScreenProps<
 // Screen Props Types - Discover Stack
 // =============================================================================
 export type DiscoverScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<DiscoverStackParamList, "Discover">,
+  NativeStackScreenProps<DiscoverStackParamList, 'Discover'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "DiscoverTab">,
+    BottomTabScreenProps<BottomTabParamList, 'DiscoverTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
 
 export type SearchResultsScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<DiscoverStackParamList, "SearchResults">,
+  NativeStackScreenProps<DiscoverStackParamList, 'SearchResults'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "DiscoverTab">,
+    BottomTabScreenProps<BottomTabParamList, 'DiscoverTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
 
 export type PodcastPreviewScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<DiscoverStackParamList, "PodcastPreview">,
+  NativeStackScreenProps<DiscoverStackParamList, 'PodcastPreview'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "DiscoverTab">,
+    BottomTabScreenProps<BottomTabParamList, 'DiscoverTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
@@ -114,17 +114,17 @@ export type PodcastPreviewScreenProps = CompositeScreenProps<
 // Screen Props Types - Queue Stack
 // =============================================================================
 export type QueueScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<QueueStackParamList, "Queue">,
+  NativeStackScreenProps<QueueStackParamList, 'Queue'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "QueueTab">,
+    BottomTabScreenProps<BottomTabParamList, 'QueueTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
 
 export type QueueEpisodeDetailScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<QueueStackParamList, "EpisodeDetail">,
+  NativeStackScreenProps<QueueStackParamList, 'EpisodeDetail'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "QueueTab">,
+    BottomTabScreenProps<BottomTabParamList, 'QueueTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
@@ -133,25 +133,25 @@ export type QueueEpisodeDetailScreenProps = CompositeScreenProps<
 // Screen Props Types - Profile Stack
 // =============================================================================
 export type ProfileScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, "Profile">,
+  NativeStackScreenProps<ProfileStackParamList, 'Profile'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "ProfileTab">,
+    BottomTabScreenProps<BottomTabParamList, 'ProfileTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
 
 export type ListeningHistoryScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, "ListeningHistory">,
+  NativeStackScreenProps<ProfileStackParamList, 'ListeningHistory'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "ProfileTab">,
+    BottomTabScreenProps<BottomTabParamList, 'ProfileTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
 
 export type ChangePasswordScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, "ChangePassword">,
+  NativeStackScreenProps<ProfileStackParamList, 'ChangePassword'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "ProfileTab">,
+    BottomTabScreenProps<BottomTabParamList, 'ProfileTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
@@ -160,9 +160,9 @@ export type ChangePasswordScreenProps = CompositeScreenProps<
 // Screen Props Types - Settings Stack
 // =============================================================================
 export type SettingsScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<SettingsStackParamList, "Settings">,
+  NativeStackScreenProps<SettingsStackParamList, 'Settings'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, "SettingsTab">,
+    BottomTabScreenProps<BottomTabParamList, 'SettingsTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
@@ -172,12 +172,12 @@ export type SettingsScreenProps = CompositeScreenProps<
 // =============================================================================
 export type FullPlayerScreenProps = NativeStackScreenProps<
   RootStackParamList,
-  "FullPlayer"
+  'FullPlayer'
 >;
 
 export type AddPodcastModalScreenProps = NativeStackScreenProps<
   RootStackParamList,
-  "AddPodcastModal"
+  'AddPodcastModal'
 >;
 
 // =============================================================================

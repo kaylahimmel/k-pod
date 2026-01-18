@@ -1,18 +1,18 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React from 'react';
+import { View, Text } from 'react-native';
 import DraggableFlatList, {
   RenderItemParams,
-} from "react-native-draggable-flatlist";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useQueueViewModel } from "./QueueViewModel";
-import { FormattedQueueItem, QueueViewProps } from "./Queue.types";
-import { styles } from "./Queue.styles";
+} from 'react-native-draggable-flatlist';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useQueueViewModel } from './QueueViewModel';
+import { FormattedQueueItem, QueueViewProps } from './Queue.types';
+import { styles } from './Queue.styles';
 import {
   CardNowPlaying,
   CardQueueItem,
   HeaderQueue,
   StateEmpty,
-} from "../../components";
+} from '../../components';
 
 export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
   const viewModel = useQueueViewModel(onEpisodePress);
@@ -35,9 +35,9 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
     return (
       <View style={styles.container}>
         <StateEmpty
-          icon="list-outline"
-          title="Your Queue is Empty"
-          message="Add episodes to your queue from any podcast to listen to them next"
+          icon='list-outline'
+          title='Your Queue is Empty'
+          message='Add episodes to your queue from any podcast to listen to them next'
         />
       </View>
     );

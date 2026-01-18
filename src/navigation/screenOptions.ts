@@ -1,4 +1,4 @@
-import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
+import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 
 /**
  * Default screen options for all stack navigators
@@ -6,17 +6,17 @@ import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
  */
 export const defaultScreenOptions: NativeStackNavigationOptions = {
   headerStyle: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
   },
-  headerTintColor: "#007AFF",
+  headerTintColor: '#007AFF',
   headerTitleStyle: {
-    fontWeight: "600",
+    fontWeight: '600',
     fontSize: 17,
   },
-  headerBackButtonDisplayMode: "minimal",
+  headerBackButtonDisplayMode: 'minimal',
   headerShadowVisible: true,
   contentStyle: {
-    backgroundColor: "#F2F2F7",
+    backgroundColor: '#F2F2F7',
   },
 };
 
@@ -24,17 +24,17 @@ export const defaultScreenOptions: NativeStackNavigationOptions = {
  * Modal screen options for full-screen modals
  */
 export const modalScreenOptions: NativeStackNavigationOptions = {
-  presentation: "modal",
+  presentation: 'modal',
   headerStyle: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
   },
-  headerTintColor: "#007AFF",
+  headerTintColor: '#007AFF',
   headerTitleStyle: {
-    fontWeight: "600",
+    fontWeight: '600',
     fontSize: 17,
   },
   contentStyle: {
-    backgroundColor: "#F2F2F7",
+    backgroundColor: '#F2F2F7',
   },
 };
 
@@ -43,6 +43,6 @@ export const modalScreenOptions: NativeStackNavigationOptions = {
  */
 export const transparentHeaderOptions: NativeStackNavigationOptions = {
   headerTransparent: true,
-  headerTintColor: "#FFFFFF",
-  headerTitle: "",
+  headerTintColor: '#FFFFFF',
+  headerTitle: '',
 };

@@ -29,7 +29,7 @@ export interface FormattedUser {
   email: string;
   displayEmail: string;
   initials: string;
-  theme: "light" | "dark";
+  theme: 'light' | 'dark';
   notificationsEnabled: boolean;
 }
 

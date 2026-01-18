@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Text, Switch, StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import React from 'react';
+import { View, Text, Switch, StyleSheet } from 'react-native';
+import { COLORS } from '../../constants/Colors';
 
 interface SettingToggleRowProps {
   label: string;
@@ -27,9 +27,9 @@ export const SettingToggleRow = ({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,

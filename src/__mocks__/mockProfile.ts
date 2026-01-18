@@ -1,15 +1,15 @@
-import { ListeningHistory, User } from "../models";
-import { createMockPodcast, createMockEpisode } from "./mockLibrary";
+import { ListeningHistory, User } from '../models';
+import { createMockPodcast, createMockEpisode } from './mockLibrary';
 
 /**
  * Creates a mock User object for testing
  * @param overrides - Optional partial User to override default values
  */
 export const createMockUser = (overrides: Partial<User> = {}): User => ({
-  id: "user-1",
-  email: "test@example.com",
+  id: 'user-1',
+  email: 'test@example.com',
   preferences: {
-    theme: "light",
+    theme: 'light',
     notifications: true,
   },
   ...overrides,
@@ -24,7 +24,7 @@ export const createMockListeningHistory = (
 ): ListeningHistory => ({
   podcast: createMockPodcast(),
   episode: createMockEpisode(),
-  completedAt: new Date("2024-01-15T12:00:00Z"),
+  completedAt: new Date('2024-01-15T12:00:00Z'),
   completionPercentage: 100,
   ...overrides,
 });

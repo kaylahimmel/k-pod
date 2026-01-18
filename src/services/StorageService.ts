@@ -1,6 +1,6 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Podcast, QueueItem, AppSettings, ListeningHistory } from "../models";
-import { STORAGE_KEYS } from "../constants/StorageKeys";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Podcast, QueueItem, AppSettings, ListeningHistory } from '../models';
+import { STORAGE_KEYS } from '../constants/StorageKeys';
 
 // ============================================
 // BASE METHODS - Generic storage operations
@@ -130,7 +130,7 @@ async function removePlaybackPosition(episodeId: string): Promise<void> {
  */
 async function clearAllData(): Promise<void> {
   const keys = await AsyncStorage.getAllKeys();
-  const appKeys = keys.filter((key) => key.startsWith("@k-pod/"));
+  const appKeys = keys.filter((key) => key.startsWith('@k-pod/'));
   await AsyncStorage.multiRemove(appKeys);
 }
 

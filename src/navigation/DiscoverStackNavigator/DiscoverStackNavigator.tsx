@@ -1,10 +1,10 @@
-import React from "react";
-import { View, Text } from "react-native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { DiscoverStackParamList } from "../types";
-import { defaultScreenOptions } from "../screenOptions";
-import { DiscoverScreen } from "../../screens/DiscoverScreen";
-import { styles } from "../StackNavigator.styles";
+import React from 'react';
+import { View, Text } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { DiscoverStackParamList } from '../types';
+import { defaultScreenOptions } from '../screenOptions';
+import { DiscoverScreen } from '../../screens/DiscoverScreen';
+import { styles } from '../StackNavigator.styles';
 
 const Stack = createNativeStackNavigator<DiscoverStackParamList>();
 
@@ -22,29 +22,29 @@ const PlaceholderScreen = ({ name }: { name: string }) => (
 // import { PodcastPreviewScreen } from "../screens/PodcastPreviewScreen/PodcastPreviewScreen";
 
 const SearchResultsScreenPlaceholder = () => (
-  <PlaceholderScreen name="Search Results" />
+  <PlaceholderScreen name='Search Results' />
 );
 const PodcastPreviewScreenPlaceholder = () => (
-  <PlaceholderScreen name="Podcast Preview" />
+  <PlaceholderScreen name='Podcast Preview' />
 );
 
 export const DiscoverStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={defaultScreenOptions}>
       <Stack.Screen
-        name="Discover"
+        name='Discover'
         component={DiscoverScreen}
-        options={{ title: "Discover" }}
+        options={{ title: 'Discover' }}
       />
       <Stack.Screen
-        name="SearchResults"
+        name='SearchResults'
         component={SearchResultsScreenPlaceholder}
-        options={{ title: "Search Results" }}
+        options={{ title: 'Search Results' }}
       />
       <Stack.Screen
-        name="PodcastPreview"
+        name='PodcastPreview'
         component={PodcastPreviewScreenPlaceholder}
-        options={{ title: "Podcast" }}
+        options={{ title: 'Podcast' }}
       />
     </Stack.Navigator>
   );

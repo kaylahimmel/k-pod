@@ -15,4 +15,4 @@ export interface FormattedPodcast {
   formattedSubscribeDate: string;
 }
 
-export type SortOption = "recent" | "alphabetical" | "episodeCount";
+export type SortOption = 'recent' | 'alphabetical' | 'episodeCount';

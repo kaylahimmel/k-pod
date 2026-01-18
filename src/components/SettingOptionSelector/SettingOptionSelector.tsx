@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { COLORS } from '../../constants/Colors';
 
 interface Option {
   value: number;
@@ -53,9 +53,9 @@ export const SettingOptionSelector = ({
 
 const styles = StyleSheet.create({
   labelRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   optionsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     paddingHorizontal: 16,
     paddingVertical: 12,
     gap: 8,
@@ -96,6 +96,6 @@ const styles = StyleSheet.create({
   },
   optionButtonTextSelected: {
     color: COLORS.cardBackground,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

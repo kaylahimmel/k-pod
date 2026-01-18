@@ -4,16 +4,16 @@ import {
   ITunesSearchResponse,
   SearchParams,
   ServiceResult,
-} from "../models";
-import { PODCAST_GENRES, PodcastGenre } from "../constants/PodcastGenres";
+} from '../models';
+import { PODCAST_GENRES, PodcastGenre } from '../constants/PodcastGenres';
 
 // ============================================
 // CONSTANTS
 // ============================================
-const ITUNES_SEARCH_BASE = "https://itunes.apple.com/search";
-const ITUNES_LOOKUP_BASE = "https://itunes.apple.com/lookup";
+const ITUNES_SEARCH_BASE = 'https://itunes.apple.com/search';
+const ITUNES_LOOKUP_BASE = 'https://itunes.apple.com/lookup';
 const DEFAULT_LIMIT = 25;
-const DEFAULT_COUNTRY = "US";
+const DEFAULT_COUNTRY = 'US';
 
 // ============================================
 // HELPER FUNCTIONS
@@ -24,11 +24,11 @@ const DEFAULT_COUNTRY = "US";
 function transformToDiscoveryPodcast(item: ITunesPodcast): DiscoveryPodcast {
   return {
     id: item.trackId.toString(),
-    title: item.trackName || item.collectionName || "Unknown Podcast",
-    author: item.artistName || "Unknown Author",
+    title: item.trackName || item.collectionName || 'Unknown Podcast',
+    author: item.artistName || 'Unknown Author',
     feedUrl: item.feedUrl,
-    artworkUrl: item.artworkUrl600 || item.artworkUrl100 || "",
-    genre: item.primaryGenreName || "",
+    artworkUrl: item.artworkUrl600 || item.artworkUrl100 || '',
+    genre: item.primaryGenreName || '',
     episodeCount: item.trackCount || 0,
   };
 }
@@ -65,13 +65,13 @@ async function searchPodcasts(
     const { query, limit = DEFAULT_LIMIT, country = DEFAULT_COUNTRY } = params;
 
     if (!query || query.trim().length === 0) {
-      return { success: false, error: "Search query is required" };
+      return { success: false, error: 'Search query is required' };
     }
 
     const url = buildSearchUrl({
       term: query.trim(),
-      media: "podcast",
-      entity: "podcast",
+      media: 'podcast',
+      entity: 'podcast',
       limit,
       country,
     });
@@ -91,7 +91,7 @@ async function searchPodcasts(
 
     return { success: true, data: podcasts };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Search failed: ${message}` };
   }
 }
@@ -101,7 +101,7 @@ async function searchPodcasts(
  * Fetches top podcasts from iTunes by genre
  */
 async function getTrendingPodcasts(
-  genre: PodcastGenre = "ALL",
+  genre: PodcastGenre = 'ALL',
   limit: number = DEFAULT_LIMIT,
   country: string = DEFAULT_COUNTRY,
 ): Promise<ServiceResult<DiscoveryPodcast[]>> {
@@ -111,9 +111,9 @@ async function getTrendingPodcasts(
     // Use a broad search term to get popular results in the genre
     // iTunes doesn't have a direct "trending" endpoint, so we search by genre
     const url = buildSearchUrl({
-      term: "podcast",
-      media: "podcast",
-      entity: "podcast",
+      term: 'podcast',
+      media: 'podcast',
+      entity: 'podcast',
       genreId,
       limit,
       country,
@@ -134,7 +134,7 @@ async function getTrendingPodcasts(
 
     return { success: true, data: podcasts };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Failed to fetch trending: ${message}` };
   }
 }
@@ -151,7 +151,7 @@ async function getRecommendations(
   try {
     // If no genres provided, return trending podcasts instead
     if (!subscribedPodcastGenres || subscribedPodcastGenres.length === 0) {
-      return getTrendingPodcasts("ALL", limit, country);
+      return getTrendingPodcasts('ALL', limit, country);
     }
 
     // Get unique genres and search for podcasts in each
@@ -164,8 +164,8 @@ async function getRecommendations(
     for (const genre of uniqueGenres) {
       const url = buildSearchUrl({
         term: genre,
-        media: "podcast",
-        entity: "podcast",
+        media: 'podcast',
+        entity: 'podcast',
         limit: limitPerGenre,
         country,
       });
@@ -187,7 +187,7 @@ async function getRecommendations(
 
     return { success: true, data: uniqueResults };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return {
       success: false,
       error: `Failed to fetch recommendations: ${message}`,
@@ -216,17 +216,17 @@ async function getPodcastById(
     const data: ITunesSearchResponse = await response.json();
 
     if (data.resultCount === 0 || !data.results[0]) {
-      return { success: false, error: "Podcast not found" };
+      return { success: false, error: 'Podcast not found' };
     }
 
     const podcast = data.results[0];
     if (!podcast.feedUrl) {
-      return { success: false, error: "Podcast has no RSS feed available" };
+      return { success: false, error: 'Podcast has no RSS feed available' };
     }
 
     return { success: true, data: transformToDiscoveryPodcast(podcast) };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Lookup failed: ${message}` };
   }
 }

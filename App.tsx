@@ -1,10 +1,10 @@
-import React from "react";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { NavigationContainer } from "@react-navigation/native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { RootNavigator } from "./src/navigation/RootNavigator";
+import React from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { RootNavigator } from './src/navigation/RootNavigator';
 
 export default function App() {
   return (
@@ -12,7 +12,7 @@ export default function App() {
       <SafeAreaProvider>
         <NavigationContainer>
           <RootNavigator />
-          <StatusBar style="auto" />
+          <StatusBar style='auto' />
         </NavigationContainer>
       </SafeAreaProvider>
     </GestureHandlerRootView>

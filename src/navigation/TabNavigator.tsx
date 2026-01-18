@@ -1,15 +1,15 @@
-import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
-import { BottomTabParamList } from "./types";
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+import { BottomTabParamList } from './types';
 import {
   LibraryStackNavigator,
   DiscoverStackNavigator,
   SettingsStackNavigator,
   ProfileStackNavigator,
   QueueStackNavigator,
-} from "./";
-import { styles } from "./TabNavigator.styles";
+} from './';
+import { styles } from './TabNavigator.styles';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -22,24 +22,24 @@ interface TabIconConfig {
 
 const TAB_ICONS: Record<keyof BottomTabParamList, TabIconConfig> = {
   LibraryTab: {
-    focused: "library",
-    unfocused: "library-outline",
+    focused: 'library',
+    unfocused: 'library-outline',
   },
   DiscoverTab: {
-    focused: "search",
-    unfocused: "search-outline",
+    focused: 'search',
+    unfocused: 'search-outline',
   },
   QueueTab: {
-    focused: "list",
-    unfocused: "list-outline",
+    focused: 'list',
+    unfocused: 'list-outline',
   },
   ProfileTab: {
-    focused: "person",
-    unfocused: "person-outline",
+    focused: 'person',
+    unfocused: 'person-outline',
   },
   SettingsTab: {
-    focused: "settings",
-    unfocused: "settings-outline",
+    focused: 'settings',
+    unfocused: 'settings-outline',
   },
 };
 
@@ -52,37 +52,37 @@ export const TabNavigator = () => {
           const iconName = focused ? iconConfig.focused : iconConfig.unfocused;
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "#007AFF",
-        tabBarInactiveTintColor: "#8E8E93",
+        tabBarActiveTintColor: '#007AFF',
+        tabBarInactiveTintColor: '#8E8E93',
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabBarLabel,
         headerShown: false,
       })}
     >
       <Tab.Screen
-        name="LibraryTab"
+        name='LibraryTab'
         component={LibraryStackNavigator}
-        options={{ tabBarLabel: "Library" }}
+        options={{ tabBarLabel: 'Library' }}
       />
       <Tab.Screen
-        name="DiscoverTab"
+        name='DiscoverTab'
         component={DiscoverStackNavigator}
-        options={{ tabBarLabel: "Discover" }}
+        options={{ tabBarLabel: 'Discover' }}
       />
       <Tab.Screen
-        name="QueueTab"
+        name='QueueTab'
         component={QueueStackNavigator}
-        options={{ tabBarLabel: "Up Next" }}
+        options={{ tabBarLabel: 'Up Next' }}
       />
       <Tab.Screen
-        name="ProfileTab"
+        name='ProfileTab'
         component={ProfileStackNavigator}
-        options={{ tabBarLabel: "Profile" }}
+        options={{ tabBarLabel: 'Profile' }}
       />
       <Tab.Screen
-        name="SettingsTab"
+        name='SettingsTab'
         component={SettingsStackNavigator}
-        options={{ tabBarLabel: "Settings" }}
+        options={{ tabBarLabel: 'Settings' }}
       />
     </Tab.Navigator>
   );

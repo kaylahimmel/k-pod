@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { styles } from "./HeaderQueue.styles";
-import { COLORS } from "../../constants/Colors";
+import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { styles } from './HeaderQueue.styles';
+import { COLORS } from '../../constants/Colors';
 
 interface HeaderQueueProps {
   count: string;
@@ -25,7 +25,7 @@ export const HeaderQueue = ({
       </View>
       {hasItems && (
         <TouchableOpacity style={styles.clearButton} onPress={onClear}>
-          <Ionicons name="trash-outline" size={16} color={COLORS.danger} />
+          <Ionicons name='trash-outline' size={16} color={COLORS.danger} />
           <Text style={styles.clearButtonText}>Clear</Text>
         </TouchableOpacity>
       )}

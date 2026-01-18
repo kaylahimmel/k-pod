@@ -1,5 +1,5 @@
-import { QueueItem } from "../models";
-import { createMockEpisode, createMockPodcast } from "./mockLibrary";
+import { QueueItem } from '../models';
+import { createMockEpisode, createMockPodcast } from './mockLibrary';
 
 /**
  * Creates a mock QueueItem object for testing
@@ -8,7 +8,7 @@ import { createMockEpisode, createMockPodcast } from "./mockLibrary";
 export const createMockQueueItem = (
   overrides: Partial<QueueItem> = {},
 ): QueueItem => ({
-  id: "queue-item-1",
+  id: 'queue-item-1',
   episode: createMockEpisode(),
   podcast: createMockPodcast(),
   position: 0,

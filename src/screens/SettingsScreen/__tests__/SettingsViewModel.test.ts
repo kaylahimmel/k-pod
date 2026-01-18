@@ -1,18 +1,18 @@
-import { renderHook, act } from "@testing-library/react-native";
-import { useSettingsViewModel } from "../SettingsViewModel";
-import { settingsStore } from "../../../stores";
-import { Alert, Linking } from "react-native";
+import { renderHook, act } from '@testing-library/react-native';
+import { useSettingsViewModel } from '../SettingsViewModel';
+import { settingsStore } from '../../../stores';
+import { Alert, Linking } from 'react-native';
 
 // Mock the stores
-jest.mock("../../../stores", () => ({
+jest.mock('../../../stores', () => ({
   settingsStore: jest.fn(),
 }));
 
 // Mock Alert and Linking
-jest.spyOn(Alert, "alert");
-jest.spyOn(Linking, "openURL").mockResolvedValue(true);
+jest.spyOn(Alert, 'alert');
+jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
 
-describe("useSettingsViewModel", () => {
+describe('useSettingsViewModel', () => {
   const mockUpdateSetting = jest.fn();
   const mockResetSettings = jest.fn();
 
@@ -34,20 +34,20 @@ describe("useSettingsViewModel", () => {
     });
   });
 
-  it("should return formatted settings", () => {
+  it('should return formatted settings', () => {
     const { result } = renderHook(() => useSettingsViewModel());
 
     expect(result.current.settings.autoPlayNext).toBe(true);
     expect(result.current.settings.defaultSpeed).toBe(1);
-    expect(result.current.settings.defaultSpeedLabel).toBe("1x (Normal)");
+    expect(result.current.settings.defaultSpeedLabel).toBe('1x (Normal)');
     expect(result.current.settings.downloadOnWiFi).toBe(true);
     expect(result.current.settings.skipForwardSeconds).toBe(30);
-    expect(result.current.settings.skipForwardLabel).toBe("30 sec");
+    expect(result.current.settings.skipForwardLabel).toBe('30 sec');
     expect(result.current.settings.skipBackwardSeconds).toBe(15);
-    expect(result.current.settings.skipBackwardLabel).toBe("15 sec");
+    expect(result.current.settings.skipBackwardLabel).toBe('15 sec');
   });
 
-  it("should return loading state", () => {
+  it('should return loading state', () => {
     (settingsStore as unknown as jest.Mock).mockReturnValue({
       settings: defaultSettings,
       loading: true,
@@ -60,88 +60,88 @@ describe("useSettingsViewModel", () => {
     expect(result.current.isLoading).toBe(true);
   });
 
-  it("should return speed options", () => {
+  it('should return speed options', () => {
     const { result } = renderHook(() => useSettingsViewModel());
 
     expect(result.current.speedOptions).toHaveLength(7);
     expect(result.current.speedOptions[0].value).toBe(0.5);
   });
 
-  it("should return skip options", () => {
+  it('should return skip options', () => {
     const { result } = renderHook(() => useSettingsViewModel());
 
     expect(result.current.skipForwardOptions).toHaveLength(5);
     expect(result.current.skipBackwardOptions).toHaveLength(4);
   });
 
-  it("should return app version", () => {
+  it('should return app version', () => {
     const { result } = renderHook(() => useSettingsViewModel());
 
-    expect(result.current.appVersion).toBe("1.0.0");
+    expect(result.current.appVersion).toBe('1.0.0');
   });
 
-  describe("handleToggleAutoPlayNext", () => {
-    it("should toggle auto-play next setting", () => {
+  describe('handleToggleAutoPlayNext', () => {
+    it('should toggle auto-play next setting', () => {
       const { result } = renderHook(() => useSettingsViewModel());
 
       act(() => {
         result.current.handleToggleAutoPlayNext();
       });
 
-      expect(mockUpdateSetting).toHaveBeenCalledWith("autoPlayNext", false);
+      expect(mockUpdateSetting).toHaveBeenCalledWith('autoPlayNext', false);
     });
   });
 
-  describe("handleSpeedChange", () => {
-    it("should update playback speed", () => {
+  describe('handleSpeedChange', () => {
+    it('should update playback speed', () => {
       const { result } = renderHook(() => useSettingsViewModel());
 
       act(() => {
         result.current.handleSpeedChange(1.5);
       });
 
-      expect(mockUpdateSetting).toHaveBeenCalledWith("defaultSpeed", 1.5);
+      expect(mockUpdateSetting).toHaveBeenCalledWith('defaultSpeed', 1.5);
     });
   });
 
-  describe("handleToggleDownloadOnWiFi", () => {
-    it("should toggle download on WiFi setting", () => {
+  describe('handleToggleDownloadOnWiFi', () => {
+    it('should toggle download on WiFi setting', () => {
       const { result } = renderHook(() => useSettingsViewModel());
 
       act(() => {
         result.current.handleToggleDownloadOnWiFi();
       });
 
-      expect(mockUpdateSetting).toHaveBeenCalledWith("downloadOnWiFi", false);
+      expect(mockUpdateSetting).toHaveBeenCalledWith('downloadOnWiFi', false);
     });
   });
 
-  describe("handleSkipForwardChange", () => {
-    it("should update skip forward seconds", () => {
+  describe('handleSkipForwardChange', () => {
+    it('should update skip forward seconds', () => {
       const { result } = renderHook(() => useSettingsViewModel());
 
       act(() => {
         result.current.handleSkipForwardChange(45);
       });
 
-      expect(mockUpdateSetting).toHaveBeenCalledWith("skipForwardSeconds", 45);
+      expect(mockUpdateSetting).toHaveBeenCalledWith('skipForwardSeconds', 45);
     });
   });
 
-  describe("handleSkipBackwardChange", () => {
-    it("should update skip backward seconds", () => {
+  describe('handleSkipBackwardChange', () => {
+    it('should update skip backward seconds', () => {
       const { result } = renderHook(() => useSettingsViewModel());
 
       act(() => {
         result.current.handleSkipBackwardChange(10);
       });
 
-      expect(mockUpdateSetting).toHaveBeenCalledWith("skipBackwardSeconds", 10);
+      expect(mockUpdateSetting).toHaveBeenCalledWith('skipBackwardSeconds', 10);
     });
   });
 
-  describe("handleResetSettings", () => {
-    it("should show confirmation alert", () => {
+  describe('handleResetSettings', () => {
+    it('should show confirmation alert', () => {
       const { result } = renderHook(() => useSettingsViewModel());
 
       act(() => {
@@ -149,16 +149,16 @@ describe("useSettingsViewModel", () => {
       });
 
       expect(Alert.alert).toHaveBeenCalledWith(
-        "Reset Settings",
-        "Are you sure you want to reset all settings to their defaults?",
+        'Reset Settings',
+        'Are you sure you want to reset all settings to their defaults?',
         expect.arrayContaining([
-          expect.objectContaining({ text: "Cancel", style: "cancel" }),
-          expect.objectContaining({ text: "Reset", style: "destructive" }),
+          expect.objectContaining({ text: 'Cancel', style: 'cancel' }),
+          expect.objectContaining({ text: 'Reset', style: 'destructive' }),
         ]),
       );
     });
 
-    it("should call resetSettings when confirmed", () => {
+    it('should call resetSettings when confirmed', () => {
       const { result } = renderHook(() => useSettingsViewModel());
 
       act(() => {
@@ -168,7 +168,7 @@ describe("useSettingsViewModel", () => {
       // Simulate pressing Reset button in alert
       const alertCall = (Alert.alert as jest.Mock).mock.calls[0];
       const resetButton = alertCall[2].find(
-        (btn: { text: string }) => btn.text === "Reset",
+        (btn: { text: string }) => btn.text === 'Reset',
       );
 
       act(() => {
@@ -179,8 +179,8 @@ describe("useSettingsViewModel", () => {
     });
   });
 
-  describe("handlePrivacyPolicyPress", () => {
-    it("should open privacy policy URL", async () => {
+  describe('handlePrivacyPolicyPress', () => {
+    it('should open privacy policy URL', async () => {
       const { result } = renderHook(() => useSettingsViewModel());
 
       await act(async () => {
@@ -188,20 +188,20 @@ describe("useSettingsViewModel", () => {
       });
 
       expect(Linking.openURL).toHaveBeenCalledWith(
-        "https://example.com/privacy",
+        'https://example.com/privacy',
       );
     });
   });
 
-  describe("handleTermsOfServicePress", () => {
-    it("should open terms of service URL", async () => {
+  describe('handleTermsOfServicePress', () => {
+    it('should open terms of service URL', async () => {
       const { result } = renderHook(() => useSettingsViewModel());
 
       await act(async () => {
         await result.current.handleTermsOfServicePress();
       });
 
-      expect(Linking.openURL).toHaveBeenCalledWith("https://example.com/terms");
+      expect(Linking.openURL).toHaveBeenCalledWith('https://example.com/terms');
     });
   });
 });

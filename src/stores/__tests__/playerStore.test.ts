@@ -1,7 +1,7 @@
-import { playerStore } from "../../stores";
-import { Episode, PlaybackSpeed } from "../../models";
+import { playerStore } from '../../stores';
+import { Episode, PlaybackSpeed } from '../../models';
 
-describe("playerStore", () => {
+describe('playerStore', () => {
   beforeEach(() => {
     // Reset store to initial state before each test
     playerStore.setState({
@@ -13,8 +13,8 @@ describe("playerStore", () => {
     });
   });
 
-  describe("initial state", () => {
-    it("should initialize with default values", () => {
+  describe('initial state', () => {
+    it('should initialize with default values', () => {
       const state = playerStore.getState();
       expect(state.currentEpisode).toBeNull();
       expect(state.isPlaying).toBe(false);
@@ -24,14 +24,14 @@ describe("playerStore", () => {
     });
   });
 
-  describe("setCurrentEpisode", () => {
-    it("should set the current episode", () => {
+  describe('setCurrentEpisode', () => {
+    it('should set the current episode', () => {
       const mockEpisode: Episode = {
-        id: "1",
-        podcastId: "podcast-1",
-        title: "Episode 1",
-        description: "Test episode",
-        audioUrl: "https://example.com/audio.mp3",
+        id: '1',
+        podcastId: 'podcast-1',
+        title: 'Episode 1',
+        description: 'Test episode',
+        audioUrl: 'https://example.com/audio.mp3',
         duration: 3600,
         publishDate: new Date().toISOString(),
         played: false,
@@ -42,13 +42,13 @@ describe("playerStore", () => {
       expect(playerStore.getState().currentEpisode).toEqual(mockEpisode);
     });
 
-    it("should set current episode to null", () => {
+    it('should set current episode to null', () => {
       const mockEpisode: Episode = {
-        id: "1",
-        podcastId: "podcast-1",
-        title: "Episode 1",
-        description: "Test episode",
-        audioUrl: "https://example.com/audio.mp3",
+        id: '1',
+        podcastId: 'podcast-1',
+        title: 'Episode 1',
+        description: 'Test episode',
+        audioUrl: 'https://example.com/audio.mp3',
         duration: 3600,
         publishDate: new Date().toISOString(),
         played: false,
@@ -61,44 +61,44 @@ describe("playerStore", () => {
     });
   });
 
-  describe("setIsPlaying", () => {
-    it("should set isPlaying to true", () => {
+  describe('setIsPlaying', () => {
+    it('should set isPlaying to true', () => {
       playerStore.getState().setIsPlaying(true);
       expect(playerStore.getState().isPlaying).toBe(true);
     });
 
-    it("should set isPlaying to false", () => {
+    it('should set isPlaying to false', () => {
       playerStore.getState().setIsPlaying(true);
       playerStore.getState().setIsPlaying(false);
       expect(playerStore.getState().isPlaying).toBe(false);
     });
   });
 
-  describe("setPosition", () => {
-    it("should update playback position", () => {
+  describe('setPosition', () => {
+    it('should update playback position', () => {
       playerStore.getState().setPosition(120);
       expect(playerStore.getState().position).toBe(120);
     });
 
-    it("should handle fractional positions", () => {
+    it('should handle fractional positions', () => {
       playerStore.getState().setPosition(123.456);
       expect(playerStore.getState().position).toBe(123.456);
     });
 
-    it("should reset position to zero", () => {
+    it('should reset position to zero', () => {
       playerStore.getState().setPosition(500);
       playerStore.getState().setPosition(0);
       expect(playerStore.getState().position).toBe(0);
     });
   });
 
-  describe("setDuration", () => {
-    it("should set episode duration", () => {
+  describe('setDuration', () => {
+    it('should set episode duration', () => {
       playerStore.getState().setDuration(3600);
       expect(playerStore.getState().duration).toBe(3600);
     });
 
-    it("should update duration independently of position", () => {
+    it('should update duration independently of position', () => {
       playerStore.getState().setPosition(500);
       playerStore.getState().setDuration(3600);
       expect(playerStore.getState().position).toBe(500);
@@ -106,13 +106,13 @@ describe("playerStore", () => {
     });
   });
 
-  describe("setSpeed", () => {
-    it("should set playback speed", () => {
+  describe('setSpeed', () => {
+    it('should set playback speed', () => {
       playerStore.getState().setSpeed(1.5);
       expect(playerStore.getState().speed).toBe(1.5);
     });
 
-    it("should handle various speed values", () => {
+    it('should handle various speed values', () => {
       const speeds: PlaybackSpeed[] = [
         0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9,
         2,
@@ -124,14 +124,14 @@ describe("playerStore", () => {
     });
   });
 
-  describe("reset", () => {
-    it("should reset all player state to initial values", () => {
+  describe('reset', () => {
+    it('should reset all player state to initial values', () => {
       const mockEpisode: Episode = {
-        id: "1",
-        podcastId: "podcast-1",
-        title: "Episode 1",
-        description: "Test episode",
-        audioUrl: "https://example.com/audio.mp3",
+        id: '1',
+        podcastId: 'podcast-1',
+        title: 'Episode 1',
+        description: 'Test episode',
+        audioUrl: 'https://example.com/audio.mp3',
         duration: 3600,
         publishDate: new Date().toISOString(),
         played: false,

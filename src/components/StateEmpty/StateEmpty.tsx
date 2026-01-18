@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "../../constants/Colors";
-import { styles } from "./StateEmpty.styles";
+import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from '../../constants/Colors';
+import { styles } from './StateEmpty.styles';
 
 interface StateEmptyProps {
   icon: keyof typeof Ionicons.glyphMap;

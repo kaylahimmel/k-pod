@@ -1,13 +1,13 @@
-import { QueueItem } from "../../models";
-import { FormattedQueueItem } from "./Queue.types";
-import { truncateText } from "../../utils";
+import { QueueItem } from '../../models';
+import { FormattedQueueItem } from './Queue.types';
+import { truncateText } from '../../utils';
 
 /**
  * Formats duration in seconds to HH:MM:SS or MM:SS format
  */
 export function formatDuration(seconds: number): string {
   if (!seconds || seconds <= 0) {
-    return "0:00";
+    return '0:00';
   }
 
   const hours = Math.floor(seconds / 3600);
@@ -15,9 +15,9 @@ export function formatDuration(seconds: number): string {
   const secs = Math.floor(seconds % 60);
 
   if (hours > 0) {
-    return `${hours}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
-  return `${minutes}:${secs.toString().padStart(2, "0")}`;
+  return `${minutes}:${secs.toString().padStart(2, '0')}`;
 }
 
 /**
@@ -37,7 +37,7 @@ export function calculateRemainingTime(
  */
 export function formatRemainingTime(seconds: number): string {
   if (!seconds || seconds <= 0) {
-    return "No time remaining";
+    return 'No time remaining';
   }
 
   const hours = Math.floor(seconds / 3600);
@@ -57,7 +57,7 @@ export function formatPositionLabel(
   isCurrentlyPlaying: boolean,
 ): string {
   if (isCurrentlyPlaying) {
-    return "Now Playing";
+    return 'Now Playing';
   }
   return `#${index + 1}`;
 }
@@ -127,9 +127,9 @@ export function getUpcomingItems(
  */
 export function formatQueueCount(count: number): string {
   if (count === 0) {
-    return "Queue is empty";
+    return 'Queue is empty';
   } else if (count === 1) {
-    return "1 episode";
+    return '1 episode';
   } else {
     return `${count} episodes`;
   }

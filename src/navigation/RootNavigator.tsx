@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { RootStackParamList } from "./types";
-import { TabNavigator } from "./TabNavigator";
-import { modalScreenOptions } from "./screenOptions";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { RootStackParamList } from './types';
+import { TabNavigator } from './TabNavigator';
+import { modalScreenOptions } from './screenOptions';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -21,9 +21,9 @@ const PlaceholderModal = ({ title }: { title: string }) => (
 // import { FullPlayerScreen } from "../screens/FullPlayerScreen";
 // import { AddPodcastModal } from "../screens/AddPodcastModal";
 
-const FullPlayerPlaceholder = () => <PlaceholderModal title="Full Player" />;
+const FullPlayerPlaceholder = () => <PlaceholderModal title='Full Player' />;
 const AddPodcastModalPlaceholder = () => (
-  <PlaceholderModal title="Add Podcast" />
+  <PlaceholderModal title='Add Podcast' />
 );
 
 // =============================================================================
@@ -32,17 +32,17 @@ const AddPodcastModalPlaceholder = () => (
 export const RootNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Main" component={TabNavigator} />
+      <Stack.Screen name='Main' component={TabNavigator} />
       <Stack.Group screenOptions={modalScreenOptions}>
         <Stack.Screen
-          name="FullPlayer"
+          name='FullPlayer'
           component={FullPlayerPlaceholder}
-          options={{ title: "Now Playing" }}
+          options={{ title: 'Now Playing' }}
         />
         <Stack.Screen
-          name="AddPodcastModal"
+          name='AddPodcastModal'
           component={AddPodcastModalPlaceholder}
-          options={{ title: "Add Podcast" }}
+          options={{ title: 'Add Podcast' }}
         />
       </Stack.Group>
     </Stack.Navigator>
@@ -55,18 +55,18 @@ export const RootNavigator = () => {
 const styles = StyleSheet.create({
   placeholder: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F2F2F7",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F2F2F7',
   },
   placeholderText: {
     fontSize: 24,
-    fontWeight: "600",
-    color: "#1C1C1E",
+    fontWeight: '600',
+    color: '#1C1C1E',
   },
   placeholderSubtext: {
     fontSize: 14,
-    color: "#8E8E93",
+    color: '#8E8E93',
     marginTop: 8,
   },
 });

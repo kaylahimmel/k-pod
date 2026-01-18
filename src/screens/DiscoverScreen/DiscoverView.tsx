@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text, FlatList, SectionList } from "react-native";
-import { DiscoveryPodcast } from "../../models";
-import { FormattedDiscoveryPodcast } from "./Discover.types";
-import { useDiscoverViewModel } from "./DiscoverViewModel";
+import React from 'react';
+import { View, Text, FlatList, SectionList } from 'react-native';
+import { DiscoveryPodcast } from '../../models';
+import { FormattedDiscoveryPodcast } from './Discover.types';
+import { useDiscoverViewModel } from './DiscoverViewModel';
 import {
   DiscoveryPodcastCard,
   SearchBar,
@@ -10,12 +10,11 @@ import {
   StateLoading,
   StateError,
   StateNoResults,
-} from "../../components";
-import { styles } from "./Discover.styles";
+} from '../../components';
+import { styles } from './Discover.styles';
 
 interface DiscoverViewProps {
   onPodcastPress: (podcast: DiscoveryPodcast) => void;
-  onSubscribe: (podcast: DiscoveryPodcast) => void;
 }
 
 interface SectionHeaderProps {
@@ -28,11 +27,8 @@ const SectionHeader = ({ title }: SectionHeaderProps) => (
   </View>
 );
 
-export const DiscoverView = ({
-  onPodcastPress,
-  onSubscribe,
-}: DiscoverViewProps) => {
-  const viewModel = useDiscoverViewModel(onPodcastPress, onSubscribe);
+export const DiscoverView = ({ onPodcastPress }: DiscoverViewProps) => {
+  const viewModel = useDiscoverViewModel(onPodcastPress);
 
   const renderPodcastCard = ({ item }: { item: FormattedDiscoveryPodcast }) => {
     const originalPodcast = viewModel.getOriginalPodcast(item.id);
@@ -61,7 +57,7 @@ export const DiscoverView = ({
           onChangeText={viewModel.handleSearchQueryChange}
           onSubmit={viewModel.handleSearch}
         />
-        <StateLoading message="Searching..." />
+        <StateLoading message='Searching...' />
       </View>
     );
   }
@@ -76,7 +72,7 @@ export const DiscoverView = ({
             onChangeText={viewModel.handleSearchQueryChange}
             onSubmit={viewModel.handleSearch}
           />
-          <StateLoading message="Searching..." />
+          <StateLoading message='Searching...' />
         </View>
       );
     }
@@ -105,7 +101,7 @@ export const DiscoverView = ({
             onChangeText={viewModel.handleSearchQueryChange}
             onSubmit={viewModel.handleSearch}
           />
-          <StateNoResults query={viewModel.searchQuery} icon="sad-outline" />
+          <StateNoResults query={viewModel.searchQuery} icon='sad-outline' />
         </View>
       );
     }
@@ -139,9 +135,9 @@ export const DiscoverView = ({
       />
       {viewModel.hasNoTrendingResults ? (
         <StateEmpty
-          icon="search-outline"
-          title="Discover Podcasts"
-          message="Search for your favorite podcasts or browse trending shows below"
+          icon='search-outline'
+          title='Discover Podcasts'
+          message='Search for your favorite podcasts or browse trending shows below'
         />
       ) : (
         <SectionList

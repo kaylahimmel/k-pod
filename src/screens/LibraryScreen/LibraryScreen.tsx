@@ -1,22 +1,22 @@
-import React, { useCallback, useLayoutEffect } from "react";
-import { TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { LibraryScreenProps } from "../../navigation/types";
-import { LibraryView } from "./LibraryView";
-import { COLORS } from "../../constants/Colors";
+import React, { useCallback, useLayoutEffect } from 'react';
+import { TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LibraryScreenProps } from '../../navigation/types';
+import { LibraryView } from './LibraryView';
+import { COLORS } from '../../constants/Colors';
 
 export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
   // Navigation handler: Navigate to podcast detail
   const handlePodcastPressNav = useCallback(
     (podcastId: string) => {
-      navigation.navigate("PodcastDetail", { podcastId });
+      navigation.navigate('PodcastDetail', { podcastId });
     },
     [navigation],
   );
 
   // Navigation handler: Open add podcast modal
   const handleAddPodcastPressNav = useCallback(() => {
-    navigation.navigate("AddPodcastModal");
+    navigation.navigate('AddPodcastModal');
   }, [navigation]);
 
   // Configure header right button for adding podcasts
@@ -28,7 +28,7 @@ export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Ionicons
-            name="add-circle-outline"
+            name='add-circle-outline'
             size={28}
             color={COLORS.primary}
           />

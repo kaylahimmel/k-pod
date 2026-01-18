@@ -1,6 +1,6 @@
-import React from "react";
-import { SettingsScreenProps } from "../../navigation/types";
-import { SettingsView } from "./SettingsView";
+import React from 'react';
+import { SettingsScreenProps } from '../../navigation/types';
+import { SettingsView } from './SettingsView';
 
 export const SettingsScreen = (_props: SettingsScreenProps) => {
   // No navigation handlers needed currently

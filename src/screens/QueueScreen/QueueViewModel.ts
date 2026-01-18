@@ -1,14 +1,14 @@
-import { useCallback, useMemo } from "react";
-import { useQueueStore } from "../../hooks/useQueueStore";
-import { usePlayerStore } from "../../hooks/usePlayerStore";
-import { QueueItem } from "../../models";
+import { useCallback, useMemo } from 'react';
+import { useQueueStore } from '../../hooks/useQueueStore';
+import { usePlayerStore } from '../../hooks/usePlayerStore';
+import { QueueItem } from '../../models';
 import {
   formatQueueItems,
   getCurrentlyPlayingItem,
   getUpcomingItems,
   getQueueStats,
-} from "./QueuePresenter";
-import { FormattedQueueItem } from "./Queue.types";
+} from './QueuePresenter';
+import { FormattedQueueItem } from './Queue.types';
 
 export const useQueueViewModel = (
   onEpisodePress?: (episodeId: string, podcastId: string) => void,

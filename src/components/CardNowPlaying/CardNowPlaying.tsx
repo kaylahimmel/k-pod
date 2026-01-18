@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "../../constants/Colors";
-import { FormattedQueueItem } from "../../screens/QueueScreen/Queue.types";
-import { styles } from "./CardNowPlaying.styles";
+import React from 'react';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from '../../constants/Colors';
+import { FormattedQueueItem } from '../../screens/QueueScreen/Queue.types';
+import { styles } from './CardNowPlaying.styles';
 
 interface CardNowPlayingProps {
   item: FormattedQueueItem;
@@ -19,12 +19,12 @@ export const CardNowPlaying = ({
   <TouchableOpacity style={styles.nowPlayingContainer} onPress={onPress}>
     <View style={styles.nowPlayingHeader}>
       <Ionicons
-        name={isPlaying ? "volume-high" : "pause"}
+        name={isPlaying ? 'volume-high' : 'pause'}
         size={14}
-        color="#FFFFFF"
+        color='#FFFFFF'
       />
       <Text style={styles.nowPlayingLabel}>
-        {isPlaying ? "NOW PLAYING" : "PAUSED"}
+        {isPlaying ? 'NOW PLAYING' : 'PAUSED'}
       </Text>
     </View>
     <View style={styles.nowPlayingContent}>
@@ -36,7 +36,7 @@ export const CardNowPlaying = ({
       ) : (
         <View style={styles.nowPlayingArtwork}>
           <Ionicons
-            name="musical-notes"
+            name='musical-notes'
             size={30}
             color={COLORS.textSecondary}
           />

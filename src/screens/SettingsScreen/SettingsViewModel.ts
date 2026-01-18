@@ -1,18 +1,18 @@
-import { useCallback, useMemo } from "react";
-import { Alert, Linking } from "react-native";
-import { useSettingsStore } from "../../hooks/useSettingsStore";
+import { useCallback, useMemo } from 'react';
+import { Alert, Linking } from 'react-native';
+import { useSettingsStore } from '../../hooks/useSettingsStore';
 import {
   formatSettings,
   getAppVersion,
   SPEED_OPTIONS,
   SKIP_FORWARD_OPTIONS,
   SKIP_BACKWARD_OPTIONS,
-} from "./SettingsPresenter";
-import { SettingsViewModelReturn } from "./Settings.types";
+} from './SettingsPresenter';
+import { SettingsViewModelReturn } from './Settings.types';
 
 // Placeholder URLs for legal pages
-const PRIVACY_POLICY_URL = "https://example.com/privacy";
-const TERMS_OF_SERVICE_URL = "https://example.com/terms";
+const PRIVACY_POLICY_URL = 'https://example.com/privacy';
+const TERMS_OF_SERVICE_URL = 'https://example.com/terms';
 
 /**
  * ViewModel hook for the Settings screen
@@ -33,7 +33,7 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
    * Toggles the auto-play next episode setting
    */
   const handleToggleAutoPlayNext = useCallback(() => {
-    updateSetting("autoPlayNext", !settings.autoPlayNext);
+    updateSetting('autoPlayNext', !settings.autoPlayNext);
   }, [settings.autoPlayNext, updateSetting]);
 
   /**
@@ -41,7 +41,7 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
    */
   const handleSpeedChange = useCallback(
     (speed: number) => {
-      updateSetting("defaultSpeed", speed);
+      updateSetting('defaultSpeed', speed);
     },
     [updateSetting],
   );
@@ -50,7 +50,7 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
    * Toggles the download on WiFi only setting
    */
   const handleToggleDownloadOnWiFi = useCallback(() => {
-    updateSetting("downloadOnWiFi", !settings.downloadOnWiFi);
+    updateSetting('downloadOnWiFi', !settings.downloadOnWiFi);
   }, [settings.downloadOnWiFi, updateSetting]);
 
   /**
@@ -58,7 +58,7 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
    */
   const handleSkipForwardChange = useCallback(
     (seconds: number) => {
-      updateSetting("skipForwardSeconds", seconds);
+      updateSetting('skipForwardSeconds', seconds);
     },
     [updateSetting],
   );
@@ -68,7 +68,7 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
    */
   const handleSkipBackwardChange = useCallback(
     (seconds: number) => {
-      updateSetting("skipBackwardSeconds", seconds);
+      updateSetting('skipBackwardSeconds', seconds);
     },
     [updateSetting],
   );
@@ -78,13 +78,13 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
    */
   const handleResetSettings = useCallback(() => {
     Alert.alert(
-      "Reset Settings",
-      "Are you sure you want to reset all settings to their defaults?",
+      'Reset Settings',
+      'Are you sure you want to reset all settings to their defaults?',
       [
-        { text: "Cancel", style: "cancel" },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: "Reset",
-          style: "destructive",
+          text: 'Reset',
+          style: 'destructive',
           onPress: () => {
             resetSettings();
           },
@@ -101,7 +101,7 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
     try {
       await Linking.openURL(PRIVACY_POLICY_URL);
     } catch {
-      Alert.alert("Error", "Unable to open privacy policy.");
+      Alert.alert('Error', 'Unable to open privacy policy.');
     }
   }, []);
 
@@ -113,7 +113,7 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
     try {
       await Linking.openURL(TERMS_OF_SERVICE_URL);
     } catch {
-      Alert.alert("Error", "Unable to open terms of service.");
+      Alert.alert('Error', 'Unable to open terms of service.');
     }
   }, []);
 

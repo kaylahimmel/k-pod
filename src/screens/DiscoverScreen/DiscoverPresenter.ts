@@ -1,6 +1,6 @@
-import { DiscoveryPodcast } from "../../models";
-import { FormattedDiscoveryPodcast } from "./Discover.types";
-import { truncateText } from "../../utils";
+import { DiscoveryPodcast } from '../../models';
+import { FormattedDiscoveryPodcast } from './Discover.types';
+import { truncateText } from '../../utils';
 
 export interface PodcastsByGenre {
   genre: string;
@@ -12,9 +12,9 @@ export interface PodcastsByGenre {
  */
 export function formatEpisodeCount(count: number): string {
   if (count === 0) {
-    return "No episodes";
+    return 'No episodes';
   } else if (count === 1) {
-    return "1 episode";
+    return '1 episode';
   } else {
     return `${count} episodes`;
   }
@@ -57,7 +57,7 @@ export function groupPodcastsByGenre(
   const genreMap = new Map<string, DiscoveryPodcast[]>();
 
   podcasts.forEach((podcast) => {
-    const genre = podcast.genre || "Other";
+    const genre = podcast.genre || 'Other';
     const existing = genreMap.get(genre) || [];
     genreMap.set(genre, [...existing, podcast]);
   });
@@ -90,7 +90,7 @@ export function filterByGenre(
   podcasts: DiscoveryPodcast[],
   genre: string,
 ): DiscoveryPodcast[] {
-  if (!genre || genre === "All") {
+  if (!genre || genre === 'All') {
     return podcasts;
   }
   return podcasts.filter((p) => p.genre === genre);

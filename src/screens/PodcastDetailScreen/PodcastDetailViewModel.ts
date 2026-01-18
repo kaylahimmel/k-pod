@@ -1,9 +1,9 @@
-import { useCallback, useState } from "react";
-import { Alert } from "react-native";
-import { formatPodcastDetail } from "./PodcastDetailPresenter";
-import { Episode, Podcast, QueueItem } from "../../models";
-import { usePodcastStore } from "../../hooks/usePodcastStore";
-import { useQueueStore } from "../../hooks/useQueueStore";
+import { useCallback, useState } from 'react';
+import { Alert } from 'react-native';
+import { formatPodcastDetail } from './PodcastDetailPresenter';
+import { Episode, Podcast, QueueItem } from '../../models';
+import { usePodcastStore } from '../../hooks/usePodcastStore';
+import { useQueueStore } from '../../hooks/useQueueStore';
 
 // ViewModel: Manages state and logic
 export const usePodcastDetailViewModel = (
@@ -28,13 +28,13 @@ export const usePodcastDetailViewModel = (
 
   const handleEpisodeUnsubscribe = useCallback(() => {
     Alert.alert(
-      "Unsubscribe",
+      'Unsubscribe',
       `Are you sure you want to unsubscribe from "${podcast?.title}"?`,
       [
-        { text: "Cancel", style: "cancel" },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: "Unsubscribe",
-          style: "destructive",
+          text: 'Unsubscribe',
+          style: 'destructive',
           onPress: onUnsubscribe,
         },
       ],
@@ -49,8 +49,8 @@ export const usePodcastDetailViewModel = (
       const isInQueue = queue.some((item) => item.episode.id === episode.id);
       if (isInQueue) {
         Alert.alert(
-          "Already in Queue",
-          "This episode is already in your queue",
+          'Already in Queue',
+          'This episode is already in your queue',
         );
         return;
       }
@@ -64,7 +64,7 @@ export const usePodcastDetailViewModel = (
 
       addToQueue(queueItem);
       Alert.alert(
-        "Added to Queue",
+        'Added to Queue',
         `"${episode.title}" has been added to your queue`,
       );
     },

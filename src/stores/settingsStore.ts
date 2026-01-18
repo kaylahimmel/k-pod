@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { AppSettings, SettingsStore } from "../models";
+import { create } from 'zustand';
+import { AppSettings, SettingsStore } from '../models';
 
 const defaultSettings: AppSettings = {
   autoPlayNext: true,

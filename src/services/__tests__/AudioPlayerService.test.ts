@@ -1,7 +1,7 @@
-import { AudioPlayerService } from "../AudioPlayerService";
+import { AudioPlayerService } from '../AudioPlayerService';
 
 // Import Audio after mocking
-import { Audio } from "expo-av";
+import { Audio } from 'expo-av';
 
 // ===========================================
 // MOCK SETUP
@@ -26,7 +26,7 @@ const mockSoundInstance = {
 };
 
 // Mock expo-av
-jest.mock("expo-av", () => ({
+jest.mock('expo-av', () => ({
   Audio: {
     setAudioModeAsync: jest.fn(() => Promise.resolve()),
     Sound: {
@@ -41,17 +41,17 @@ jest.mock("expo-av", () => ({
 
 // Mock episode for testing
 const mockEpisode = {
-  id: "test-episode-1",
-  podcastId: "test-podcast-1",
-  title: "Test Episode",
-  description: "A test episode",
-  audioUrl: "https://example.com/audio.mp3",
+  id: 'test-episode-1',
+  podcastId: 'test-podcast-1',
+  title: 'Test Episode',
+  description: 'A test episode',
+  audioUrl: 'https://example.com/audio.mp3',
   duration: 3600,
-  publishDate: "2024-01-01T00:00:00Z",
+  publishDate: '2024-01-01T00:00:00Z',
   played: false,
 };
 
-describe("AudioPlayerService", () => {
+describe('AudioPlayerService', () => {
   // Reset mocks and cleanup before each test
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -63,8 +63,8 @@ describe("AudioPlayerService", () => {
   // -----------------------------------------
   // Audio Mode Configuration Tests
   // -----------------------------------------
-  describe("configureAudioMode", () => {
-    it("should configure audio mode on first call", async () => {
+  describe('configureAudioMode', () => {
+    it('should configure audio mode on first call', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
 
       expect(Audio.setAudioModeAsync).toHaveBeenCalledWith({
@@ -75,7 +75,7 @@ describe("AudioPlayerService", () => {
       });
     });
 
-    it("should only configure audio mode once", async () => {
+    it('should only configure audio mode once', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       await AudioPlayerService.loadEpisode(mockEpisode);
 
@@ -87,8 +87,8 @@ describe("AudioPlayerService", () => {
   // -----------------------------------------
   // Load Episode Tests
   // -----------------------------------------
-  describe("loadEpisode", () => {
-    it("should successfully load an episode", async () => {
+  describe('loadEpisode', () => {
+    it('should successfully load an episode', async () => {
       const result = await AudioPlayerService.loadEpisode(mockEpisode);
 
       expect(result.success).toBe(true);
@@ -99,32 +99,32 @@ describe("AudioPlayerService", () => {
       );
     });
 
-    it("should set the current episode ID", async () => {
+    it('should set the current episode ID', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
 
       expect(AudioPlayerService.getCurrentEpisodeId()).toBe(mockEpisode.id);
     });
 
-    it("should unload previous sound before loading new one", async () => {
+    it('should unload previous sound before loading new one', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       await AudioPlayerService.loadEpisode({
         ...mockEpisode,
-        id: "episode-2",
+        id: 'episode-2',
       });
 
       expect(mockSoundInstance.unloadAsync).toHaveBeenCalled();
     });
 
-    it("should return error when createAsync fails", async () => {
+    it('should return error when createAsync fails', async () => {
       (Audio.Sound.createAsync as jest.Mock).mockRejectedValueOnce(
-        new Error("Failed to load audio"),
+        new Error('Failed to load audio'),
       );
 
       const result = await AudioPlayerService.loadEpisode(mockEpisode);
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toContain("Failed to load episode");
+        expect(result.error).toContain('Failed to load episode');
       }
     });
   });
@@ -132,17 +132,17 @@ describe("AudioPlayerService", () => {
   // -----------------------------------------
   // Play/Pause/Stop Tests
   // -----------------------------------------
-  describe("play", () => {
-    it("should return error when no episode is loaded", async () => {
+  describe('play', () => {
+    it('should return error when no episode is loaded', async () => {
       const result = await AudioPlayerService.play();
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe("No episode loaded");
+        expect(result.error).toBe('No episode loaded');
       }
     });
 
-    it("should successfully play loaded episode", async () => {
+    it('should successfully play loaded episode', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       const result = await AudioPlayerService.play();
 
@@ -151,17 +151,17 @@ describe("AudioPlayerService", () => {
     });
   });
 
-  describe("pause", () => {
-    it("should return error when no episode is loaded", async () => {
+  describe('pause', () => {
+    it('should return error when no episode is loaded', async () => {
       const result = await AudioPlayerService.pause();
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe("No episode loaded");
+        expect(result.error).toBe('No episode loaded');
       }
     });
 
-    it("should successfully pause playback", async () => {
+    it('should successfully pause playback', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       const result = await AudioPlayerService.pause();
 
@@ -170,17 +170,17 @@ describe("AudioPlayerService", () => {
     });
   });
 
-  describe("stop", () => {
-    it("should return error when no episode is loaded", async () => {
+  describe('stop', () => {
+    it('should return error when no episode is loaded', async () => {
       const result = await AudioPlayerService.stop();
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe("No episode loaded");
+        expect(result.error).toBe('No episode loaded');
       }
     });
 
-    it("should successfully stop playback", async () => {
+    it('should successfully stop playback', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       const result = await AudioPlayerService.stop();
 
@@ -192,17 +192,17 @@ describe("AudioPlayerService", () => {
   // -----------------------------------------
   // Seek Tests
   // -----------------------------------------
-  describe("seek", () => {
-    it("should return error when no episode is loaded", async () => {
+  describe('seek', () => {
+    it('should return error when no episode is loaded', async () => {
       const result = await AudioPlayerService.seek(60);
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe("No episode loaded");
+        expect(result.error).toBe('No episode loaded');
       }
     });
 
-    it("should seek to position in milliseconds", async () => {
+    it('should seek to position in milliseconds', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       const result = await AudioPlayerService.seek(60); // 60 seconds
 
@@ -214,8 +214,8 @@ describe("AudioPlayerService", () => {
   // -----------------------------------------
   // Skip Forward/Backward Tests
   // -----------------------------------------
-  describe("skipForward", () => {
-    it("should skip forward by default 15 seconds", async () => {
+  describe('skipForward', () => {
+    it('should skip forward by default 15 seconds', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       await AudioPlayerService.skipForward();
 
@@ -223,7 +223,7 @@ describe("AudioPlayerService", () => {
       expect(mockSoundInstance.setPositionAsync).toHaveBeenCalledWith(45000);
     });
 
-    it("should skip forward by custom amount", async () => {
+    it('should skip forward by custom amount', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       await AudioPlayerService.skipForward(30);
 
@@ -232,8 +232,8 @@ describe("AudioPlayerService", () => {
     });
   });
 
-  describe("skipBackward", () => {
-    it("should skip backward by default 15 seconds", async () => {
+  describe('skipBackward', () => {
+    it('should skip backward by default 15 seconds', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       await AudioPlayerService.skipBackward();
 
@@ -241,7 +241,7 @@ describe("AudioPlayerService", () => {
       expect(mockSoundInstance.setPositionAsync).toHaveBeenCalledWith(15000);
     });
 
-    it("should not go below 0", async () => {
+    it('should not go below 0', async () => {
       // Set position to 5 seconds
       mockSoundInstance.getStatusAsync.mockResolvedValueOnce({
         isLoaded: true,
@@ -261,17 +261,17 @@ describe("AudioPlayerService", () => {
   // -----------------------------------------
   // Playback Speed Tests
   // -----------------------------------------
-  describe("setPlaybackSpeed", () => {
-    it("should return error when no episode is loaded", async () => {
+  describe('setPlaybackSpeed', () => {
+    it('should return error when no episode is loaded', async () => {
       const result = await AudioPlayerService.setPlaybackSpeed(1.5);
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe("No episode loaded");
+        expect(result.error).toBe('No episode loaded');
       }
     });
 
-    it("should set playback speed with pitch correction", async () => {
+    it('should set playback speed with pitch correction', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       const result = await AudioPlayerService.setPlaybackSpeed(1.5);
 
@@ -283,17 +283,17 @@ describe("AudioPlayerService", () => {
   // -----------------------------------------
   // Get Status Tests
   // -----------------------------------------
-  describe("getStatus", () => {
-    it("should return error when no episode is loaded", async () => {
+  describe('getStatus', () => {
+    it('should return error when no episode is loaded', async () => {
       const result = await AudioPlayerService.getStatus();
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe("No episode loaded");
+        expect(result.error).toBe('No episode loaded');
       }
     });
 
-    it("should return current playback status", async () => {
+    it('should return current playback status', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       const result = await AudioPlayerService.getStatus();
 
@@ -308,8 +308,8 @@ describe("AudioPlayerService", () => {
   // -----------------------------------------
   // Callback Registration Tests
   // -----------------------------------------
-  describe("callbacks", () => {
-    it("should register progress callback", () => {
+  describe('callbacks', () => {
+    it('should register progress callback', () => {
       const callback = jest.fn();
       AudioPlayerService.setOnProgress(callback);
 
@@ -317,14 +317,14 @@ describe("AudioPlayerService", () => {
       expect(() => AudioPlayerService.setOnProgress(null)).not.toThrow();
     });
 
-    it("should register end callback", () => {
+    it('should register end callback', () => {
       const callback = jest.fn();
       AudioPlayerService.setOnEnd(callback);
 
       expect(() => AudioPlayerService.setOnEnd(null)).not.toThrow();
     });
 
-    it("should register error callback", () => {
+    it('should register error callback', () => {
       const callback = jest.fn();
       AudioPlayerService.setOnError(callback);
 
@@ -335,8 +335,8 @@ describe("AudioPlayerService", () => {
   // -----------------------------------------
   // Cleanup Tests
   // -----------------------------------------
-  describe("cleanup", () => {
-    it("should unload sound and clear callbacks", async () => {
+  describe('cleanup', () => {
+    it('should unload sound and clear callbacks', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       AudioPlayerService.setOnProgress(jest.fn());
       AudioPlayerService.setOnEnd(jest.fn());
@@ -352,15 +352,15 @@ describe("AudioPlayerService", () => {
   // -----------------------------------------
   // Helper Function Tests
   // -----------------------------------------
-  describe("helper functions", () => {
-    describe("isStatusSuccess", () => {
+  describe('helper functions', () => {
+    describe('isStatusSuccess', () => {
       const { isStatusSuccess } = AudioPlayerService._helpers;
 
-      it("should return true for loaded status", () => {
+      it('should return true for loaded status', () => {
         expect(isStatusSuccess({ isLoaded: true } as any)).toBe(true);
       });
 
-      it("should return false for unloaded status", () => {
+      it('should return false for unloaded status', () => {
         expect(isStatusSuccess({ isLoaded: false } as any)).toBe(false);
       });
     });

@@ -1,14 +1,14 @@
-import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
-import { QueueView } from "../QueueView";
-import { queueStore, playerStore } from "../../../stores";
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react-native';
+import { QueueView } from '../QueueView';
+import { queueStore, playerStore } from '../../../stores';
 import {
   createMockEpisode,
   createMockPodcast,
   createMockQueueItem,
-} from "../../../__mocks__";
+} from '../../../__mocks__';
 
-describe("QueueView", () => {
+describe('QueueView', () => {
   const mockOnEpisodePress = jest.fn();
 
   beforeEach(() => {
@@ -29,32 +29,32 @@ describe("QueueView", () => {
   const renderQueueView = () =>
     render(<QueueView onEpisodePress={mockOnEpisodePress} />);
 
-  describe("Empty State", () => {
-    it("should display empty state when queue is empty", () => {
+  describe('Empty State', () => {
+    it('should display empty state when queue is empty', () => {
       const { getByText } = renderQueueView();
 
-      expect(getByText("Your Queue is Empty")).toBeTruthy();
+      expect(getByText('Your Queue is Empty')).toBeTruthy();
       expect(
         getByText(
-          "Add episodes to your queue from any podcast to listen to them next",
+          'Add episodes to your queue from any podcast to listen to them next',
         ),
       ).toBeTruthy();
     });
 
-    it("should not display header when queue is empty", () => {
+    it('should not display header when queue is empty', () => {
       const { queryByText } = renderQueueView();
 
-      expect(queryByText("Up Next:")).toBeNull();
+      expect(queryByText('Up Next:')).toBeNull();
     });
   });
 
-  describe("Currently Playing", () => {
-    it("should display currently playing episode", () => {
+  describe('Currently Playing', () => {
+    it('should display currently playing episode', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({
-            episode: createMockEpisode({ title: "Now Playing Episode" }),
-            podcast: createMockPodcast({ title: "Current Podcast" }),
+            episode: createMockEpisode({ title: 'Now Playing Episode' }),
+            podcast: createMockPodcast({ title: 'Current Podcast' }),
           }),
         ],
         currentIndex: 0,
@@ -62,11 +62,11 @@ describe("QueueView", () => {
 
       const { getByText } = renderQueueView();
 
-      expect(getByText("Now Playing Episode")).toBeTruthy();
-      expect(getByText("Current Podcast")).toBeTruthy();
+      expect(getByText('Now Playing Episode')).toBeTruthy();
+      expect(getByText('Current Podcast')).toBeTruthy();
     });
 
-    it("should show NOW PLAYING when isPlaying is true", () => {
+    it('should show NOW PLAYING when isPlaying is true', () => {
       queueStore.setState({
         queue: [createMockQueueItem()],
         currentIndex: 0,
@@ -75,10 +75,10 @@ describe("QueueView", () => {
 
       const { getByText } = renderQueueView();
 
-      expect(getByText("NOW PLAYING")).toBeTruthy();
+      expect(getByText('NOW PLAYING')).toBeTruthy();
     });
 
-    it("should show PAUSED when isPlaying is false", () => {
+    it('should show PAUSED when isPlaying is false', () => {
       queueStore.setState({
         queue: [createMockQueueItem()],
         currentIndex: 0,
@@ -87,10 +87,10 @@ describe("QueueView", () => {
 
       const { getByText } = renderQueueView();
 
-      expect(getByText("PAUSED")).toBeTruthy();
+      expect(getByText('PAUSED')).toBeTruthy();
     });
 
-    it("should display formatted duration", () => {
+    it('should display formatted duration', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({
@@ -102,25 +102,25 @@ describe("QueueView", () => {
 
       const { getByText } = renderQueueView();
 
-      expect(getByText("30:30")).toBeTruthy();
+      expect(getByText('30:30')).toBeTruthy();
     });
   });
 
-  describe("Up Next List", () => {
-    it("should display upcoming episodes", () => {
+  describe('Up Next List', () => {
+    it('should display upcoming episodes', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({
-            id: "q1",
-            episode: createMockEpisode({ title: "Current" }),
+            id: 'q1',
+            episode: createMockEpisode({ title: 'Current' }),
           }),
           createMockQueueItem({
-            id: "q2",
-            episode: createMockEpisode({ title: "Up Next 1" }),
+            id: 'q2',
+            episode: createMockEpisode({ title: 'Up Next 1' }),
           }),
           createMockQueueItem({
-            id: "q3",
-            episode: createMockEpisode({ title: "Up Next 2" }),
+            id: 'q3',
+            episode: createMockEpisode({ title: 'Up Next 2' }),
           }),
         ],
         currentIndex: 0,
@@ -128,12 +128,12 @@ describe("QueueView", () => {
 
       const { getByText } = renderQueueView();
 
-      expect(getByText("Up Next")).toBeTruthy();
-      expect(getByText("Up Next 1")).toBeTruthy();
-      expect(getByText("Up Next 2")).toBeTruthy();
+      expect(getByText('Up Next')).toBeTruthy();
+      expect(getByText('Up Next 1')).toBeTruthy();
+      expect(getByText('Up Next 2')).toBeTruthy();
     });
 
-    it("should not show Up Next section when no upcoming items", () => {
+    it('should not show Up Next section when no upcoming items', () => {
       queueStore.setState({
         queue: [createMockQueueItem()],
         currentIndex: 0,
@@ -141,51 +141,51 @@ describe("QueueView", () => {
 
       const { queryByText } = renderQueueView();
 
-      expect(queryByText("Up Next")).toBeNull();
+      expect(queryByText('Up Next')).toBeNull();
     });
 
-    it("should display position labels for upcoming items", () => {
+    it('should display position labels for upcoming items', () => {
       queueStore.setState({
         queue: [
-          createMockQueueItem({ id: "q1" }),
-          createMockQueueItem({ id: "q2" }),
-          createMockQueueItem({ id: "q3" }),
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
+          createMockQueueItem({ id: 'q3' }),
         ],
         currentIndex: 0,
       });
 
       const { getByText } = renderQueueView();
 
-      expect(getByText("#2")).toBeTruthy();
-      expect(getByText("#3")).toBeTruthy();
+      expect(getByText('#2')).toBeTruthy();
+      expect(getByText('#3')).toBeTruthy();
     });
   });
 
-  describe("Header Stats", () => {
-    it("should display episode count", () => {
+  describe('Header Stats', () => {
+    it('should display episode count', () => {
       queueStore.setState({
         queue: [
-          createMockQueueItem({ id: "q1" }),
-          createMockQueueItem({ id: "q2" }),
-          createMockQueueItem({ id: "q3" }),
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
+          createMockQueueItem({ id: 'q3' }),
         ],
         currentIndex: 0,
       });
 
       const { getByText } = renderQueueView();
 
-      expect(getByText("Up Next: 2 episodes")).toBeTruthy();
+      expect(getByText('Up Next: 2 episodes')).toBeTruthy();
     });
 
-    it("should display remaining time", () => {
+    it('should display remaining time', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({
-            id: "q1",
+            id: 'q1',
             episode: createMockEpisode({ duration: 1800 }),
           }),
           createMockQueueItem({
-            id: "q2",
+            id: 'q2',
             episode: createMockEpisode({ duration: 1800 }),
           }),
         ],
@@ -194,30 +194,30 @@ describe("QueueView", () => {
 
       const { getByText } = renderQueueView();
 
-      expect(getByText("30m remaining")).toBeTruthy();
+      expect(getByText('30m remaining')).toBeTruthy();
     });
 
-    it("should show Clear button when there are upcoming items", () => {
+    it('should show Clear button when there are upcoming items', () => {
       queueStore.setState({
         queue: [
-          createMockQueueItem({ id: "q1" }),
-          createMockQueueItem({ id: "q2" }),
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
         ],
         currentIndex: 0,
       });
 
       const { getByText } = renderQueueView();
 
-      expect(getByText("Clear")).toBeTruthy();
+      expect(getByText('Clear')).toBeTruthy();
     });
   });
 
-  describe("Actions", () => {
-    it("should remove item from queue when remove button is pressed", () => {
+  describe('Actions', () => {
+    it('should remove item from queue when remove button is pressed', () => {
       queueStore.setState({
         queue: [
-          createMockQueueItem({ id: "q1" }),
-          createMockQueueItem({ id: "q2" }),
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
         ],
         currentIndex: 0,
       });
@@ -228,35 +228,35 @@ describe("QueueView", () => {
       expect(queueStore.getState().queue).toHaveLength(2);
 
       // Test the store action directly since we're testing state management
-      queueStore.getState().removeFromQueue("q2");
+      queueStore.getState().removeFromQueue('q2');
 
       expect(queueStore.getState().queue).toHaveLength(1);
-      expect(queueStore.getState().queue[0].id).toBe("q1");
+      expect(queueStore.getState().queue[0].id).toBe('q1');
     });
 
-    it("should clear queue when Clear button is pressed", () => {
+    it('should clear queue when Clear button is pressed', () => {
       queueStore.setState({
         queue: [
-          createMockQueueItem({ id: "q1" }),
-          createMockQueueItem({ id: "q2" }),
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
         ],
         currentIndex: 0,
       });
 
       const { getByText } = renderQueueView();
 
-      fireEvent.press(getByText("Clear"));
+      fireEvent.press(getByText('Clear'));
 
       expect(queueStore.getState().queue).toHaveLength(0);
     });
 
-    it("should update currentIndex when item is tapped", () => {
+    it('should update currentIndex when item is tapped', () => {
       queueStore.setState({
         queue: [
-          createMockQueueItem({ id: "q1" }),
+          createMockQueueItem({ id: 'q1' }),
           createMockQueueItem({
-            id: "q2",
-            episode: createMockEpisode({ title: "Tap Me" }),
+            id: 'q2',
+            episode: createMockEpisode({ title: 'Tap Me' }),
           }),
         ],
         currentIndex: 0,
@@ -265,19 +265,19 @@ describe("QueueView", () => {
       const { getByText } = renderQueueView();
 
       // Tapping the upcoming item should set it as current
-      fireEvent.press(getByText("Tap Me"));
+      fireEvent.press(getByText('Tap Me'));
 
       expect(queueStore.getState().currentIndex).toBe(1);
     });
   });
 
-  describe("Reorder", () => {
-    it("should reorder queue items", () => {
+  describe('Reorder', () => {
+    it('should reorder queue items', () => {
       queueStore.setState({
         queue: [
-          createMockQueueItem({ id: "q1" }),
-          createMockQueueItem({ id: "q2" }),
-          createMockQueueItem({ id: "q3" }),
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
+          createMockQueueItem({ id: 'q3' }),
         ],
         currentIndex: 0,
       });
@@ -287,19 +287,19 @@ describe("QueueView", () => {
       queueStore.getState().reorderQueue(2, 1);
 
       const queue = queueStore.getState().queue;
-      expect(queue[0].id).toBe("q1");
-      expect(queue[1].id).toBe("q3");
-      expect(queue[2].id).toBe("q2");
+      expect(queue[0].id).toBe('q1');
+      expect(queue[1].id).toBe('q3');
+      expect(queue[2].id).toBe('q2');
     });
   });
 
-  describe("Episode Artwork", () => {
-    it("should display podcast artwork when available", () => {
+  describe('Episode Artwork', () => {
+    it('should display podcast artwork when available', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({
             podcast: createMockPodcast({
-              artworkUrl: "https://example.com/artwork.jpg",
+              artworkUrl: 'https://example.com/artwork.jpg',
             }),
           }),
         ],
@@ -311,7 +311,7 @@ describe("QueueView", () => {
       const { toJSON } = renderQueueView();
       const tree = JSON.stringify(toJSON());
 
-      expect(tree).toContain("https://example.com/artwork.jpg");
+      expect(tree).toContain('https://example.com/artwork.jpg');
     });
   });
 });
