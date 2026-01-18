@@ -6,6 +6,7 @@ import {
   getCurrentlyPlayingItem,
   getUpcomingItems,
   getQueueStats,
+  getDisplayQueue,
 } from './QueuePresenter';
 import { FormattedQueueItem } from './Queue.types';
 
@@ -29,6 +30,12 @@ export const useQueueViewModel = (
     [queue, currentIndex],
   );
 
+  // Unified display queue (currently playing + upcoming)
+  const displayQueue = useMemo(
+    () => getDisplayQueue(queue, currentIndex),
+    [queue, currentIndex],
+  );
+
   const currentlyPlaying = useMemo(
     () => getCurrentlyPlayingItem(queue, currentIndex),
     [queue, currentIndex],
@@ -48,6 +55,7 @@ export const useQueueViewModel = (
   const isEmpty = queue.length === 0;
   const hasUpcoming = upcomingItems.length > 0;
   const hasCurrentlyPlaying = currentlyPlaying !== null;
+  const hasItems = displayQueue.length > 0;
 
   // Actions
   const handleRemoveFromQueue = useCallback(
@@ -59,13 +67,24 @@ export const useQueueViewModel = (
 
   const handleReorder = useCallback(
     (fromIndex: number, toIndex: number) => {
-      // Adjust indices to account for the "currently playing" item being separate
-      // The draggable list only contains upcoming items (currentIndex + 1 onwards)
-      const actualFromIndex = currentIndex + 1 + fromIndex;
-      const actualToIndex = currentIndex + 1 + toIndex;
+      // The draggable list displays from currentIndex onwards (unified queue)
+      // Adjust indices to map from display positions to actual queue positions
+      const actualFromIndex = currentIndex + fromIndex;
+      const actualToIndex = currentIndex + toIndex;
       reorderQueue(actualFromIndex, actualToIndex);
+
+      // If we're moving the currently playing item, update currentIndex
+      if (fromIndex === 0) {
+        setCurrentIndex(actualToIndex);
+      } else if (toIndex === 0) {
+        setCurrentIndex(actualToIndex);
+      } else if (fromIndex < toIndex && toIndex === 0) {
+        setCurrentIndex(actualToIndex);
+      } else if (fromIndex > toIndex && toIndex === 0) {
+        setCurrentIndex(actualToIndex);
+      }
     },
-    [reorderQueue, currentIndex],
+    [reorderQueue, currentIndex, setCurrentIndex],
   );
 
   const handleClearQueue = useCallback(() => {
@@ -104,6 +123,7 @@ export const useQueueViewModel = (
   return {
     queue,
     formattedQueue,
+    displayQueue,
     currentlyPlaying,
     upcomingItems,
     queueStats,
@@ -112,6 +132,7 @@ export const useQueueViewModel = (
     isEmpty,
     hasUpcoming,
     hasCurrentlyPlaying,
+    hasItems,
     handleRemoveFromQueue,
     handleReorder,
     handleClearQueue,

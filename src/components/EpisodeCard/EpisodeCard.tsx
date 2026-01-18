@@ -62,7 +62,7 @@ export const EpisodeCard = ({
         onPress={onAddToQueue}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        <Ionicons name='list' size={24} color={COLORS.textSecondary} />
+        <Ionicons name='add-circle' size={32} color={COLORS.primary} />
       </TouchableOpacity>
     </View>
   </TouchableOpacity>

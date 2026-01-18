@@ -35,17 +35,20 @@ function generateId(input: string): string {
  * Parse duration string (like "1:23:45" or "5400") into seconds
  * RSS feeds use various formats, so we need to handle multiple cases
  */
-function parseDuration(duration: string | undefined): number {
+function parseDuration(duration: string | number | undefined): number {
   if (!duration) return 0;
 
+  // Convert to string if it's a number
+  const durationStr = String(duration);
+
   // If it's already a number (seconds), return it
-  const asNumber = parseInt(duration, 10);
-  if (!isNaN(asNumber) && !duration.includes(':')) {
+  const asNumber = parseInt(durationStr, 10);
+  if (!isNaN(asNumber) && !durationStr.includes(':')) {
     return asNumber;
   }
 
   // Parse time format (HH:MM:SS or MM:SS)
-  const parts = duration.split(':').map((p) => parseInt(p, 10));
+  const parts = durationStr.split(':').map((p) => parseInt(p, 10));
   if (parts.some(isNaN)) return 0;
 
   if (parts.length === 3) {

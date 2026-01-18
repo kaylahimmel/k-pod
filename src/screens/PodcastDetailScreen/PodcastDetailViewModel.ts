@@ -13,6 +13,9 @@ export const usePodcastDetailViewModel = (
 ) => {
   const [refreshing, setRefreshing] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showAllEpisodes, setShowAllEpisodes] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const { podcasts, loading } = usePodcastStore();
   const { addToQueue, queue } = useQueueStore();
   const podcast = podcasts.find((p) => p.id === podcastId);
@@ -62,10 +65,10 @@ export const usePodcastDetailViewModel = (
       };
 
       addToQueue(queueItem);
-      Alert.alert(
-        'Added to Queue',
-        `"${episode.title}" has been added to your queue`,
-      );
+
+      // Show toast notification
+      setToastMessage(`"${episode.title}" added to queue`);
+      setToastVisible(true);
     },
     [podcast, queue, addToQueue],
   );
@@ -82,6 +85,14 @@ export const usePodcastDetailViewModel = (
     setShowFullDescription((prev) => !prev);
   }, []);
 
+  const toggleShowAllEpisodes = useCallback(() => {
+    setShowAllEpisodes((prev) => !prev);
+  }, []);
+
+  const handleToastDismiss = useCallback(() => {
+    setToastVisible(false);
+  }, []);
+
   // Get the raw episode for play/queue actions
   const getEpisodeRawData = useCallback(
     (episodeId: string): Episode | undefined => {
@@ -93,6 +104,9 @@ export const usePodcastDetailViewModel = (
   return {
     refreshing,
     showFullDescription,
+    showAllEpisodes,
+    toastVisible,
+    toastMessage,
     loading,
     podcast,
     formattedPodcast,
@@ -101,6 +115,8 @@ export const usePodcastDetailViewModel = (
     handleEpisodeAddToQueue,
     handleEpisodePlayEpisode,
     toggleEpisodeDescription,
+    toggleShowAllEpisodes,
+    handleToastDismiss,
     getEpisodeRawData,
     onEpisodePress,
   };

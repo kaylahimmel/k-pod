@@ -75,10 +75,10 @@ describe('QueueView', () => {
 
       const { getByText } = renderQueueView();
 
-      expect(getByText('NOW PLAYING')).toBeTruthy();
+      expect(getByText('Now Playing')).toBeTruthy();
     });
 
-    it('should show PAUSED when isPlaying is false', () => {
+    it('should show Now Playing label even when paused', () => {
       queueStore.setState({
         queue: [createMockQueueItem()],
         currentIndex: 0,
@@ -87,7 +87,7 @@ describe('QueueView', () => {
 
       const { getByText } = renderQueueView();
 
-      expect(getByText('PAUSED')).toBeTruthy();
+      expect(getByText('Now Playing')).toBeTruthy();
     });
 
     it('should display formatted duration', () => {
@@ -106,8 +106,8 @@ describe('QueueView', () => {
     });
   });
 
-  describe('Up Next List', () => {
-    it('should display upcoming episodes', () => {
+  describe('Unified Queue List', () => {
+    it('should display all queue episodes including currently playing', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({
@@ -128,23 +128,23 @@ describe('QueueView', () => {
 
       const { getByText } = renderQueueView();
 
-      expect(getByText('Up Next')).toBeTruthy();
+      expect(getByText('Current')).toBeTruthy();
       expect(getByText('Up Next 1')).toBeTruthy();
       expect(getByText('Up Next 2')).toBeTruthy();
     });
 
-    it('should not show Up Next section when no upcoming items', () => {
+    it('should display currently playing item even when no upcoming items', () => {
       queueStore.setState({
         queue: [createMockQueueItem()],
         currentIndex: 0,
       });
 
-      const { queryByText } = renderQueueView();
+      const { getByText } = renderQueueView();
 
-      expect(queryByText('Up Next')).toBeNull();
+      expect(getByText('Now Playing')).toBeTruthy();
     });
 
-    it('should display position labels for upcoming items', () => {
+    it('should only display position label for currently playing item', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({ id: 'q1' }),
@@ -154,10 +154,11 @@ describe('QueueView', () => {
         currentIndex: 0,
       });
 
-      const { getByText } = renderQueueView();
+      const { getByText, queryByText } = renderQueueView();
 
-      expect(getByText('#2')).toBeTruthy();
-      expect(getByText('#3')).toBeTruthy();
+      expect(getByText('Now Playing')).toBeTruthy();
+      expect(queryByText('#2')).toBeNull();
+      expect(queryByText('#3')).toBeNull();
     });
   });
 
@@ -174,7 +175,7 @@ describe('QueueView', () => {
 
       const { getByText } = renderQueueView();
 
-      expect(getByText('Up Next: 2 episodes')).toBeTruthy();
+      expect(getByText('3 episodes')).toBeTruthy();
     });
 
     it('should display remaining time', () => {
@@ -194,7 +195,7 @@ describe('QueueView', () => {
 
       const { getByText } = renderQueueView();
 
-      expect(getByText('30m remaining')).toBeTruthy();
+      expect(getByText('1h 0m remaining')).toBeTruthy();
     });
 
     it('should show Clear button when there are upcoming items', () => {
@@ -250,7 +251,7 @@ describe('QueueView', () => {
       expect(queueStore.getState().queue).toHaveLength(0);
     });
 
-    it('should update currentIndex when item is tapped', () => {
+    it('should update currentIndex when play button is tapped', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({ id: 'q1' }),
@@ -262,10 +263,11 @@ describe('QueueView', () => {
         currentIndex: 0,
       });
 
-      const { getByText } = renderQueueView();
+      const { getAllByText } = renderQueueView();
 
-      // Tapping the upcoming item should set it as current
-      fireEvent.press(getByText('Tap Me'));
+      // Find the play button icon for the second item and tap it
+      const playButtons = getAllByText('play-circle');
+      fireEvent.press(playButtons[1]); // Second item's play button
 
       expect(queueStore.getState().currentIndex).toBe(1);
     });

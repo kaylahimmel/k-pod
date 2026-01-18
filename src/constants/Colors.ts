@@ -3,9 +3,9 @@ export const COLORS = {
   background: '#F2F2F7',
   cardBackground: '#FFFFFF',
   textPrimary: '#1C1C1E',
-  textSecondary: '#8E8E93',
+  textSecondary: '#79797d',
   border: '#E5E5EA',
   danger: '#FF3B30',
-  success: '#34C759',
+  success: '#15ab3b',
   played: '#C7C7CC',
 };

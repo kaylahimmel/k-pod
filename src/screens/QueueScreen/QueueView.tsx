@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist';
@@ -7,12 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useQueueViewModel } from './QueueViewModel';
 import { FormattedQueueItem, QueueViewProps } from './Queue.types';
 import { styles } from './Queue.styles';
-import {
-  CardNowPlaying,
-  CardQueueItem,
-  HeaderQueue,
-  StateEmpty,
-} from '../../components';
+import { CardQueueItem, HeaderQueue, StateEmpty } from '../../components';
 
 export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
   const viewModel = useQueueViewModel(onEpisodePress);
@@ -27,7 +22,8 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
       drag={drag}
       isActive={isActive}
       onRemove={() => viewModel.handleRemoveFromQueue(item.id)}
-      onPress={() => viewModel.handlePlayItem(item)}
+      onPlay={() => viewModel.handlePlayItem(item)}
+      onPress={() => viewModel.handleEpisodePress(item)}
     />
   );
 
@@ -49,34 +45,19 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
         count={viewModel.queueStats.count}
         remainingTime={viewModel.queueStats.remainingTime}
         onClear={viewModel.handleClearQueue}
-        hasItems={viewModel.hasUpcoming}
+        hasItems={viewModel.hasItems}
       />
 
-      {viewModel.hasCurrentlyPlaying && viewModel.currentlyPlaying && (
-        <CardNowPlaying
-          item={viewModel.currentlyPlaying}
-          isPlaying={viewModel.isPlaying}
-          onPress={() =>
-            viewModel.currentlyPlaying &&
-            viewModel.handleEpisodePress(viewModel.currentlyPlaying)
-          }
-        />
-      )}
-
-      {viewModel.hasUpcoming && (
-        <>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Up Next</Text>
-          </View>
-
+      {viewModel.hasItems && (
+        <View style={styles.queueListContainer}>
           <DraggableFlatList
-            data={viewModel.upcomingItems}
+            data={viewModel.displayQueue}
             onDragEnd={({ from, to }) => viewModel.handleReorder(from, to)}
             keyExtractor={(item) => item.id}
             renderItem={renderItem}
             contentContainerStyle={styles.listContent}
           />
-        </>
+        </View>
       )}
     </GestureHandlerRootView>
   );

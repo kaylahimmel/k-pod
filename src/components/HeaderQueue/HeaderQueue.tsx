@@ -20,7 +20,7 @@ export const HeaderQueue = ({
   <View style={styles.headerContainer}>
     <View style={styles.headerRow}>
       <View style={styles.headerStats}>
-        <Text style={styles.headerTitle}>Up Next: {count}</Text>
+        <Text style={styles.headerTitle}>{count}</Text>
         <Text style={styles.headerSubtitle}>{remainingTime}</Text>
       </View>
       {hasItems && (
