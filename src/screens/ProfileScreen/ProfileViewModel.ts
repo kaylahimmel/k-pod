@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert } from "react-native";
-import { usePodcastStore } from "../../hooks/usePodcastStore";
-import { StorageService } from "../../services/StorageService";
-import { ListeningHistory, User } from "../../models";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Alert } from 'react-native';
+import { usePodcastStore } from '../../hooks';
+import { StorageService } from '../../services';
+import { ListeningHistory, User } from '../../models';
 import {
   formatUser,
   getRecentHistory,
   getProfileStats,
-} from "./ProfilePresenter";
-import { ProfileViewModelReturn } from "./Profile.types";
+} from './ProfilePresenter';
+import { ProfileViewModelReturn } from './Profile.types';
 
 /**
  * ViewModel hook for the Profile screen
@@ -38,16 +38,16 @@ export const useProfileViewModel = (
         // TODO: Load actual user from auth service when implemented (Phase 8)
         // For now, use mock user data for UI development
         const mockUser: User = {
-          id: "mock-user-1",
-          email: "user@example.com",
+          id: 'mock-user-1',
+          email: 'user@example.com',
           preferences: {
-            theme: "light",
+            theme: 'light',
             notifications: true,
           },
         };
         setUser(mockUser);
       } catch (error) {
-        console.error("Error loading profile data:", error);
+        console.error('Error loading profile data:', error);
       } finally {
         setIsLoading(false);
       }
@@ -81,11 +81,11 @@ export const useProfileViewModel = (
 
   const handleSignOutPress = useCallback(() => {
     // TODO: Implement actual sign out when auth is implemented (Phase 8)
-    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
       {
-        text: "Sign Out",
-        style: "destructive",
+        text: 'Sign Out',
+        style: 'destructive',
         onPress: () => {
           onSignOutPress();
         },

@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../constants';
 
 export const styles = StyleSheet.create({
   nowPlayingContainer: {
@@ -7,25 +7,25 @@ export const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 16,
     borderRadius: 12,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   nowPlayingHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 8,
     backgroundColor: COLORS.primary,
   },
   nowPlayingLabel: {
     fontSize: 12,
-    fontWeight: "600",
-    color: "#FFFFFF",
+    fontWeight: '600',
+    color: 'COLORS.cardBackground',
     marginLeft: 6,
   },
   nowPlayingContent: {
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   nowPlayingArtwork: {
     width: 60,
@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
   },
   nowPlayingTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS.textPrimary,
   },
   nowPlayingPodcast: {

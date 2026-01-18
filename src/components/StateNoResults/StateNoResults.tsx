@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "../../constants/Colors";
-import { styles } from "./StateNoResults.styles";
+import React from 'react';
+import { View, Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from '../../constants';
+import { styles } from './StateNoResults.styles';
 
 interface StateNoResultsProps {
   query: string;
@@ -11,7 +11,7 @@ interface StateNoResultsProps {
 
 export const StateNoResults = ({
   query,
-  icon = "search-outline",
+  icon = 'search-outline',
 }: StateNoResultsProps) => (
   <View style={styles.container}>
     <Ionicons name={icon} size={64} color={COLORS.textSecondary} />

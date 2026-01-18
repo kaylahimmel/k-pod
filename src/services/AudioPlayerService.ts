@@ -1,4 +1,4 @@
-import { Audio, AVPlaybackStatus, AVPlaybackStatusSuccess } from "expo-av";
+import { Audio, AVPlaybackStatus, AVPlaybackStatusSuccess } from 'expo-av';
 import {
   PlaybackSpeed,
   OnEndCallback,
@@ -6,7 +6,7 @@ import {
   OnProgressCallback,
   ServiceResult,
   Episode,
-} from "../models";
+} from '../models';
 
 // ============================================
 // SINGLETON STATE
@@ -51,7 +51,7 @@ async function configureAudioMode(): Promise<ServiceResult<void>> {
     isAudioModeConfigured = true;
     return { success: true, data: undefined };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return {
       success: false,
       error: `Failed to configure audio mode: ${message}`,
@@ -129,7 +129,7 @@ async function loadEpisode(episode: Episode): Promise<ServiceResult<void>> {
 
     return { success: true, data: undefined };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Failed to load episode: ${message}` };
   }
 }
@@ -139,14 +139,14 @@ async function loadEpisode(episode: Episode): Promise<ServiceResult<void>> {
  */
 async function play(): Promise<ServiceResult<void>> {
   if (!soundInstance) {
-    return { success: false, error: "No episode loaded" };
+    return { success: false, error: 'No episode loaded' };
   }
 
   try {
     await soundInstance.playAsync();
     return { success: true, data: undefined };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Failed to play: ${message}` };
   }
 }
@@ -156,14 +156,14 @@ async function play(): Promise<ServiceResult<void>> {
  */
 async function pause(): Promise<ServiceResult<void>> {
   if (!soundInstance) {
-    return { success: false, error: "No episode loaded" };
+    return { success: false, error: 'No episode loaded' };
   }
 
   try {
     await soundInstance.pauseAsync();
     return { success: true, data: undefined };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Failed to pause: ${message}` };
   }
 }
@@ -173,14 +173,14 @@ async function pause(): Promise<ServiceResult<void>> {
  */
 async function stop(): Promise<ServiceResult<void>> {
   if (!soundInstance) {
-    return { success: false, error: "No episode loaded" };
+    return { success: false, error: 'No episode loaded' };
   }
 
   try {
     await soundInstance.stopAsync();
     return { success: true, data: undefined };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Failed to stop: ${message}` };
   }
 }
@@ -212,7 +212,7 @@ async function skipBackward(seconds: number = 15) {
  */
 async function seek(positionSeconds: number): Promise<ServiceResult<void>> {
   if (!soundInstance) {
-    return { success: false, error: "No episode loaded" };
+    return { success: false, error: 'No episode loaded' };
   }
 
   try {
@@ -220,7 +220,7 @@ async function seek(positionSeconds: number): Promise<ServiceResult<void>> {
     await soundInstance.setPositionAsync(positionMillis);
     return { success: true, data: undefined };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Failed to seek: ${message}` };
   }
 }
@@ -232,7 +232,7 @@ async function setPlaybackSpeed(
   speed: PlaybackSpeed,
 ): Promise<ServiceResult<void>> {
   if (!soundInstance) {
-    return { success: false, error: "No episode loaded" };
+    return { success: false, error: 'No episode loaded' };
   }
 
   try {
@@ -240,7 +240,7 @@ async function setPlaybackSpeed(
     await soundInstance.setRateAsync(speed, true);
     return { success: true, data: undefined };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Failed to set speed: ${message}` };
   }
 }
@@ -250,17 +250,17 @@ async function setPlaybackSpeed(
  */
 async function getStatus(): Promise<ServiceResult<AVPlaybackStatusSuccess>> {
   if (!soundInstance) {
-    return { success: false, error: "No episode loaded" };
+    return { success: false, error: 'No episode loaded' };
   }
 
   try {
     const status = await soundInstance.getStatusAsync();
     if (!isStatusSuccess(status)) {
-      return { success: false, error: "Audio not loaded" };
+      return { success: false, error: 'Audio not loaded' };
     }
     return { success: true, data: status };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Failed to get status: ${message}` };
   }
 }

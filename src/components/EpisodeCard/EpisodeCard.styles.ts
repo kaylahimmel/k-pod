@@ -1,15 +1,15 @@
-import { StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../constants';
 
 export const styles = StyleSheet.create({
   episodeCard: {
-    flexDirection: "row",
+    flexDirection: 'row',
     backgroundColor: COLORS.cardBackground,
     marginHorizontal: 16,
     marginBottom: 8,
     borderRadius: 12,
     padding: 12,
-    shadowColor: "#000",
+    shadowColor: 'COLORS.textPrimary',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
   },
   episodeTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS.textPrimary,
     marginBottom: 4,
   },
@@ -38,9 +38,9 @@ export const styles = StyleSheet.create({
     lineHeight: 18,
   },
   episodeMeta: {
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
     gap: 8,
   },
   episodeDate: {
@@ -52,8 +52,8 @@ export const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   playedBadge: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 2,
   },
   playedText: {
@@ -61,8 +61,8 @@ export const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   episodeActions: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 8,
   },
   actionButton: {

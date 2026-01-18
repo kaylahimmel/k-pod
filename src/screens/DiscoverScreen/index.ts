@@ -1,3 +1,3 @@
-export { DiscoverScreen } from "./DiscoverScreen";
-export { DiscoverView } from "./DiscoverView";
-export * from "./DiscoverPresenter";
+export { DiscoverScreen } from './DiscoverScreen';
+export { DiscoverView } from './DiscoverView';
+export * from './DiscoverPresenter';

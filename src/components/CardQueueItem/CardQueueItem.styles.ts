@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../constants';
 
 export const styles = StyleSheet.create({
   queueItemContainer: {
@@ -7,24 +7,24 @@ export const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginVertical: 4,
     borderRadius: 12,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   queueItemDragging: {
     opacity: 0.9,
-    shadowColor: "#000",
+    shadowColor: 'COLORS.textPrimary',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
   queueItemContent: {
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   dragHandle: {
     paddingRight: 12,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   queueItemArtwork: {
     width: 50,
@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
   },
   queueItemTitle: {
     fontSize: 15,
-    fontWeight: "500",
+    fontWeight: '500',
     color: COLORS.textPrimary,
   },
   queueItemPodcast: {
@@ -47,8 +47,8 @@ export const styles = StyleSheet.create({
     marginTop: 2,
   },
   queueItemMeta: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 4,
   },
   queueItemDuration: {

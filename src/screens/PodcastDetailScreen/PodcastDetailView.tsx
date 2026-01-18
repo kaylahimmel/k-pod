@@ -1,19 +1,19 @@
-import React from "react";
-import { FlatList, RefreshControl } from "react-native";
+import React from 'react';
+import { FlatList, RefreshControl } from 'react-native';
 import {
   FormattedEpisode,
   PodcastDetailViewProps,
-} from "./PodcastDetail.types";
-import { usePodcastDetailViewModel } from "./PodcastDetailViewModel";
-import { styles } from "./PodcastDetail.styles";
-import { COLORS } from "../../constants/Colors";
+} from './PodcastDetail.types';
+import { usePodcastDetailViewModel } from './PodcastDetailViewModel';
+import { styles } from './PodcastDetail.styles';
+import { COLORS } from '../../constants';
 import {
   EpisodeCard,
   HeaderPodcast,
   EmptyEpisodes,
   EpisodeLoadingState,
   EpisodeNotFoundState,
-} from "../../components";
+} from '../../components';
 
 export const PodcastDetailView = (props: PodcastDetailViewProps) => {
   const viewModel = usePodcastDetailViewModel(

@@ -1,1 +1,1 @@
-export { truncateText, stripHtml } from "./textUtils";
+export { truncateText, stripHtml } from './textUtils';

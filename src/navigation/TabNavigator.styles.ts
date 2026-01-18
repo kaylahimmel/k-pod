@@ -1,14 +1,14 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: 'COLORS.cardBackground',
     borderTopWidth: 1,
-    borderTopColor: "#E5E5EA",
+    borderTopColor: 'COLORS.border',
     paddingTop: 8,
   },
   tabBarLabel: {
     fontSize: 10,
-    fontWeight: "500",
+    fontWeight: '500',
   },
 });

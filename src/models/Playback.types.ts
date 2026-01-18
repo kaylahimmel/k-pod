@@ -1,4 +1,4 @@
-import { Episode } from "./Episode.types";
+import { Episode } from './Episode.types';
 
 /**
  * Playback speed options (0.5x to 2x in 0.1 increments)

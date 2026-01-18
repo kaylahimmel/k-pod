@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "../../constants/Colors";
-import { FormattedPodcastDetail } from "../../screens/PodcastDetailScreen/PodcastDetail.types";
-import { styles } from "./HeaderPodcast.styles";
+import React from 'react';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from '../../constants';
+import { FormattedPodcastDetail } from '../../screens/PodcastDetailScreen/PodcastDetail.types';
+import { styles } from './HeaderPodcast.styles';
 
 interface HeaderPodcastProps {
   podcast: FormattedPodcastDetail;
@@ -23,7 +23,7 @@ export const HeaderPodcast = ({
       <Image
         source={{ uri: podcast.artworkUrl }}
         style={styles.artwork}
-        defaultSource={require("../../../assets/icon.png")}
+        defaultSource={require('../../../assets/icon.png')}
       />
       <View style={styles.headerInfo}>
         <Text style={styles.title} numberOfLines={2}>
@@ -45,13 +45,13 @@ export const HeaderPodcast = ({
       </Text>
       {podcast.description.length > 150 && (
         <Text style={styles.showMoreText}>
-          {showFullDescription ? "Show less" : "Show more"}
+          {showFullDescription ? 'Show less' : 'Show more'}
         </Text>
       )}
     </TouchableOpacity>
 
     <TouchableOpacity style={styles.unsubscribeButton} onPress={onUnsubscribe}>
-      <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
+      <Ionicons name='checkmark-circle' size={20} color={COLORS.success} />
       <Text style={styles.unsubscribeText}>Subscribed</Text>
     </TouchableOpacity>
 

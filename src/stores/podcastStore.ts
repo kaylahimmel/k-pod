@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { PodcastStore } from "../models";
+import { create } from 'zustand';
+import { PodcastStore } from '../models';
 
 export const podcastStore = create<PodcastStore>((set) => ({
   podcasts: [],

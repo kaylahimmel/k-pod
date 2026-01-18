@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { QueueStore } from "../models";
+import { create } from 'zustand';
+import { QueueStore } from '../models';
 
 export const queueStore = create<QueueStore>((set) => ({
   queue: [],

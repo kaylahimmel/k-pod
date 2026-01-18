@@ -1,8 +1,8 @@
-import React, { useCallback } from "react";
-import { PodcastDetailScreenProps } from "../../navigation/types";
-import { PodcastDetailView } from "./PodcastDetailView";
-import { usePodcastStore } from "../../hooks/usePodcastStore";
-import { Episode, Podcast } from "../../models";
+import React, { useCallback } from 'react';
+import { PodcastDetailScreenProps } from '../../navigation/types';
+import { PodcastDetailView } from './PodcastDetailView';
+import { usePodcastStore } from '../../hooks';
+import { Episode, Podcast } from '../../models';
 
 export const PodcastDetailScreen = ({
   navigation,
@@ -14,7 +14,7 @@ export const PodcastDetailScreen = ({
   // Navigation handler: Navigate to episode detail
   const handleEpisodePressNav = useCallback(
     (episodeId: string) => {
-      navigation.navigate("EpisodeDetail", { episodeId, podcastId });
+      navigation.navigate('EpisodeDetail', { episodeId, podcastId });
     },
     [navigation, podcastId],
   );
@@ -22,7 +22,7 @@ export const PodcastDetailScreen = ({
   // Navigation handler: Open full player with episode
   const handlePlayEpisodeNav = useCallback(
     (episode: Episode, podcast: Podcast) => {
-      navigation.navigate("FullPlayer", { episode, podcast });
+      navigation.navigate('FullPlayer', { episode, podcast });
     },
     [navigation],
   );

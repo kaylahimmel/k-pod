@@ -1,8 +1,8 @@
-import React from "react";
-import { View, FlatList, RefreshControl } from "react-native";
-import { useLibraryViewModel } from "./LibraryViewModel";
-import { COLORS } from "../../constants/Colors";
-import { LibraryViewProps, FormattedPodcast } from "./Library.types";
+import React from 'react';
+import { View, FlatList, RefreshControl } from 'react-native';
+import { useLibraryViewModel } from './LibraryViewModel';
+import { COLORS } from '../../constants';
+import { LibraryViewProps, FormattedPodcast } from './Library.types';
 import {
   SearchBar,
   LibraryPodcastCard,
@@ -10,8 +10,8 @@ import {
   StateLoading,
   StateError,
   StateNoResults,
-} from "../../components";
-import { styles } from "./Library.styles";
+} from '../../components';
+import { styles } from './Library.styles';
 
 export const LibraryView = ({
   onPodcastPress,
@@ -21,7 +21,7 @@ export const LibraryView = ({
 
   // Loading state
   if (viewModel.isLoading) {
-    return <StateLoading message="Loading podcasts..." />;
+    return <StateLoading message='Loading podcasts...' />;
   }
 
   // Error state
@@ -38,11 +38,11 @@ export const LibraryView = ({
   if (viewModel.hasNoPodcasts) {
     return (
       <StateEmpty
-        icon="library-outline"
-        title="No Podcasts Yet"
-        message="Add your first podcast to start listening"
-        buttonText="Add Podcast"
-        buttonIcon="add"
+        icon='library-outline'
+        title='No Podcasts Yet'
+        message='Add your first podcast to start listening'
+        buttonText='Add Podcast'
+        buttonIcon='add'
         onButtonPress={viewModel.handleAddPress}
       />
     );

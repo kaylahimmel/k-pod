@@ -1,7 +1,7 @@
-import { settingsStore } from "../../stores";
-import { AppSettings } from "../../models";
+import { settingsStore } from '../../stores';
+import { AppSettings } from '../../models';
 
-describe("settingsStore", () => {
+describe('settingsStore', () => {
   const defaultSettings: AppSettings = {
     autoPlayNext: true,
     defaultSpeed: 1,
@@ -19,8 +19,8 @@ describe("settingsStore", () => {
     });
   });
 
-  describe("initial state", () => {
-    it("should initialize with default settings", () => {
+  describe('initial state', () => {
+    it('should initialize with default settings', () => {
       const state = settingsStore.getState();
       expect(state.settings).toEqual(defaultSettings);
       expect(state.loading).toBe(false);
@@ -28,34 +28,34 @@ describe("settingsStore", () => {
     });
   });
 
-  describe("updateSetting", () => {
-    it("should update a single setting", () => {
-      settingsStore.getState().updateSetting("defaultSpeed", 1.5);
+  describe('updateSetting', () => {
+    it('should update a single setting', () => {
+      settingsStore.getState().updateSetting('defaultSpeed', 1.5);
 
       const state = settingsStore.getState();
       expect(state.settings.defaultSpeed).toBe(1.5);
       expect(state.settings.autoPlayNext).toBe(true); // Other settings unchanged
     });
 
-    it("should update boolean settings", () => {
-      settingsStore.getState().updateSetting("autoPlayNext", false);
+    it('should update boolean settings', () => {
+      settingsStore.getState().updateSetting('autoPlayNext', false);
 
       expect(settingsStore.getState().settings.autoPlayNext).toBe(false);
     });
 
-    it("should update numeric settings", () => {
-      settingsStore.getState().updateSetting("skipForwardSeconds", 45);
-      settingsStore.getState().updateSetting("skipBackwardSeconds", 10);
+    it('should update numeric settings', () => {
+      settingsStore.getState().updateSetting('skipForwardSeconds', 45);
+      settingsStore.getState().updateSetting('skipBackwardSeconds', 10);
 
       const state = settingsStore.getState();
       expect(state.settings.skipForwardSeconds).toBe(45);
       expect(state.settings.skipBackwardSeconds).toBe(10);
     });
 
-    it("should preserve other settings when updating one", () => {
+    it('should preserve other settings when updating one', () => {
       const originalSettings = { ...settingsStore.getState().settings };
 
-      settingsStore.getState().updateSetting("downloadOnWiFi", false);
+      settingsStore.getState().updateSetting('downloadOnWiFi', false);
 
       const state = settingsStore.getState();
       expect(state.settings.autoPlayNext).toBe(originalSettings.autoPlayNext);
@@ -70,8 +70,8 @@ describe("settingsStore", () => {
     });
   });
 
-  describe("updateSettings", () => {
-    it("should update multiple settings at once", () => {
+  describe('updateSettings', () => {
+    it('should update multiple settings at once', () => {
       const updates: Partial<AppSettings> = {
         autoPlayNext: false,
         defaultSpeed: 2,
@@ -88,7 +88,7 @@ describe("settingsStore", () => {
       expect(state.settings.skipBackwardSeconds).toBe(15); // Unchanged
     });
 
-    it("should handle partial updates", () => {
+    it('should handle partial updates', () => {
       settingsStore.getState().updateSettings({
         defaultSpeed: 0.75,
       });
@@ -98,7 +98,7 @@ describe("settingsStore", () => {
       expect(state.settings.autoPlayNext).toBe(defaultSettings.autoPlayNext);
     });
 
-    it("should merge with existing settings", () => {
+    it('should merge with existing settings', () => {
       settingsStore.getState().updateSettings({
         autoPlayNext: false,
       });
@@ -113,8 +113,8 @@ describe("settingsStore", () => {
     });
   });
 
-  describe("loadSettings", () => {
-    it("should load and replace entire settings object", () => {
+  describe('loadSettings', () => {
+    it('should load and replace entire settings object', () => {
       const newSettings: AppSettings = {
         autoPlayNext: false,
         defaultSpeed: 0.75,
@@ -128,8 +128,8 @@ describe("settingsStore", () => {
       expect(settingsStore.getState().settings).toEqual(newSettings);
     });
 
-    it("should completely replace previous settings", () => {
-      settingsStore.getState().updateSetting("autoPlayNext", false);
+    it('should completely replace previous settings', () => {
+      settingsStore.getState().updateSetting('autoPlayNext', false);
 
       const newSettings: AppSettings = {
         autoPlayNext: true, // Reset to default
@@ -145,8 +145,8 @@ describe("settingsStore", () => {
     });
   });
 
-  describe("resetSettings", () => {
-    it("should reset settings to defaults", () => {
+  describe('resetSettings', () => {
+    it('should reset settings to defaults', () => {
       // Change all settings
       settingsStore.getState().updateSettings({
         autoPlayNext: false,
@@ -168,8 +168,8 @@ describe("settingsStore", () => {
     });
   });
 
-  describe("setLoading", () => {
-    it("should set loading state", () => {
+  describe('setLoading', () => {
+    it('should set loading state', () => {
       settingsStore.getState().setLoading(true);
       expect(settingsStore.getState().loading).toBe(true);
 
@@ -178,21 +178,21 @@ describe("settingsStore", () => {
     });
   });
 
-  describe("setError", () => {
-    it("should set error message", () => {
-      settingsStore.getState().setError("Failed to load settings");
-      expect(settingsStore.getState().error).toBe("Failed to load settings");
+  describe('setError', () => {
+    it('should set error message', () => {
+      settingsStore.getState().setError('Failed to load settings');
+      expect(settingsStore.getState().error).toBe('Failed to load settings');
     });
 
-    it("should clear error message", () => {
-      settingsStore.getState().setError("Some error");
+    it('should clear error message', () => {
+      settingsStore.getState().setError('Some error');
       settingsStore.getState().setError(null);
       expect(settingsStore.getState().error).toBeNull();
     });
   });
 
-  describe("complex scenarios", () => {
-    it("should handle loading flow: loading -> success -> reset", () => {
+  describe('complex scenarios', () => {
+    it('should handle loading flow: loading -> success -> reset', () => {
       const state = settingsStore.getState();
 
       state.setLoading(true);

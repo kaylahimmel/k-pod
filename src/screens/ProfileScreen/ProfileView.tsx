@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useProfileViewModel } from "./ProfileViewModel";
-import { styles } from "./Profile.styles";
-import { COLORS } from "../../constants/Colors";
-import { CardHistoryItem } from "../../components";
-import { ProfileViewProps } from "./Profile.types";
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useProfileViewModel } from './ProfileViewModel';
+import { styles } from './Profile.styles';
+import { COLORS } from '../../constants';
+import { CardHistoryItem } from '../../components';
+import { ProfileViewProps } from './Profile.types';
 
 export const ProfileView = ({
   onViewHistoryPress,
@@ -27,7 +27,7 @@ export const ProfileView = ({
   if (viewModel.isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator size='large' color={COLORS.primary} />
       </View>
     );
   }
@@ -41,11 +41,11 @@ export const ProfileView = ({
       <View style={styles.headerSection}>
         <View style={styles.avatarContainer}>
           <Text style={styles.avatarText}>
-            {viewModel.user?.initials ?? "?"}
+            {viewModel.user?.initials ?? '?'}
           </Text>
         </View>
         <Text style={styles.userEmail}>
-          {viewModel.user?.displayEmail ?? "Not signed in"}
+          {viewModel.user?.displayEmail ?? 'Not signed in'}
         </Text>
       </View>
 
@@ -117,7 +117,7 @@ export const ProfileView = ({
         >
           <Text style={styles.actionText}>Change Password</Text>
           <Ionicons
-            name="chevron-forward"
+            name='chevron-forward'
             size={20}
             color={COLORS.textSecondary}
           />

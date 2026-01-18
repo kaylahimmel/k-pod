@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { FormattedPodcast } from "../../screens/LibraryScreen/Library.types";
-import { COLORS } from "../../constants/Colors";
-import { styles } from "./LibraryPodcastCard.styles";
+import React from 'react';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { FormattedPodcast } from '../../screens/LibraryScreen/Library.types';
+import { COLORS } from '../../constants';
+import { styles } from './LibraryPodcastCard.styles';
 
 interface LibraryPodcastCardProps {
   podcast: FormattedPodcast;
@@ -18,7 +18,7 @@ export const LibraryPodcastCard = ({
     <Image
       source={{ uri: podcast.artworkUrl }}
       style={styles.podcastArtwork}
-      defaultSource={require("../../../assets/icon.png")}
+      defaultSource={require('../../../assets/icon.png')}
     />
     <View style={styles.podcastInfo}>
       <Text style={styles.podcastTitle} numberOfLines={2}>
@@ -28,10 +28,10 @@ export const LibraryPodcastCard = ({
         {podcast.author}
       </Text>
       <Text style={styles.podcastMeta}>
-        {podcast.episodeCountLabel} • Subscribed{" "}
+        {podcast.episodeCountLabel} • Subscribed{' '}
         {podcast.formattedSubscribeDate}
       </Text>
     </View>
-    <Ionicons name="chevron-forward" size={20} color={COLORS.textSecondary} />
+    <Ionicons name='chevron-forward' size={20} color={COLORS.textSecondary} />
   </TouchableOpacity>
 );

@@ -1,16 +1,16 @@
-import { Episode, Podcast } from "../../models";
+import { Episode, Podcast } from '../../models';
 import {
   FormattedEpisode,
   FormattedPodcastDetail,
-} from "./PodcastDetail.types";
-import { truncateText, stripHtml } from "../../utils";
+} from './PodcastDetail.types';
+import { truncateText, stripHtml } from '../../utils';
 
 /**
  * Formats duration in seconds to HH:MM:SS or MM:SS format
  */
 export function formatDuration(seconds: number): string {
   if (seconds <= 0 || !isFinite(seconds)) {
-    return "0:00";
+    return '0:00';
   }
 
   const hours = Math.floor(seconds / 3600);
@@ -18,10 +18,10 @@ export function formatDuration(seconds: number): string {
   const secs = Math.floor(seconds % 60);
 
   if (hours > 0) {
-    return `${hours}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
 
-  return `${minutes}:${secs.toString().padStart(2, "0")}`;
+  return `${minutes}:${secs.toString().padStart(2, '0')}`;
 }
 
 /**
@@ -29,7 +29,7 @@ export function formatDuration(seconds: number): string {
  */
 export function formatDurationLong(seconds: number): string {
   if (seconds <= 0 || !isFinite(seconds)) {
-    return "0 min";
+    return '0 min';
   }
 
   const hours = Math.floor(seconds / 3600);
@@ -54,19 +54,19 @@ export function formatPublishDate(isoDateString: string): string {
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) {
-    return "Today";
+    return 'Today';
   } else if (diffDays === 1) {
-    return "Yesterday";
+    return 'Yesterday';
   } else if (diffDays < 7) {
     return `${diffDays} days ago`;
   } else if (diffDays < 30) {
     const weeks = Math.floor(diffDays / 7);
-    return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
+    return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`;
   } else {
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
     });
   }
 }
@@ -76,9 +76,9 @@ export function formatPublishDate(isoDateString: string): string {
  */
 export function formatEpisodeCount(count: number): string {
   if (count === 0) {
-    return "No episodes";
+    return 'No episodes';
   } else if (count === 1) {
-    return "1 episode";
+    return '1 episode';
   } else {
     return `${count} episodes`;
   }

@@ -1,4 +1,4 @@
-export { ProfileScreen } from "./ProfileScreen";
-export { ProfileView } from "./ProfileView";
-export * from "./ProfilePresenter";
-export * from "./Profile.types";
+export { ProfileScreen } from './ProfileScreen';
+export { ProfileView } from './ProfileView';
+export * from './ProfilePresenter';
+export * from './Profile.types';

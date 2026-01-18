@@ -1,7 +1,7 @@
-import React from "react";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "../../constants/Colors";
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from '../../constants';
 
 interface SettingLinkRowProps {
   label: string;
@@ -19,15 +19,15 @@ export const SettingLinkRow = ({
     onPress={onPress}
   >
     <Text style={styles.label}>{label}</Text>
-    <Ionicons name="chevron-forward" size={20} color={COLORS.textSecondary} />
+    <Ionicons name='chevron-forward' size={20} color={COLORS.textSecondary} />
   </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,

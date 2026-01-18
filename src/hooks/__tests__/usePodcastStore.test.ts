@@ -1,9 +1,9 @@
-import { renderHook, act } from "@testing-library/react-native";
-import { usePodcastStore } from "../usePodcastStore";
-import { podcastStore } from "../../stores";
-import { Podcast } from "../../models";
+import { renderHook, act } from '@testing-library/react-native';
+import { usePodcastStore } from '../usePodcastStore';
+import { podcastStore } from '../../stores';
+import { Podcast } from '../../models';
 
-describe("usePodcastStore", () => {
+describe('usePodcastStore', () => {
   beforeEach(() => {
     // Reset store to initial state before each test
     podcastStore.setState({
@@ -13,15 +13,15 @@ describe("usePodcastStore", () => {
     });
   });
 
-  describe("addPodcast", () => {
-    it("should add a podcast to the store", () => {
+  describe('addPodcast', () => {
+    it('should add a podcast to the store', () => {
       const newPodcast: Podcast = {
-        id: "1",
-        title: "Test Podcast",
-        description: "A test podcast",
-        artworkUrl: "https://example.com/image.jpg",
-        rssUrl: "https://example.com/feed",
-        author: "Test Author",
+        id: '1',
+        title: 'Test Podcast',
+        description: 'A test podcast',
+        artworkUrl: 'https://example.com/image.jpg',
+        rssUrl: 'https://example.com/feed',
+        author: 'Test Author',
         episodes: [],
         subscribeDate: new Date().toISOString(),
         lastUpdated: new Date().toISOString(),
@@ -37,14 +37,14 @@ describe("usePodcastStore", () => {
       expect(result.current.podcasts[0]).toEqual(newPodcast);
     });
 
-    it("should not add duplicate podcasts", () => {
+    it('should not add duplicate podcasts', () => {
       const podcast: Podcast = {
-        id: "1",
-        title: "Test Podcast",
-        description: "A test podcast",
-        artworkUrl: "https://example.com/image.jpg",
-        rssUrl: "https://example.com/feed",
-        author: "Test Author",
+        id: '1',
+        title: 'Test Podcast',
+        description: 'A test podcast',
+        artworkUrl: 'https://example.com/image.jpg',
+        rssUrl: 'https://example.com/feed',
+        author: 'Test Author',
         episodes: [],
         subscribeDate: new Date().toISOString(),
         lastUpdated: new Date().toISOString(),
@@ -61,15 +61,15 @@ describe("usePodcastStore", () => {
     });
   });
 
-  describe("removePodcast", () => {
-    it("should remove a podcast from the store", () => {
+  describe('removePodcast', () => {
+    it('should remove a podcast from the store', () => {
       const podcast: Podcast = {
-        id: "1",
-        title: "Test Podcast",
-        description: "A test podcast",
-        artworkUrl: "https://example.com/image.jpg",
-        rssUrl: "https://example.com/feed",
-        author: "Test Author",
+        id: '1',
+        title: 'Test Podcast',
+        description: 'A test podcast',
+        artworkUrl: 'https://example.com/image.jpg',
+        rssUrl: 'https://example.com/feed',
+        author: 'Test Author',
         episodes: [],
         subscribeDate: new Date().toISOString(),
         lastUpdated: new Date().toISOString(),
@@ -82,15 +82,15 @@ describe("usePodcastStore", () => {
       });
 
       act(() => {
-        result.current.removePodcast("1");
+        result.current.removePodcast('1');
       });
 
       expect(result.current.podcasts).toHaveLength(0);
     });
   });
 
-  describe("error handling", () => {
-    it("should handle loading and error states", () => {
+  describe('error handling', () => {
+    it('should handle loading and error states', () => {
       const { result } = renderHook(() => usePodcastStore());
 
       act(() => {
@@ -100,13 +100,13 @@ describe("usePodcastStore", () => {
 
       act(() => {
         result.current.setLoading(false);
-        result.current.setError("Failed to fetch");
+        result.current.setError('Failed to fetch');
       });
-      expect(result.current.error).toBe("Failed to fetch");
+      expect(result.current.error).toBe('Failed to fetch');
     });
   });
 
-  it("manages loading and error states", () => {
+  it('manages loading and error states', () => {
     const { result } = renderHook(() => usePodcastStore());
 
     expect(result.current.loading).toBe(false);
@@ -117,9 +117,9 @@ describe("usePodcastStore", () => {
     expect(result.current.loading).toBe(true);
 
     act(() => {
-      result.current.setError("Failed to fetch");
+      result.current.setError('Failed to fetch');
     });
-    expect(result.current.error).toBe("Failed to fetch");
+    expect(result.current.error).toBe('Failed to fetch');
 
     act(() => {
       result.current.setError(null);

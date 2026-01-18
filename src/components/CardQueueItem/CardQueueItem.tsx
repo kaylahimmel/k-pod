@@ -1,10 +1,10 @@
-import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "../../constants/Colors";
-import { FormattedQueueItem } from "../../screens/QueueScreen/Queue.types";
-import { styles } from "./CardQueueItem.styles";
-import { ScaleDecorator } from "react-native-draggable-flatlist";
+import React from 'react';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from '../../constants';
+import { FormattedQueueItem } from '../../screens/QueueScreen/Queue.types';
+import { styles } from './CardQueueItem.styles';
+import { ScaleDecorator } from 'react-native-draggable-flatlist';
 
 interface CardQueueItemProps {
   item: FormattedQueueItem;
@@ -34,7 +34,7 @@ export const CardQueueItem = ({
           onLongPress={drag}
           delayLongPress={0}
         >
-          <Ionicons name="menu" size={20} color={COLORS.textSecondary} />
+          <Ionicons name='menu' size={20} color={COLORS.textSecondary} />
         </TouchableOpacity>
 
         {item.podcastArtworkUrl ? (
@@ -45,7 +45,7 @@ export const CardQueueItem = ({
         ) : (
           <View style={styles.queueItemArtwork}>
             <Ionicons
-              name="musical-notes"
+              name='musical-notes'
               size={24}
               color={COLORS.textSecondary}
             />
@@ -73,7 +73,7 @@ export const CardQueueItem = ({
             onPress={onRemove}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Ionicons name="close-circle" size={24} color={COLORS.danger} />
+            <Ionicons name='close-circle' size={24} color={COLORS.danger} />
           </TouchableOpacity>
         </View>
       </View>

@@ -1,20 +1,19 @@
-import { useState, useCallback, useEffect } from "react";
-import { usePodcastStore } from "../../hooks/usePodcastStore";
-import { DiscoveryService } from "../../services/DiscoveryService";
-import { DiscoveryPodcast, Podcast } from "../../models";
-import { now } from "../../constants/NowDate";
+import { useState, useCallback, useEffect } from 'react';
+import { usePodcastStore } from '../../hooks';
+import { DiscoveryService } from '../../services';
+import { DiscoveryPodcast, Podcast } from '../../models';
+import { now } from '../../constants';
 import {
   formatDiscoveryPodcasts,
   groupPodcastsByGenre,
   filterOutSubscribed,
   isSubscribed,
-} from "./DiscoverPresenter";
+} from './DiscoverPresenter';
 
 export const useDiscoverViewModel = (
   onPodcastPress: (podcast: DiscoveryPodcast) => void,
-  onSubscribe: (podcast: DiscoveryPodcast) => void,
 ) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<DiscoveryPodcast[]>([]);
   const [trendingPodcasts, setTrendingPodcasts] = useState<DiscoveryPodcast[]>(
     [],
@@ -24,7 +23,7 @@ export const useDiscoverViewModel = (
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const { podcasts } = usePodcastStore();
+  const { podcasts, addPodcast } = usePodcastStore();
   const subscribedFeedUrls = podcasts.map((p) => p.rssUrl);
 
   const filteredTrending = filterOutSubscribed(
@@ -49,7 +48,7 @@ export const useDiscoverViewModel = (
   useEffect(() => {
     const fetchTrending = async () => {
       setLoadingTrending(true);
-      const result = await DiscoveryService.getTrendingPodcasts("ALL", 20);
+      const result = await DiscoveryService.getTrendingPodcasts('ALL', 20);
       if (result.success && result.data) {
         setTrendingPodcasts(result.data);
       }
@@ -84,7 +83,7 @@ export const useDiscoverViewModel = (
   }, [searchQuery]);
 
   const handleClearSearch = useCallback(() => {
-    setSearchQuery("");
+    setSearchQuery('');
     setSearchResults([]);
     setHasSearched(false);
     setError(null);
@@ -93,7 +92,7 @@ export const useDiscoverViewModel = (
   const handleSearchQueryChange = useCallback(
     (text: string) => {
       setSearchQuery(text);
-      if (text === "") {
+      if (text === '') {
         handleClearSearch();
       }
     },
@@ -124,7 +123,7 @@ export const useDiscoverViewModel = (
       author: discovery.author,
       rssUrl: discovery.feedUrl,
       artworkUrl: discovery.artworkUrl,
-      description: discovery.description || "",
+      description: discovery.description || '',
       subscribeDate: now,
       lastUpdated: now,
       episodes: [], // Episodes will be fetched from RSS
@@ -138,11 +137,13 @@ export const useDiscoverViewModel = (
     [onPodcastPress],
   );
 
+  // Subscribe directly by adding podcast to the store
   const handleSubscribe = useCallback(
     (podcast: DiscoveryPodcast) => {
-      onSubscribe(podcast);
+      const podcastToAdd = createPodcastFromDiscovery(podcast);
+      addPodcast(podcastToAdd);
     },
-    [onSubscribe],
+    [addPodcast],
   );
 
   return {

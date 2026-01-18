@@ -1,12 +1,12 @@
-import React from "react";
-import { render } from "@testing-library/react-native";
-import { QueueScreen } from "../QueueScreen";
-import { queueStore, playerStore } from "../../../stores";
+import React from 'react';
+import { render } from '@testing-library/react-native';
+import { QueueScreen } from '../QueueScreen';
+import { queueStore, playerStore } from '../../../stores';
 import {
   createMockEpisode,
   createMockPodcast,
   createMockQueueItem,
-} from "../../../__mocks__";
+} from '../../../__mocks__';
 
 // =============================================================================
 // Test Setup
@@ -18,8 +18,8 @@ const mockNavigation = {
 } as any;
 
 const mockRoute = {
-  key: "queue-screen",
-  name: "Queue" as const,
+  key: 'queue-screen',
+  name: 'Queue' as const,
   params: undefined,
 };
 
@@ -27,7 +27,7 @@ const mockRoute = {
 // Tests
 // =============================================================================
 
-describe("QueueScreen", () => {
+describe('QueueScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     queueStore.setState({
@@ -46,20 +46,20 @@ describe("QueueScreen", () => {
   const renderQueueScreen = () =>
     render(<QueueScreen navigation={mockNavigation} route={mockRoute} />);
 
-  describe("Rendering", () => {
-    it("should render QueueView with empty state", () => {
+  describe('Rendering', () => {
+    it('should render QueueView with empty state', () => {
       const { getByText } = renderQueueScreen();
 
-      expect(getByText("Your Queue is Empty")).toBeTruthy();
+      expect(getByText('Your Queue is Empty')).toBeTruthy();
     });
 
-    it("should render queue items when queue has items", () => {
+    it('should render queue items when queue has items', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({
-            id: "q1",
-            episode: createMockEpisode({ title: "Episode 1" }),
-            podcast: createMockPodcast({ title: "Podcast 1" }),
+            id: 'q1',
+            episode: createMockEpisode({ title: 'Episode 1' }),
+            podcast: createMockPodcast({ title: 'Podcast 1' }),
           }),
         ],
         currentIndex: 0,
@@ -67,18 +67,18 @@ describe("QueueScreen", () => {
 
       const { getByText } = renderQueueScreen();
 
-      expect(getByText("Episode 1")).toBeTruthy();
-      expect(getByText("Podcast 1")).toBeTruthy();
+      expect(getByText('Episode 1')).toBeTruthy();
+      expect(getByText('Podcast 1')).toBeTruthy();
     });
   });
 
-  describe("Navigation", () => {
-    it("should pass navigation handler to QueueView", () => {
+  describe('Navigation', () => {
+    it('should pass navigation handler to QueueView', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({
-            id: "q1",
-            episode: createMockEpisode({ id: "ep-1", podcastId: "pod-1" }),
+            id: 'q1',
+            episode: createMockEpisode({ id: 'ep-1', podcastId: 'pod-1' }),
           }),
         ],
         currentIndex: 0,
@@ -87,11 +87,11 @@ describe("QueueScreen", () => {
       // The navigation is passed to QueueView, which is tested in QueueView.test.tsx
       // Here we just verify the screen renders correctly
       const { getByText } = renderQueueScreen();
-      expect(getByText("Test Episode")).toBeTruthy();
+      expect(getByText('Test Episode')).toBeTruthy();
     });
   });
 
-  describe("State Management", () => {
+  describe('State Management', () => {
     it("should show 'Now Playing' indicator for currently playing item", () => {
       queueStore.setState({
         queue: [createMockQueueItem()],
@@ -103,7 +103,7 @@ describe("QueueScreen", () => {
 
       const { getByText } = renderQueueScreen();
 
-      expect(getByText("NOW PLAYING")).toBeTruthy();
+      expect(getByText('NOW PLAYING')).toBeTruthy();
     });
 
     it("should show 'Paused' indicator when playback is paused", () => {
@@ -117,7 +117,7 @@ describe("QueueScreen", () => {
 
       const { getByText } = renderQueueScreen();
 
-      expect(getByText("PAUSED")).toBeTruthy();
+      expect(getByText('PAUSED')).toBeTruthy();
     });
   });
 });

@@ -1,4 +1,4 @@
-import { Podcast, Episode } from "../models";
+import { Podcast, Episode } from '../models';
 
 /**
  * Creates a mock Podcast object for testing
@@ -7,14 +7,14 @@ import { Podcast, Episode } from "../models";
 export const createMockPodcast = (
   overrides: Partial<Podcast> = {},
 ): Podcast => ({
-  id: "podcast-1",
-  title: "Test Podcast",
-  author: "Test Author",
-  rssUrl: "https://example.com/feed.xml",
-  artworkUrl: "https://example.com/artwork.jpg",
-  description: "A test podcast description",
-  subscribeDate: "2024-01-01T00:00:00Z",
-  lastUpdated: "2024-01-01T00:00:00Z",
+  id: 'podcast-1',
+  title: 'Test Podcast',
+  author: 'Test Author',
+  rssUrl: 'https://example.com/feed.xml',
+  artworkUrl: 'https://example.com/artwork.jpg',
+  description: 'A test podcast description',
+  subscribeDate: '2024-01-01T00:00:00Z',
+  lastUpdated: '2024-01-01T00:00:00Z',
   episodes: [],
   ...overrides,
 });
@@ -26,13 +26,13 @@ export const createMockPodcast = (
 export const createMockEpisode = (
   overrides: Partial<Episode> = {},
 ): Episode => ({
-  id: "episode-1",
-  podcastId: "podcast-1",
-  title: "Test Episode",
-  description: "A test episode description",
-  audioUrl: "https://example.com/audio.mp3",
+  id: 'episode-1',
+  podcastId: 'podcast-1',
+  title: 'Test Episode',
+  description: 'A test episode description',
+  audioUrl: 'https://example.com/audio.mp3',
   duration: 3600, // 1 hour in seconds
-  publishDate: "2024-01-01T00:00:00Z",
+  publishDate: '2024-01-01T00:00:00Z',
   played: false,
   ...overrides,
 });
@@ -56,7 +56,7 @@ export const createMockPodcasts = (count: number): Podcast[] =>
  */
 export const createMockEpisodes = (
   count: number,
-  podcastId = "podcast-1",
+  podcastId = 'podcast-1',
 ): Episode[] =>
   Array.from({ length: count }, (_, i) =>
     createMockEpisode({

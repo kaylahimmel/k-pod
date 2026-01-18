@@ -1,10 +1,10 @@
-import { ListeningHistory, User, Podcast } from "../../models";
+import { ListeningHistory, User, Podcast } from '../../models';
 import {
   FormattedHistoryItem,
   FormattedUser,
   ProfileStats,
-} from "./Profile.types";
-import { truncateText } from "../../utils";
+} from './Profile.types';
+import { truncateText } from '../../utils';
 
 /**
  * Formats listening time in seconds to a human-readable string
@@ -12,7 +12,7 @@ import { truncateText } from "../../utils";
  */
 export function formatListeningTime(seconds: number): string {
   if (!seconds || seconds <= 0) {
-    return "0 min";
+    return '0 min';
   }
 
   const hours = Math.floor(seconds / 3600);
@@ -35,23 +35,23 @@ export function formatListeningTime(seconds: number): string {
  */
 export function formatRelativeDate(date: Date | string): string {
   const now = new Date();
-  const targetDate = typeof date === "string" ? new Date(date) : date;
+  const targetDate = typeof date === 'string' ? new Date(date) : date;
   const diffMs = now.getTime() - targetDate.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) {
-    return "Today";
+    return 'Today';
   }
 
   if (diffDays === 1) {
-    return "Yesterday";
+    return 'Yesterday';
   }
 
   if (diffDays < 7) {
     return `${diffDays} days ago`;
   }
 
-  const month = targetDate.toLocaleDateString("en-US", { month: "short" });
+  const month = targetDate.toLocaleDateString('en-US', { month: 'short' });
   const day = targetDate.getDate();
   return `${month} ${day}`;
 }
@@ -61,7 +61,7 @@ export function formatRelativeDate(date: Date | string): string {
  */
 export function formatCompletionPercentage(percentage: number): string {
   if (percentage >= 100) {
-    return "Completed";
+    return 'Completed';
   }
   return `${Math.round(percentage)}% listened`;
 }
@@ -71,7 +71,7 @@ export function formatCompletionPercentage(percentage: number): string {
  * Example: "john.doe@example.com" -> "JD"
  */
 export function getInitialsFromEmail(email: string): string {
-  const localPart = email.split("@")[0];
+  const localPart = email.split('@')[0];
   const parts = localPart.split(/[._-]/);
 
   if (parts.length >= 2) {
@@ -199,14 +199,14 @@ export function getProfileStats(
     episodesCompleted,
     episodesCompletedLabel: formatCountLabel(
       episodesCompleted,
-      "Episode",
-      "Episodes",
+      'Episode',
+      'Episodes',
     ),
     podcastsSubscribed,
     podcastsSubscribedLabel: formatCountLabel(
       podcastsSubscribed,
-      "Podcast",
-      "Podcasts",
+      'Podcast',
+      'Podcasts',
     ),
   };
 }

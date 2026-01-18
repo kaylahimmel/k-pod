@@ -1,14 +1,14 @@
-import { useState, useCallback } from "react";
-import { usePodcastStore } from "../../hooks/usePodcastStore";
-import { preparePodcastsForDisplay } from "./LibraryPresenter";
-import { SortOption } from "./Library.types";
+import { useState, useCallback } from 'react';
+import { usePodcastStore } from '../../hooks';
+import { preparePodcastsForDisplay } from './LibraryPresenter';
+import { SortOption } from './Library.types';
 
 export const useLibraryViewModel = (
   onPodcastPress: (podcastId: string) => void,
   onAddPodcastPress: () => void,
 ) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption] = useState<SortOption>("recent");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption] = useState<SortOption>('recent');
   const [refreshing, setRefreshing] = useState(false);
   const { podcasts, loading, error } = usePodcastStore();
   const displayPodcasts = preparePodcastsForDisplay(

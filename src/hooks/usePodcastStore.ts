@@ -1,4 +1,4 @@
-import { podcastStore } from "../stores";
+import { podcastStore } from '../stores';
 
 /**
  * Hook to access the podcast store

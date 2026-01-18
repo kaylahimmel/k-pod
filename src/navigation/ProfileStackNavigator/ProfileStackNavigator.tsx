@@ -1,10 +1,10 @@
-import React from "react";
-import { View, Text } from "react-native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { ProfileStackParamList } from "../types";
-import { defaultScreenOptions } from "../screenOptions";
-import { styles } from "../StackNavigator.styles";
-import { ProfileScreen } from "../../screens/ProfileScreen";
+import React from 'react';
+import { View, Text } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ProfileStackParamList } from '../types';
+import { defaultScreenOptions } from '../screenOptions';
+import { styles } from '../StackNavigator.styles';
+import { ProfileScreen } from '../../screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
@@ -22,29 +22,29 @@ const PlaceholderScreen = ({ name }: { name: string }) => (
 // import { ChangePasswordScreen } from "../../screens/ChangePasswordScreen";
 
 const ListeningHistoryScreenPlaceholder = () => (
-  <PlaceholderScreen name="Listening History" />
+  <PlaceholderScreen name='Listening History' />
 );
 const ChangePasswordScreenPlaceholder = () => (
-  <PlaceholderScreen name="Change Password" />
+  <PlaceholderScreen name='Change Password' />
 );
 
 export const ProfileStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={defaultScreenOptions}>
       <Stack.Screen
-        name="Profile"
+        name='Profile'
         component={ProfileScreen}
-        options={{ title: "Profile" }}
+        options={{ title: 'Profile' }}
       />
       <Stack.Screen
-        name="ListeningHistory"
+        name='ListeningHistory'
         component={ListeningHistoryScreenPlaceholder}
-        options={{ title: "Listening History" }}
+        options={{ title: 'Listening History' }}
       />
       <Stack.Screen
-        name="ChangePassword"
+        name='ChangePassword'
         component={ChangePasswordScreenPlaceholder}
-        options={{ title: "Change Password" }}
+        options={{ title: 'Change Password' }}
       />
     </Stack.Navigator>
   );

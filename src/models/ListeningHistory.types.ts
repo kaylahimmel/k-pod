@@ -1,5 +1,5 @@
-import { Podcast } from "./Podcast.types";
-import { Episode } from "./Episode.types";
+import { Podcast } from './Podcast.types';
+import { Episode } from './Episode.types';
 
 export interface ListeningHistory {
   podcast: Podcast;

@@ -1,6 +1,6 @@
-import { Podcast } from "../../models";
-import { FormattedPodcast, SortOption } from "./Library.types";
-import { truncateText } from "../../utils";
+import { Podcast } from '../../models';
+import { FormattedPodcast, SortOption } from './Library.types';
+import { truncateText } from '../../utils';
 
 /**
  * Formats a date string to a relative time (e.g., "2 days ago")
@@ -13,22 +13,22 @@ export function formatRelativeDate(isoDateString: string): string {
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) {
-    return "Today";
+    return 'Today';
   } else if (diffDays === 1) {
-    return "Yesterday";
+    return 'Yesterday';
   } else if (diffDays < 7) {
     return `${diffDays} days ago`;
   } else if (diffDays < 30) {
     const weeks = Math.floor(diffDays / 7);
-    return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
+    return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`;
   } else if (diffDays < 365) {
     const months = Math.floor(diffDays / 30);
-    return months === 1 ? "1 month ago" : `${months} months ago`;
+    return months === 1 ? '1 month ago' : `${months} months ago`;
   } else {
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
     });
   }
 }
@@ -38,9 +38,9 @@ export function formatRelativeDate(isoDateString: string): string {
  */
 export function formatEpisodeCount(count: number): string {
   if (count === 0) {
-    return "No episodes";
+    return 'No episodes';
   } else if (count === 1) {
-    return "1 episode";
+    return '1 episode';
   } else {
     return `${count} episodes`;
   }
@@ -80,19 +80,19 @@ export function sortPodcasts(
   const sorted = [...podcasts];
 
   switch (sortOption) {
-    case "recent":
+    case 'recent':
       // Most recently subscribed first
       return sorted.sort(
         (a, b) =>
           new Date(b.subscribeDate).getTime() -
           new Date(a.subscribeDate).getTime(),
       );
-    case "alphabetical":
+    case 'alphabetical':
       // A-Z by title
       return sorted.sort((a, b) =>
         a.title.toLowerCase().localeCompare(b.title.toLowerCase()),
       );
-    case "episodeCount":
+    case 'episodeCount':
       // Most episodes first
       return sorted.sort((a, b) => b.episodes.length - a.episodes.length);
     default:

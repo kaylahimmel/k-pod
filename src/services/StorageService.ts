@@ -1,10 +1,7 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Podcast, QueueItem, AppSettings, ListeningHistory } from "../models";
-import { STORAGE_KEYS } from "../constants/StorageKeys";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Podcast, QueueItem, AppSettings, ListeningHistory } from '../models';
+import { STORAGE_KEYS } from '../constants';
 
-// ============================================
-// BASE METHODS - Generic storage operations
-// ============================================
 /**
  * Save any JSON-serializable data to storage
  * @param key - Storage key
@@ -51,9 +48,6 @@ async function removeData(key: string): Promise<void> {
   }
 }
 
-// ============================================
-// PODCAST STORAGE
-// ============================================
 async function savePodcasts(podcasts: Podcast[]): Promise<void> {
   return saveData(STORAGE_KEYS.PODCASTS, podcasts);
 }
@@ -63,9 +57,6 @@ async function loadPodcasts(): Promise<Podcast[]> {
   return data ?? [];
 }
 
-// ============================================
-// QUEUE STORAGE
-// ============================================
 async function saveQueue(queue: QueueItem[]): Promise<void> {
   return saveData(STORAGE_KEYS.QUEUE, queue);
 }
@@ -75,9 +66,6 @@ async function loadQueue(): Promise<QueueItem[]> {
   return data ?? [];
 }
 
-// ============================================
-// SETTINGS STORAGE
-// ============================================
 async function saveSettings(settings: AppSettings): Promise<void> {
   return saveData(STORAGE_KEYS.SETTINGS, settings);
 }
@@ -86,9 +74,6 @@ async function loadSettings(): Promise<AppSettings | null> {
   return loadData<AppSettings>(STORAGE_KEYS.SETTINGS);
 }
 
-// ============================================
-// LISTENING HISTORY STORAGE
-// ============================================
 async function saveHistory(history: ListeningHistory[]): Promise<void> {
   return saveData(STORAGE_KEYS.HISTORY, history);
 }
@@ -98,10 +83,6 @@ async function loadHistory(): Promise<ListeningHistory[]> {
   return data ?? [];
 }
 
-// ============================================
-// PLAYBACK POSITION STORAGE
-// Per-episode position tracking for resume functionality
-// ============================================
 async function savePlaybackPosition(
   episodeId: string,
   position: number,
@@ -121,27 +102,20 @@ async function removePlaybackPosition(episodeId: string): Promise<void> {
   return removeData(key);
 }
 
-// ============================================
-// UTILITY METHODS
-// ============================================
 /**
  * Clear all app data from storage
  * Useful for logout or reset functionality
  */
 async function clearAllData(): Promise<void> {
   const keys = await AsyncStorage.getAllKeys();
-  const appKeys = keys.filter((key) => key.startsWith("@k-pod/"));
+  const appKeys = keys.filter((key) => key.startsWith('@k-pod/'));
   await AsyncStorage.multiRemove(appKeys);
 }
 
-// Export as a service object
 export const StorageService = {
-  // Base methods (exposed for flexibility)
   saveData,
   loadData,
   removeData,
-
-  // Domain-specific methods
   savePodcasts,
   loadPodcasts,
   saveQueue,
@@ -153,10 +127,6 @@ export const StorageService = {
   savePlaybackPosition,
   loadPlaybackPosition,
   removePlaybackPosition,
-
-  // Utilities
   clearAllData,
-
-  // Expose keys for testing
   STORAGE_KEYS,
 };

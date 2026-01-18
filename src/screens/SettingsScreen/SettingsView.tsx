@@ -1,19 +1,19 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-} from "react-native";
-import { useSettingsViewModel } from "./SettingsViewModel";
-import { styles } from "./Settings.styles";
-import { COLORS } from "../../constants/Colors";
+} from 'react-native';
+import { useSettingsViewModel } from './SettingsViewModel';
+import { styles } from './Settings.styles';
+import { COLORS } from '../../constants';
 import {
   SettingToggleRow,
   SettingOptionSelector,
   SettingLinkRow,
-} from "../../components";
+} from '../../components';
 
 export const SettingsView = () => {
   const viewModel = useSettingsViewModel();
@@ -21,7 +21,7 @@ export const SettingsView = () => {
   if (viewModel.isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator size='large' color={COLORS.primary} />
       </View>
     );
   }
@@ -37,12 +37,12 @@ export const SettingsView = () => {
       </View>
       <View style={styles.settingsSection}>
         <SettingToggleRow
-          label="Auto-play next episode"
+          label='Auto-play next episode'
           value={viewModel.settings.autoPlayNext}
           onValueChange={viewModel.handleToggleAutoPlayNext}
         />
         <SettingOptionSelector
-          label="Default playback speed"
+          label='Default playback speed'
           currentValueLabel={viewModel.settings.defaultSpeedLabel}
           options={viewModel.speedOptions}
           selectedValue={viewModel.settings.defaultSpeed}
@@ -56,14 +56,14 @@ export const SettingsView = () => {
       </View>
       <View style={styles.settingsSection}>
         <SettingOptionSelector
-          label="Skip forward"
+          label='Skip forward'
           currentValueLabel={viewModel.settings.skipForwardLabel}
           options={viewModel.skipForwardOptions}
           selectedValue={viewModel.settings.skipForwardSeconds}
           onSelect={viewModel.handleSkipForwardChange}
         />
         <SettingOptionSelector
-          label="Skip backward"
+          label='Skip backward'
           currentValueLabel={viewModel.settings.skipBackwardLabel}
           options={viewModel.skipBackwardOptions}
           selectedValue={viewModel.settings.skipBackwardSeconds}
@@ -77,7 +77,7 @@ export const SettingsView = () => {
       </View>
       <View style={styles.settingsSection}>
         <SettingToggleRow
-          label="Download on WiFi only"
+          label='Download on WiFi only'
           value={viewModel.settings.downloadOnWiFi}
           onValueChange={viewModel.handleToggleDownloadOnWiFi}
           isLast
@@ -90,11 +90,11 @@ export const SettingsView = () => {
       </View>
       <View style={styles.settingsSection}>
         <SettingLinkRow
-          label="Privacy Policy"
+          label='Privacy Policy'
           onPress={viewModel.handlePrivacyPolicyPress}
         />
         <SettingLinkRow
-          label="Terms of Service"
+          label='Terms of Service'
           onPress={viewModel.handleTermsOfServicePress}
           isLast
         />

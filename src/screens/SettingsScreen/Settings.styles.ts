@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import { COLORS } from "../../constants/Colors";
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../constants';
 
 export const styles = StyleSheet.create({
   container: {
@@ -17,9 +17,9 @@ export const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS.textSecondary,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   // Settings Section Container
@@ -29,9 +29,9 @@ export const styles = StyleSheet.create({
   },
   // Setting Row
   settingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
@@ -53,9 +53,9 @@ export const styles = StyleSheet.create({
   },
   // Touchable Setting Row (for navigation-style rows)
   touchableSettingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
@@ -67,8 +67,8 @@ export const styles = StyleSheet.create({
   },
   // Option Selector (for speed, skip duration)
   optionSelector: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     paddingHorizontal: 16,
     paddingVertical: 12,
     gap: 8,
@@ -91,19 +91,19 @@ export const styles = StyleSheet.create({
   },
   optionButtonTextSelected: {
     color: COLORS.cardBackground,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   // App Info Section
   appInfoSection: {
     backgroundColor: COLORS.cardBackground,
     paddingVertical: 16,
     paddingHorizontal: 16,
-    alignItems: "center",
+    alignItems: 'center',
     marginTop: 16,
   },
   appName: {
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.textPrimary,
     marginBottom: 4,
   },
@@ -118,19 +118,19 @@ export const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 8,
     backgroundColor: COLORS.cardBackground,
-    alignItems: "center",
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: COLORS.danger,
   },
   resetButtonText: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     color: COLORS.danger,
   },
   // Loading State
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
