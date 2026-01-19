@@ -12,6 +12,7 @@ interface EpisodeCardProps {
   onPress: () => void;
   onPlay: () => void;
   onAddToQueue: () => void;
+  isInQueue?: boolean;
 }
 
 export const EpisodeCard = ({
@@ -19,6 +20,7 @@ export const EpisodeCard = ({
   onPress,
   onPlay,
   onAddToQueue,
+  isInQueue = false,
 }: EpisodeCardProps) => (
   <TouchableOpacity
     style={[styles.episodeCard, episode.played && styles.episodeCardPlayed]}
@@ -61,8 +63,13 @@ export const EpisodeCard = ({
         style={styles.actionButton}
         onPress={onAddToQueue}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        disabled={isInQueue}
       >
-        <Ionicons name='add-circle' size={32} color={COLORS.primary} />
+        <Ionicons
+          name={isInQueue ? 'list' : 'add-circle'}
+          size={32}
+          color={isInQueue ? COLORS.textSecondary : COLORS.primary}
+        />
       </TouchableOpacity>
     </View>
   </TouchableOpacity>

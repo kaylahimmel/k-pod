@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { Alert } from 'react-native';
 import { useQueueStore, usePlayerStore } from '../../hooks';
 import { QueueItem } from '../../models';
 import {
@@ -67,28 +68,44 @@ export const useQueueViewModel = (
 
   const handleReorder = useCallback(
     (fromIndex: number, toIndex: number) => {
-      // The draggable list displays from currentIndex onwards (unified queue)
-      // Adjust indices to map from display positions to actual queue positions
-      const actualFromIndex = currentIndex + fromIndex;
-      const actualToIndex = currentIndex + toIndex;
-      reorderQueue(actualFromIndex, actualToIndex);
+      // Display queue now shows all items, so indices match directly
+      reorderQueue(fromIndex, toIndex);
 
       // If we're moving the currently playing item, update currentIndex
-      if (fromIndex === 0) {
-        setCurrentIndex(actualToIndex);
-      } else if (toIndex === 0) {
-        setCurrentIndex(actualToIndex);
-      } else if (fromIndex < toIndex && toIndex === 0) {
-        setCurrentIndex(actualToIndex);
-      } else if (fromIndex > toIndex && toIndex === 0) {
-        setCurrentIndex(actualToIndex);
+      if (fromIndex === currentIndex) {
+        setCurrentIndex(toIndex);
+      } else if (toIndex === currentIndex) {
+        // If we're moving an item to where the current item is,
+        // the current item shifts by one position
+        if (fromIndex < currentIndex) {
+          setCurrentIndex(currentIndex - 1);
+        } else {
+          setCurrentIndex(currentIndex + 1);
+        }
+      } else if (fromIndex < currentIndex && toIndex >= currentIndex) {
+        // Item moved from before current to after current
+        setCurrentIndex(currentIndex - 1);
+      } else if (fromIndex > currentIndex && toIndex <= currentIndex) {
+        // Item moved from after current to before current
+        setCurrentIndex(currentIndex + 1);
       }
     },
     [reorderQueue, currentIndex, setCurrentIndex],
   );
 
   const handleClearQueue = useCallback(() => {
-    clearQueue();
+    Alert.alert(
+      'Clear Queue',
+      'Are you sure you want to clear your entire queue? This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: () => clearQueue(),
+        },
+      ],
+    );
   }, [clearQueue]);
 
   const handlePlayItem = useCallback(
@@ -96,10 +113,15 @@ export const useQueueViewModel = (
       // Find the actual index in the queue
       const actualIndex = queue.findIndex((q) => q.id === item.id);
       if (actualIndex !== -1) {
-        setCurrentIndex(actualIndex);
+        // If the item is not already at the top, move it there
+        if (actualIndex !== 0) {
+          reorderQueue(actualIndex, 0);
+        }
+        // Always set currentIndex to 0 since that's where the playing item will be
+        setCurrentIndex(0);
       }
     },
-    [queue, setCurrentIndex],
+    [queue, reorderQueue, setCurrentIndex],
   );
 
   const handleEpisodePress = useCallback(

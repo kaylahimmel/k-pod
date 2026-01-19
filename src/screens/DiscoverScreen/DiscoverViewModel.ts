@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Alert } from 'react-native';
-import { usePodcastStore } from '../../hooks';
+import { usePodcastStore, useToast } from '../../hooks';
 import { DiscoveryService, RSSService } from '../../services';
 import { DiscoveryPodcast, Podcast } from '../../models';
 import {
@@ -25,6 +25,7 @@ export const useDiscoverViewModel = (
   const [hasSearched, setHasSearched] = useState(false);
 
   const { podcasts, addPodcast } = usePodcastStore();
+  const toast = useToast();
   const subscribedFeedUrls = podcasts.map((p) => p.rssUrl);
 
   const filteredTrending = filterOutSubscribed(
@@ -157,10 +158,7 @@ export const useDiscoverViewModel = (
           );
           addPodcast(podcastToAdd);
           console.log('[DiscoverViewModel] Podcast added successfully');
-          Alert.alert(
-            'Subscribed',
-            `You are now subscribed to "${podcast.title}"`,
-          );
+          toast.showToast(`Subscribed to "${podcast.title}"`);
         } else {
           console.error('[DiscoverViewModel] RSS fetch failed:', result.error);
           Alert.alert(
@@ -178,7 +176,7 @@ export const useDiscoverViewModel = (
         setSubscribing(false);
       }
     },
-    [addPodcast],
+    [addPodcast, toast],
   );
 
   return {
@@ -194,6 +192,7 @@ export const useDiscoverViewModel = (
     hasSearchError,
     hasNoSearchResults,
     hasNoTrendingResults,
+    toast,
     handleSearch,
     handleSearchQueryChange,
     getOriginalPodcast,

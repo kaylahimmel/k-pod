@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { formatPodcastDetail } from './PodcastDetailPresenter';
 import { Episode, Podcast, QueueItem } from '../../models';
-import { usePodcastStore, useQueueStore } from '../../hooks';
+import { usePodcastStore, useQueueStore, useToast } from '../../hooks';
 
 // ViewModel: Manages state and logic
 export const usePodcastDetailViewModel = (
@@ -14,8 +14,7 @@ export const usePodcastDetailViewModel = (
   const [refreshing, setRefreshing] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showAllEpisodes, setShowAllEpisodes] = useState(false);
-  const [toastVisible, setToastVisible] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  const toast = useToast();
   const { podcasts, loading } = usePodcastStore();
   const { addToQueue, queue } = useQueueStore();
   const podcast = podcasts.find((p) => p.id === podcastId);
@@ -47,13 +46,9 @@ export const usePodcastDetailViewModel = (
     (episode: Episode) => {
       if (!podcast) return;
 
-      // Check if already in queue
+      // Check if already in queue - if so, do nothing (button should be disabled)
       const isInQueue = queue.some((item) => item.episode.id === episode.id);
       if (isInQueue) {
-        Alert.alert(
-          'Already in Queue',
-          'This episode is already in your queue',
-        );
         return;
       }
 
@@ -67,10 +62,16 @@ export const usePodcastDetailViewModel = (
       addToQueue(queueItem);
 
       // Show toast notification
-      setToastMessage(`"${episode.title}" added to queue`);
-      setToastVisible(true);
+      toast.showToast(`"${episode.title}" added to queue`);
     },
-    [podcast, queue, addToQueue],
+    [podcast, queue, addToQueue, toast],
+  );
+
+  const isEpisodeInQueue = useCallback(
+    (episodeId: string): boolean => {
+      return queue.some((item) => item.episode.id === episodeId);
+    },
+    [queue],
   );
 
   const handleEpisodePlayEpisode = useCallback(
@@ -89,10 +90,6 @@ export const usePodcastDetailViewModel = (
     setShowAllEpisodes((prev) => !prev);
   }, []);
 
-  const handleToastDismiss = useCallback(() => {
-    setToastVisible(false);
-  }, []);
-
   // Get the raw episode for play/queue actions
   const getEpisodeRawData = useCallback(
     (episodeId: string): Episode | undefined => {
@@ -105,8 +102,7 @@ export const usePodcastDetailViewModel = (
     refreshing,
     showFullDescription,
     showAllEpisodes,
-    toastVisible,
-    toastMessage,
+    toast,
     loading,
     podcast,
     formattedPodcast,
@@ -116,8 +112,8 @@ export const usePodcastDetailViewModel = (
     handleEpisodePlayEpisode,
     toggleEpisodeDescription,
     toggleShowAllEpisodes,
-    handleToastDismiss,
     getEpisodeRawData,
+    isEpisodeInQueue,
     onEpisodePress,
   };
 };

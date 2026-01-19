@@ -154,19 +154,16 @@ export function getQueueStats(
 }
 
 /**
- * Gets the unified display queue starting from currently playing item
- * Returns items from currentIndex onwards for display in a single list
+ * Gets the unified display queue showing all items
+ * Returns all items in the queue with the currently playing item highlighted
  */
 export function getDisplayQueue(
   queue: QueueItem[],
   currentIndex: number,
 ): FormattedQueueItem[] {
-  if (queue.length === 0 || currentIndex >= queue.length) {
+  if (queue.length === 0) {
     return [];
   }
 
-  const displayQueue = queue.slice(currentIndex);
-  return displayQueue.map((item, index) =>
-    formatQueueItem(item, currentIndex + index, currentIndex),
-  );
+  return queue.map((item, index) => formatQueueItem(item, index, currentIndex));
 }

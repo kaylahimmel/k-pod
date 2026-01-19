@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { QueueView } from '../QueueView';
 import { queueStore, playerStore } from '../../../stores';
 import {
@@ -244,14 +245,34 @@ describe('QueueView', () => {
         currentIndex: 0,
       });
 
+      // Mock Alert.alert to automatically confirm
+      const alertSpy = jest
+        .spyOn(Alert, 'alert')
+        .mockImplementation((_title, _message, buttons) => {
+          if (buttons && buttons.length > 1) {
+            // Call the destructive action (Clear button)
+            const clearButton = buttons[1];
+            if (clearButton.onPress) {
+              clearButton.onPress();
+            }
+          }
+        });
+
       const { getByText } = renderQueueView();
 
       fireEvent.press(getByText('Clear'));
 
+      expect(alertSpy).toHaveBeenCalledWith(
+        'Clear Queue',
+        'Are you sure you want to clear your entire queue? This cannot be undone.',
+        expect.any(Array),
+      );
       expect(queueStore.getState().queue).toHaveLength(0);
+
+      alertSpy.mockRestore();
     });
 
-    it('should update currentIndex when play button is tapped', () => {
+    it('should move episode to top and update currentIndex when play button is tapped', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({ id: 'q1' }),
@@ -269,7 +290,11 @@ describe('QueueView', () => {
       const playButtons = getAllByText('play-circle');
       fireEvent.press(playButtons[1]); // Second item's play button
 
-      expect(queueStore.getState().currentIndex).toBe(1);
+      const state = queueStore.getState();
+      // The episode should move to position 0
+      expect(state.currentIndex).toBe(0);
+      expect(state.queue[0].id).toBe('q2');
+      expect(state.queue[1].id).toBe('q1');
     });
   });
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './Toast.styles';
@@ -7,63 +7,18 @@ import { COLORS } from '../../constants';
 interface ToastProps {
   message: string;
   visible: boolean;
+  translateY: Animated.Value;
+  opacity: Animated.Value;
   onDismiss: () => void;
-  duration?: number;
 }
 
 export const Toast = ({
   message,
   visible,
+  translateY,
+  opacity,
   onDismiss,
-  duration = 3000,
 }: ToastProps) => {
-  const translateY = React.useRef(new Animated.Value(100)).current;
-  const opacity = React.useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (visible) {
-      // Slide up and fade in
-      Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
-
-      // Auto-dismiss after duration
-      const timer = setTimeout(() => {
-        dismissToast();
-      }, duration);
-
-      return () => clearTimeout(timer);
-    } else {
-      dismissToast();
-    }
-  }, [visible, duration]);
-
-  const dismissToast = () => {
-    Animated.parallel([
-      Animated.timing(translateY, {
-        toValue: 100,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      onDismiss();
-    });
-  };
-
   if (!visible) return null;
 
   return (
@@ -85,7 +40,7 @@ export const Toast = ({
         />
         <Text style={styles.toastMessage}>{message}</Text>
         <TouchableOpacity
-          onPress={dismissToast}
+          onPress={onDismiss}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           style={styles.closeButton}
         >

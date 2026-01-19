@@ -154,7 +154,7 @@ describe('PodcastDetailView', () => {
   });
 
   describe('Add to Queue', () => {
-    it('should show alert when episode is already in queue', async () => {
+    it('should show disabled queue icon when episode is already in queue', async () => {
       const episode = createMockEpisode({ id: 'ep-1' });
       const podcast = createMockPodcast({ episodes: [episode] });
 
@@ -163,17 +163,18 @@ describe('PodcastDetailView', () => {
         queue: [{ id: 'q-1', episode, podcast, position: 0 }],
       });
 
-      const { getAllByText } = renderPodcastDetailView();
+      const { getAllByText, queryAllByText } = renderPodcastDetailView();
 
-      // Find the queue button (list icon)
-      const queueButtons = getAllByText('list');
-      fireEvent.press(queueButtons[0]);
+      // Should show 'list' icon instead of 'add-circle'
+      expect(getAllByText('list')).toBeTruthy();
+      expect(queryAllByText('add-circle')).toHaveLength(0);
+
+      // Pressing the disabled button should not trigger any alerts
+      const listIcons = getAllByText('list');
+      fireEvent.press(listIcons[0]);
 
       await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith(
-          'Already in Queue',
-          'This episode is already in your queue',
-        );
+        expect(Alert.alert).not.toHaveBeenCalled();
       });
     });
   });
