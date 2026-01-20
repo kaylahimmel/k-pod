@@ -5,25 +5,10 @@ import { DiscoverStackParamList } from '../types';
 import { defaultScreenOptions } from '../screenOptions';
 import { DiscoverScreen } from '../../screens/DiscoverScreen';
 import { SearchResultsScreen } from '../../screens/SearchResultsScreen';
+import { PodcastPreviewScreen } from '../../screens/PodcastPreviewScreen/PodcastPreviewScreen';
 import { styles } from '../StackNavigator.styles';
 
 const Stack = createNativeStackNavigator<DiscoverStackParamList>();
-
-/**  Placeholder Screens (to be replaced with actual Screen components)
- */
-const PlaceholderScreen = ({ name }: { name: string }) => (
-  <View style={styles.placeholder}>
-    <Text style={styles.placeholderText}>{name}</Text>
-    <Text style={styles.placeholderSubtext}>Coming soon</Text>
-  </View>
-);
-
-// TODO: Replace with actual screen imports
-// import { PodcastPreviewScreen } from "../screens/PodcastPreviewScreen/PodcastPreviewScreen";
-
-const PodcastPreviewScreenPlaceholder = () => (
-  <PlaceholderScreen name='Podcast Preview' />
-);
 
 export const DiscoverStackNavigator = () => {
   return (
@@ -40,7 +25,7 @@ export const DiscoverStackNavigator = () => {
       />
       <Stack.Screen
         name='PodcastPreview'
-        component={PodcastPreviewScreenPlaceholder}
+        component={PodcastPreviewScreen}
         options={{ title: 'Podcast' }}
       />
     </Stack.Navigator>
