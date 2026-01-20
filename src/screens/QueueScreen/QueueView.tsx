@@ -39,6 +39,9 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
     );
   }
 
+  const currentlyPlayingItem = viewModel.displayQueue[0];
+  const upcomingItems = viewModel.displayQueue.slice(1);
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <HeaderQueue
@@ -50,13 +53,37 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
 
       {viewModel.hasItems && (
         <View style={styles.queueListContainer}>
-          <DraggableFlatList
-            data={viewModel.displayQueue}
-            onDragEnd={({ from, to }) => viewModel.handleReorder(from, to)}
-            keyExtractor={(item) => item.id}
-            renderItem={renderItem}
-            contentContainerStyle={styles.listContent}
-          />
+          {/* Currently Playing Episode - Fixed at top */}
+          {currentlyPlayingItem && (
+            <View>
+              <CardQueueItem
+                item={currentlyPlayingItem}
+                drag={() => {}}
+                isActive={false}
+                onRemove={() =>
+                  viewModel.handleRemoveFromQueue(currentlyPlayingItem.id)
+                }
+                onPlay={() => viewModel.handlePlayItem(currentlyPlayingItem)}
+                onPress={() =>
+                  viewModel.handleEpisodePress(currentlyPlayingItem)
+                }
+                isDraggable={false}
+              />
+            </View>
+          )}
+
+          {/* Upcoming Episodes - Draggable */}
+          {upcomingItems.length > 0 && (
+            <DraggableFlatList
+              data={upcomingItems}
+              onDragEnd={({ from, to }) =>
+                viewModel.handleReorder(from + 1, to + 1)
+              }
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem}
+              contentContainerStyle={styles.listContent}
+            />
+          )}
         </View>
       )}
     </GestureHandlerRootView>

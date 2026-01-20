@@ -14,6 +14,7 @@ interface CardQueueItemProps {
   onRemove: () => void;
   onPlay: () => void;
   onPress: () => void;
+  isDraggable?: boolean;
 }
 
 export const CardQueueItem = ({
@@ -23,6 +24,7 @@ export const CardQueueItem = ({
   onRemove,
   onPlay,
   onPress,
+  isDraggable = true,
 }: CardQueueItemProps) => {
   const renderRightActions = (
     _progress: Animated.AnimatedInterpolation<number>,
@@ -47,78 +49,89 @@ export const CardQueueItem = ({
     );
   };
 
-  return (
-    <ScaleDecorator>
-      <Swipeable
-        renderRightActions={renderRightActions}
-        overshootRight={false}
-        friction={2}
+  const cardContent = (
+    <Swipeable
+      renderRightActions={renderRightActions}
+      overshootRight={false}
+      friction={2}
+    >
+      <TouchableOpacity
+        style={[
+          styles.queueItemContainer,
+          item.isCurrentlyPlaying && styles.queueItemPlaying,
+          isActive && styles.queueItemDragging,
+        ]}
+        onPress={onPress}
+        onLongPress={item.isCurrentlyPlaying ? undefined : drag}
+        delayLongPress={150}
       >
-        <TouchableOpacity
-          style={[
-            styles.queueItemContainer,
-            item.isCurrentlyPlaying && styles.queueItemPlaying,
-            isActive && styles.queueItemDragging,
-          ]}
-          onPress={onPress}
-          onLongPress={drag}
-          delayLongPress={150}
-        >
-          <View style={styles.queueItemContent}>
-            <TouchableOpacity
-              style={styles.dragHandle}
-              onLongPress={drag}
-              delayLongPress={0}
-            >
-              <Ionicons name='menu' size={20} color={COLORS.textSecondary} />
-            </TouchableOpacity>
+        <View style={styles.queueItemContent}>
+          <TouchableOpacity
+            style={styles.dragHandle}
+            onLongPress={item.isCurrentlyPlaying ? undefined : drag}
+            delayLongPress={0}
+            disabled={item.isCurrentlyPlaying}
+          >
+            <Ionicons
+              name='menu'
+              size={20}
+              color={
+                item.isCurrentlyPlaying ? COLORS.played : COLORS.textSecondary
+              }
+            />
+          </TouchableOpacity>
 
-            {item.podcastArtworkUrl ? (
-              <Image
-                source={{ uri: item.podcastArtworkUrl }}
-                style={styles.queueItemArtwork}
+          {item.podcastArtworkUrl ? (
+            <Image
+              source={{ uri: item.podcastArtworkUrl }}
+              style={styles.queueItemArtwork}
+            />
+          ) : (
+            <View style={styles.queueItemArtwork}>
+              <Ionicons
+                name='musical-notes'
+                size={24}
+                color={COLORS.textSecondary}
               />
-            ) : (
-              <View style={styles.queueItemArtwork}>
-                <Ionicons
-                  name='musical-notes'
-                  size={24}
-                  color={COLORS.textSecondary}
-                />
-              </View>
-            )}
-
-            <View style={styles.queueItemInfo}>
-              <Text style={styles.queueItemTitle} numberOfLines={2}>
-                {item.displayTitle}
-              </Text>
-              <Text style={styles.queueItemPodcast} numberOfLines={1}>
-                {item.podcastTitle}
-              </Text>
-              <View style={styles.queueItemMeta}>
-                <Text style={styles.queueItemDuration}>
-                  {item.formattedDuration}
-                </Text>
-                {item.isCurrentlyPlaying && (
-                  <Text style={styles.queueItemPosition}>
-                    {item.positionLabel}
-                  </Text>
-                )}
-              </View>
             </View>
+          )}
 
-            <View style={styles.queueItemActions}>
-              <TouchableOpacity
-                style={styles.playButton}
-                onPress={onPlay}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Ionicons name='play-circle' size={32} color={COLORS.primary} />
-              </TouchableOpacity>
+          <View style={styles.queueItemInfo}>
+            <Text style={styles.queueItemTitle} numberOfLines={2}>
+              {item.displayTitle}
+            </Text>
+            <Text style={styles.queueItemPodcast} numberOfLines={1}>
+              {item.podcastTitle}
+            </Text>
+            <View style={styles.queueItemMeta}>
+              <Text style={styles.queueItemDuration}>
+                {item.formattedDuration}
+              </Text>
+              {item.isCurrentlyPlaying && (
+                <Text style={styles.queueItemPosition}>
+                  {item.positionLabel}
+                </Text>
+              )}
             </View>
           </View>
-        </TouchableOpacity>
-      </Swipeable>
-    </ScaleDecorator>
+
+          <View style={styles.queueItemActions}>
+            <TouchableOpacity
+              style={styles.playButton}
+              onPress={onPlay}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name='play-circle' size={32} color={COLORS.primary} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </Swipeable>
+  );
+
+  return isDraggable ? (
+    <ScaleDecorator>{cardContent}</ScaleDecorator>
+  ) : (
+    cardContent
   );
 };
