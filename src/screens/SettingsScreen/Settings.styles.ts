@@ -9,7 +9,6 @@ export const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 100,
   },
-  // Section Headers
   sectionHeader: {
     paddingHorizontal: 16,
     paddingTop: 24,
@@ -22,12 +21,10 @@ export const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  // Settings Section Container
   settingsSection: {
     backgroundColor: COLORS.cardBackground,
     marginBottom: 8,
   },
-  // Setting Row
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -51,7 +48,6 @@ export const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginRight: 8,
   },
-  // Touchable Setting Row (for navigation-style rows)
   touchableSettingRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -65,7 +61,6 @@ export const styles = StyleSheet.create({
   touchableSettingRowLast: {
     borderBottomWidth: 0,
   },
-  // Option Selector (for speed, skip duration)
   optionSelector: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -93,7 +88,6 @@ export const styles = StyleSheet.create({
     color: COLORS.cardBackground,
     fontWeight: '600',
   },
-  // App Info Section
   appInfoSection: {
     backgroundColor: COLORS.cardBackground,
     paddingVertical: 16,
@@ -111,7 +105,6 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.textSecondary,
   },
-  // Reset Button
   resetButton: {
     marginTop: 24,
     marginHorizontal: 16,
@@ -127,7 +120,6 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.danger,
   },
-  // Loading State
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',

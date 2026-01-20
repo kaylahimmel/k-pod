@@ -9,7 +9,6 @@ export const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 100,
   },
-  // User Header Section
   headerSection: {
     backgroundColor: COLORS.cardBackground,
     alignItems: 'center',
@@ -35,7 +34,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.textSecondary,
   },
-  // Stats Section
   statsSection: {
     backgroundColor: COLORS.cardBackground,
     paddingVertical: 16,
@@ -66,7 +64,6 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.border,
     marginVertical: 4,
   },
-  // Section Headers
   sectionHeader: {
     paddingHorizontal: 16,
     paddingTop: 8,
@@ -77,7 +74,6 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.textPrimary,
   },
-  // Recent History Section
   historySection: {
     backgroundColor: COLORS.cardBackground,
     marginBottom: 16,
@@ -129,7 +125,6 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.primary,
   },
-  // Actions Section
   actionsSection: {
     backgroundColor: COLORS.cardBackground,
     marginBottom: 16,
@@ -154,7 +149,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.danger,
   },
-  // Empty State
   emptyContainer: {
     paddingVertical: 24,
     paddingHorizontal: 16,
@@ -165,7 +159,6 @@ export const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
-  // Loading State
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
