@@ -321,12 +321,12 @@ describe('getQueueStats', () => {
 
     const stats = getQueueStats(queue, 0);
 
-    expect(stats.count).toBe('2 episodes');
-    // 2 upcoming items x 1800s = 3600s = 1 hour
-    expect(stats.remainingTime).toBe('1h 0m remaining');
+    expect(stats.count).toBe('3 episodes');
+    // 3 items x 1800s = 5400s = 1 hour 30 minutes
+    expect(stats.remainingTime).toBe('1h 30m remaining');
   });
 
-  it('should only count upcoming items (not currently playing)', () => {
+  it('should include currently playing item in stats', () => {
     const queue = [
       createMockQueueItem({ episode: createMockEpisode({ duration: 3600 }) }),
       createMockQueueItem({ episode: createMockEpisode({ duration: 1800 }) }),
@@ -334,8 +334,8 @@ describe('getQueueStats', () => {
 
     const stats = getQueueStats(queue, 0);
 
-    expect(stats.count).toBe('1 episode');
-    expect(stats.remainingTime).toBe('30m remaining');
+    expect(stats.count).toBe('2 episodes');
+    expect(stats.remainingTime).toBe('1h 30m remaining');
   });
 
   it('should handle last item in queue', () => {
@@ -345,7 +345,7 @@ describe('getQueueStats', () => {
 
     const stats = getQueueStats(queue, 0);
 
-    expect(stats.count).toBe('Queue is empty');
-    expect(stats.remainingTime).toBe('No time remaining');
+    expect(stats.count).toBe('1 episode');
+    expect(stats.remainingTime).toBe('30m remaining');
   });
 });

@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
-import { usePodcastStore } from '../../hooks';
-import { DiscoveryService } from '../../services';
+import { Alert } from 'react-native';
+import { usePodcastStore, useToast } from '../../hooks';
+import { DiscoveryService, RSSService } from '../../services';
 import { DiscoveryPodcast, Podcast } from '../../models';
-import { now } from '../../constants';
 import {
   formatDiscoveryPodcasts,
   groupPodcastsByGenre,
@@ -20,10 +20,12 @@ export const useDiscoverViewModel = (
   );
   const [loading, setLoading] = useState(false);
   const [loadingTrending, setLoadingTrending] = useState(true);
+  const [subscribing, setSubscribing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
   const { podcasts, addPodcast } = usePodcastStore();
+  const toast = useToast();
   const subscribedFeedUrls = podcasts.map((p) => p.rssUrl);
 
   const filteredTrending = filterOutSubscribed(
@@ -113,23 +115,6 @@ export const useDiscoverViewModel = (
     [subscribedFeedUrls],
   );
 
-  /**
-   * Converts a DiscoveryPodcast to a Podcast for subscription
-   */
-  function createPodcastFromDiscovery(discovery: DiscoveryPodcast): Podcast {
-    return {
-      id: discovery.id,
-      title: discovery.title,
-      author: discovery.author,
-      rssUrl: discovery.feedUrl,
-      artworkUrl: discovery.artworkUrl,
-      description: discovery.description || '',
-      subscribeDate: now,
-      lastUpdated: now,
-      episodes: [], // Episodes will be fetched from RSS
-    };
-  }
-
   const handlePodcastPress = useCallback(
     (podcast: DiscoveryPodcast) => {
       onPodcastPress(podcast);
@@ -138,17 +123,66 @@ export const useDiscoverViewModel = (
   );
 
   // Subscribe directly by adding podcast to the store
+  // Fetches episodes from RSS feed
   const handleSubscribe = useCallback(
-    (podcast: DiscoveryPodcast) => {
-      const podcastToAdd = createPodcastFromDiscovery(podcast);
-      addPodcast(podcastToAdd);
+    async (podcast: DiscoveryPodcast) => {
+      console.log(
+        '[DiscoverViewModel] handleSubscribe called for:',
+        podcast.title,
+      );
+      setSubscribing(true);
+
+      try {
+        // Fetch full podcast data with episodes from RSS
+        console.log('[DiscoverViewModel] Fetching RSS from:', podcast.feedUrl);
+        const result = await RSSService.transformPodcastFromRSS(
+          podcast.feedUrl,
+        );
+        console.log('[DiscoverViewModel] RSS fetch result:', result.success);
+        if (result.success) {
+          // Use the RSS data but preserve discovery metadata for better quality
+          const podcastToAdd: Podcast = {
+            ...result.data,
+            id: podcast.id, // Use discovery ID for consistency
+            title: podcast.title || result.data.title,
+            author: podcast.author || result.data.author,
+            artworkUrl: podcast.artworkUrl || result.data.artworkUrl,
+            description: podcast.description || result.data.description,
+          };
+          console.log(
+            '[DiscoverViewModel] Adding podcast to store:',
+            podcastToAdd.title,
+            'with',
+            podcastToAdd.episodes.length,
+            'episodes',
+          );
+          addPodcast(podcastToAdd);
+          console.log('[DiscoverViewModel] Podcast added successfully');
+          toast.showToast(`Subscribed to "${podcast.title}"`);
+        } else {
+          console.error('[DiscoverViewModel] RSS fetch failed:', result.error);
+          Alert.alert(
+            'Subscription Failed',
+            result.error || 'Failed to subscribe to podcast',
+          );
+        }
+      } catch (error) {
+        console.error(
+          '[DiscoverViewModel] Exception in handleSubscribe:',
+          error,
+        );
+        Alert.alert('Subscription Failed', 'An unexpected error occurred');
+      } finally {
+        setSubscribing(false);
+      }
     },
-    [addPodcast],
+    [addPodcast, toast],
   );
 
   return {
     searchQuery,
     loading,
+    subscribing,
     error,
     hasSearched,
     sections,
@@ -158,11 +192,11 @@ export const useDiscoverViewModel = (
     hasSearchError,
     hasNoSearchResults,
     hasNoTrendingResults,
+    toast,
     handleSearch,
     handleSearchQueryChange,
     getOriginalPodcast,
     checkIsSubscribed,
-    createPodcastFromDiscovery,
     handlePodcastPress,
     handleSubscribe,
   };

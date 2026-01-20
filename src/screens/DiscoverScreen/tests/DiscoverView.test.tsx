@@ -2,14 +2,21 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { DiscoverView } from '../DiscoverView';
 import { podcastStore } from '../../../stores';
-import { DiscoveryService } from '../../../services';
-import { createMockDiscoveryPodcast } from '../../../__mocks__';
+import { DiscoveryService, RSSService } from '../../../services';
+import {
+  createMockDiscoveryPodcast,
+  createMockPodcast,
+  createMockEpisode,
+} from '../../../__mocks__';
 
-// Mock DiscoveryService
+// Mock services
 jest.mock('../../../services', () => ({
   DiscoveryService: {
     searchPodcasts: jest.fn(),
     getTrendingPodcasts: jest.fn(),
+  },
+  RSSService: {
+    transformPodcastFromRSS: jest.fn(),
   },
 }));
 
@@ -45,6 +52,22 @@ describe('DiscoverView', () => {
     (DiscoveryService.searchPodcasts as jest.Mock).mockResolvedValue({
       success: true,
       data: [],
+    });
+
+    // Default mock for RSSService - returns podcast with episodes
+    (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValue({
+      success: true,
+      data: createMockPodcast({
+        id: '1',
+        title: 'Mock Podcast',
+        episodes: [
+          createMockEpisode({
+            id: 'ep1',
+            podcastId: '1',
+            title: 'Episode 1',
+          }),
+        ],
+      }),
     });
   });
 

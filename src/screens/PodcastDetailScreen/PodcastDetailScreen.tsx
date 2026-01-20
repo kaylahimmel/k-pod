@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { PodcastDetailScreenProps } from '../../navigation/types';
 import { PodcastDetailView } from './PodcastDetailView';
-import { usePodcastStore } from '../../hooks';
+import { usePodcastStore, useQueueStore } from '../../hooks';
 import { Episode, Podcast } from '../../models';
 
 export const PodcastDetailScreen = ({
@@ -10,6 +10,7 @@ export const PodcastDetailScreen = ({
 }: PodcastDetailScreenProps) => {
   const { podcastId } = route.params;
   const { removePodcast } = usePodcastStore();
+  const { queue, removeFromQueue } = useQueueStore();
 
   // Navigation handler: Navigate to episode detail
   const handleEpisodePressNav = useCallback(
@@ -29,9 +30,14 @@ export const PodcastDetailScreen = ({
 
   // Navigation handler: Remove podcast and go back
   const handleUnsubscribeNav = useCallback(() => {
+    // Remove all queue items for this podcast
+    const itemsToRemove = queue.filter((item) => item.podcast.id === podcastId);
+    itemsToRemove.forEach((item) => removeFromQueue(item.id));
+
+    // Remove the podcast
     removePodcast(podcastId);
     navigation.goBack();
-  }, [removePodcast, podcastId, navigation]);
+  }, [removePodcast, podcastId, navigation, queue, removeFromQueue]);
 
   return (
     <PodcastDetailView

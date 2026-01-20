@@ -10,6 +10,7 @@ import {
   StateLoading,
   StateError,
   StateNoResults,
+  Toast,
 } from '../../components';
 import { styles } from './Discover.styles';
 
@@ -51,21 +52,7 @@ export const DiscoverView = ({ onPodcastPress }: DiscoverViewProps) => {
   // Loading state for initial trending fetch
   if (viewModel.isLoadingTrending) {
     return (
-      <View style={styles.container}>
-        <SearchBar
-          value={viewModel.searchQuery}
-          onChangeText={viewModel.handleSearchQueryChange}
-          onSubmit={viewModel.handleSearch}
-        />
-        <StateLoading message='Searching...' />
-      </View>
-    );
-  }
-
-  // Search mode
-  if (viewModel.hasSearched) {
-    if (viewModel.isSearching) {
-      return (
+      <>
         <View style={styles.container}>
           <SearchBar
             value={viewModel.searchQuery}
@@ -74,85 +61,153 @@ export const DiscoverView = ({ onPodcastPress }: DiscoverViewProps) => {
           />
           <StateLoading message='Searching...' />
         </View>
+        <Toast
+          message={viewModel.toast.message}
+          visible={viewModel.toast.visible}
+          translateY={viewModel.toast.translateY}
+          opacity={viewModel.toast.opacity}
+          onDismiss={viewModel.toast.dismissToast}
+        />
+      </>
+    );
+  }
+
+  // Search mode
+  if (viewModel.hasSearched) {
+    if (viewModel.isSearching) {
+      return (
+        <>
+          <View style={styles.container}>
+            <SearchBar
+              value={viewModel.searchQuery}
+              onChangeText={viewModel.handleSearchQueryChange}
+              onSubmit={viewModel.handleSearch}
+            />
+            <StateLoading message='Searching...' />
+          </View>
+          <Toast
+            message={viewModel.toast.message}
+            visible={viewModel.toast.visible}
+            translateY={viewModel.toast.translateY}
+            opacity={viewModel.toast.opacity}
+            onDismiss={viewModel.toast.dismissToast}
+          />
+        </>
       );
     }
 
     if (viewModel.hasSearchError) {
       return (
-        <View style={styles.container}>
-          <SearchBar
-            value={viewModel.searchQuery}
-            onChangeText={viewModel.handleSearchQueryChange}
-            onSubmit={viewModel.handleSearch}
+        <>
+          <View style={styles.container}>
+            <SearchBar
+              value={viewModel.searchQuery}
+              onChangeText={viewModel.handleSearchQueryChange}
+              onSubmit={viewModel.handleSearch}
+            />
+            <StateError
+              message={viewModel.error!}
+              onRetry={viewModel.handleSearch}
+            />
+          </View>
+          <Toast
+            message={viewModel.toast.message}
+            visible={viewModel.toast.visible}
+            translateY={viewModel.toast.translateY}
+            opacity={viewModel.toast.opacity}
+            onDismiss={viewModel.toast.dismissToast}
           />
-          <StateError
-            message={viewModel.error!}
-            onRetry={viewModel.handleSearch}
-          />
-        </View>
+        </>
       );
     }
 
     if (viewModel.hasNoSearchResults) {
       return (
+        <>
+          <View style={styles.container}>
+            <SearchBar
+              value={viewModel.searchQuery}
+              onChangeText={viewModel.handleSearchQueryChange}
+              onSubmit={viewModel.handleSearch}
+            />
+            <StateNoResults query={viewModel.searchQuery} icon='sad-outline' />
+          </View>
+          <Toast
+            message={viewModel.toast.message}
+            visible={viewModel.toast.visible}
+            translateY={viewModel.toast.translateY}
+            opacity={viewModel.toast.opacity}
+            onDismiss={viewModel.toast.dismissToast}
+          />
+        </>
+      );
+    }
+
+    return (
+      <>
         <View style={styles.container}>
           <SearchBar
             value={viewModel.searchQuery}
             onChangeText={viewModel.handleSearchQueryChange}
             onSubmit={viewModel.handleSearch}
           />
-          <StateNoResults query={viewModel.searchQuery} icon='sad-outline' />
+          <SectionHeader title={`Results for "${viewModel.searchQuery}"`} />
+          <FlatList
+            data={viewModel.formattedSearchResults}
+            renderItem={renderPodcastCard}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+          />
         </View>
-      );
-    }
+        <Toast
+          message={viewModel.toast.message}
+          visible={viewModel.toast.visible}
+          translateY={viewModel.toast.translateY}
+          opacity={viewModel.toast.opacity}
+          onDismiss={viewModel.toast.dismissToast}
+        />
+      </>
+    );
+  }
 
-    return (
+  // Trending mode
+  return (
+    <>
       <View style={styles.container}>
         <SearchBar
           value={viewModel.searchQuery}
           onChangeText={viewModel.handleSearchQueryChange}
           onSubmit={viewModel.handleSearch}
         />
-        <SectionHeader title={`Results for "${viewModel.searchQuery}"`} />
-        <FlatList
-          data={viewModel.formattedSearchResults}
-          renderItem={renderPodcastCard}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-        />
+        {viewModel.hasNoTrendingResults ? (
+          <StateEmpty
+            icon='search-outline'
+            title='Discover Podcasts'
+            message='Search for your favorite podcasts or browse trending shows below'
+          />
+        ) : (
+          <SectionList
+            sections={viewModel.sections}
+            renderItem={renderPodcastCard}
+            renderSectionHeader={({ section }) => (
+              <SectionHeader title={section.title} />
+            )}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+            stickySectionHeadersEnabled={false}
+          />
+        )}
       </View>
-    );
-  }
-
-  // Trending mode
-  return (
-    <View style={styles.container}>
-      <SearchBar
-        value={viewModel.searchQuery}
-        onChangeText={viewModel.handleSearchQueryChange}
-        onSubmit={viewModel.handleSearch}
+      <Toast
+        message={viewModel.toast.message}
+        visible={viewModel.toast.visible}
+        translateY={viewModel.toast.translateY}
+        opacity={viewModel.toast.opacity}
+        onDismiss={viewModel.toast.dismissToast}
       />
-      {viewModel.hasNoTrendingResults ? (
-        <StateEmpty
-          icon='search-outline'
-          title='Discover Podcasts'
-          message='Search for your favorite podcasts or browse trending shows below'
-        />
-      ) : (
-        <SectionList
-          sections={viewModel.sections}
-          renderItem={renderPodcastCard}
-          renderSectionHeader={({ section }) => (
-            <SectionHeader title={section.title} />
-          )}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          stickySectionHeadersEnabled={false}
-        />
-      )}
-    </View>
+    </>
   );
 };
 

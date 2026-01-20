@@ -9,6 +9,11 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
   },
+  queueItemPlaying: {
+    backgroundColor: COLORS.primary + '15',
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+  },
   queueItemDragging: {
     opacity: 0.9,
     shadowColor: 'COLORS.textPrimary',
@@ -63,7 +68,19 @@ export const styles = StyleSheet.create({
   queueItemActions: {
     paddingLeft: 8,
   },
+  playButton: {
+    padding: 4,
+  },
   removeButton: {
     padding: 8,
+  },
+  deleteAction: {
+    backgroundColor: COLORS.danger,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    marginVertical: 4,
+    marginRight: 16,
+    borderRadius: 12,
   },
 });

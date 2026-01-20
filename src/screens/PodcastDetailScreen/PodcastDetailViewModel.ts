@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { formatPodcastDetail } from './PodcastDetailPresenter';
 import { Episode, Podcast, QueueItem } from '../../models';
-import { usePodcastStore, useQueueStore } from '../../hooks';
+import { usePodcastStore, useQueueStore, useToast } from '../../hooks';
 
 // ViewModel: Manages state and logic
 export const usePodcastDetailViewModel = (
@@ -13,6 +13,8 @@ export const usePodcastDetailViewModel = (
 ) => {
   const [refreshing, setRefreshing] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showAllEpisodes, setShowAllEpisodes] = useState(false);
+  const toast = useToast();
   const { podcasts, loading } = usePodcastStore();
   const { addToQueue, queue } = useQueueStore();
   const podcast = podcasts.find((p) => p.id === podcastId);
@@ -44,13 +46,9 @@ export const usePodcastDetailViewModel = (
     (episode: Episode) => {
       if (!podcast) return;
 
-      // Check if already in queue
+      // Check if already in queue - if so, do nothing (button should be disabled)
       const isInQueue = queue.some((item) => item.episode.id === episode.id);
       if (isInQueue) {
-        Alert.alert(
-          'Already in Queue',
-          'This episode is already in your queue',
-        );
         return;
       }
 
@@ -62,12 +60,18 @@ export const usePodcastDetailViewModel = (
       };
 
       addToQueue(queueItem);
-      Alert.alert(
-        'Added to Queue',
-        `"${episode.title}" has been added to your queue`,
-      );
+
+      // Show toast notification
+      toast.showToast(`"${episode.title}" added to queue`);
     },
-    [podcast, queue, addToQueue],
+    [podcast, queue, addToQueue, toast],
+  );
+
+  const isEpisodeInQueue = useCallback(
+    (episodeId: string): boolean => {
+      return queue.some((item) => item.episode.id === episodeId);
+    },
+    [queue],
   );
 
   const handleEpisodePlayEpisode = useCallback(
@@ -82,6 +86,10 @@ export const usePodcastDetailViewModel = (
     setShowFullDescription((prev) => !prev);
   }, []);
 
+  const toggleShowAllEpisodes = useCallback(() => {
+    setShowAllEpisodes((prev) => !prev);
+  }, []);
+
   // Get the raw episode for play/queue actions
   const getEpisodeRawData = useCallback(
     (episodeId: string): Episode | undefined => {
@@ -93,6 +101,8 @@ export const usePodcastDetailViewModel = (
   return {
     refreshing,
     showFullDescription,
+    showAllEpisodes,
+    toast,
     loading,
     podcast,
     formattedPodcast,
@@ -101,7 +111,9 @@ export const usePodcastDetailViewModel = (
     handleEpisodeAddToQueue,
     handleEpisodePlayEpisode,
     toggleEpisodeDescription,
+    toggleShowAllEpisodes,
     getEpisodeRawData,
+    isEpisodeInQueue,
     onEpisodePress,
   };
 };

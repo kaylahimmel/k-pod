@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { Alert } from 'react-native';
 import { useQueueStore, usePlayerStore } from '../../hooks';
 import { QueueItem } from '../../models';
 import {
@@ -6,6 +7,7 @@ import {
   getCurrentlyPlayingItem,
   getUpcomingItems,
   getQueueStats,
+  getDisplayQueue,
 } from './QueuePresenter';
 import { FormattedQueueItem } from './Queue.types';
 
@@ -29,6 +31,12 @@ export const useQueueViewModel = (
     [queue, currentIndex],
   );
 
+  // Unified display queue (currently playing + upcoming)
+  const displayQueue = useMemo(
+    () => getDisplayQueue(queue, currentIndex),
+    [queue, currentIndex],
+  );
+
   const currentlyPlaying = useMemo(
     () => getCurrentlyPlayingItem(queue, currentIndex),
     [queue, currentIndex],
@@ -48,6 +56,7 @@ export const useQueueViewModel = (
   const isEmpty = queue.length === 0;
   const hasUpcoming = upcomingItems.length > 0;
   const hasCurrentlyPlaying = currentlyPlaying !== null;
+  const hasItems = displayQueue.length > 0;
 
   // Actions
   const handleRemoveFromQueue = useCallback(
@@ -59,17 +68,44 @@ export const useQueueViewModel = (
 
   const handleReorder = useCallback(
     (fromIndex: number, toIndex: number) => {
-      // Adjust indices to account for the "currently playing" item being separate
-      // The draggable list only contains upcoming items (currentIndex + 1 onwards)
-      const actualFromIndex = currentIndex + 1 + fromIndex;
-      const actualToIndex = currentIndex + 1 + toIndex;
-      reorderQueue(actualFromIndex, actualToIndex);
+      // Display queue now shows all items, so indices match directly
+      reorderQueue(fromIndex, toIndex);
+
+      // If we're moving the currently playing item, update currentIndex
+      if (fromIndex === currentIndex) {
+        setCurrentIndex(toIndex);
+      } else if (toIndex === currentIndex) {
+        // If we're moving an item to where the current item is,
+        // the current item shifts by one position
+        if (fromIndex < currentIndex) {
+          setCurrentIndex(currentIndex - 1);
+        } else {
+          setCurrentIndex(currentIndex + 1);
+        }
+      } else if (fromIndex < currentIndex && toIndex >= currentIndex) {
+        // Item moved from before current to after current
+        setCurrentIndex(currentIndex - 1);
+      } else if (fromIndex > currentIndex && toIndex <= currentIndex) {
+        // Item moved from after current to before current
+        setCurrentIndex(currentIndex + 1);
+      }
     },
-    [reorderQueue, currentIndex],
+    [reorderQueue, currentIndex, setCurrentIndex],
   );
 
   const handleClearQueue = useCallback(() => {
-    clearQueue();
+    Alert.alert(
+      'Clear Queue',
+      'Are you sure you want to clear your entire queue? This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: () => clearQueue(),
+        },
+      ],
+    );
   }, [clearQueue]);
 
   const handlePlayItem = useCallback(
@@ -77,10 +113,15 @@ export const useQueueViewModel = (
       // Find the actual index in the queue
       const actualIndex = queue.findIndex((q) => q.id === item.id);
       if (actualIndex !== -1) {
-        setCurrentIndex(actualIndex);
+        // If the item is not already at the top, move it there
+        if (actualIndex !== 0) {
+          reorderQueue(actualIndex, 0);
+        }
+        // Always set currentIndex to 0 since that's where the playing item will be
+        setCurrentIndex(0);
       }
     },
-    [queue, setCurrentIndex],
+    [queue, reorderQueue, setCurrentIndex],
   );
 
   const handleEpisodePress = useCallback(
@@ -104,6 +145,7 @@ export const useQueueViewModel = (
   return {
     queue,
     formattedQueue,
+    displayQueue,
     currentlyPlaying,
     upcomingItems,
     queueStats,
@@ -112,6 +154,7 @@ export const useQueueViewModel = (
     isEmpty,
     hasUpcoming,
     hasCurrentlyPlaying,
+    hasItems,
     handleRemoveFromQueue,
     handleReorder,
     handleClearQueue,

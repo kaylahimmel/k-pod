@@ -13,4 +13,5 @@ export interface FormattedQueueItem {
   formattedDuration: string;
   position: number;
   positionLabel: string;
+  isCurrentlyPlaying?: boolean;
 }

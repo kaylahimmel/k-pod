@@ -83,6 +83,7 @@ export function formatQueueItem(
     formattedDuration: formatDuration(item.episode.duration),
     position: index,
     positionLabel: formatPositionLabel(index, isCurrentlyPlaying),
+    isCurrentlyPlaying,
   };
 }
 
@@ -137,16 +138,32 @@ export function formatQueueCount(count: number): string {
 
 /**
  * Gets formatted queue statistics
+ * Returns count and time for all items from currentIndex onwards (including currently playing)
  */
 export function getQueueStats(
   queue: QueueItem[],
   currentIndex: number,
 ): { count: string; remainingTime: string } {
-  const upcomingCount = Math.max(0, queue.length - currentIndex - 1);
-  const remainingSeconds = calculateRemainingTime(queue, currentIndex + 1);
+  const totalCount = Math.max(0, queue.length - currentIndex);
+  const remainingSeconds = calculateRemainingTime(queue, currentIndex);
 
   return {
-    count: formatQueueCount(upcomingCount),
+    count: formatQueueCount(totalCount),
     remainingTime: formatRemainingTime(remainingSeconds),
   };
+}
+
+/**
+ * Gets the unified display queue showing all items
+ * Returns all items in the queue with the currently playing item highlighted
+ */
+export function getDisplayQueue(
+  queue: QueueItem[],
+  currentIndex: number,
+): FormattedQueueItem[] {
+  if (queue.length === 0) {
+    return [];
+  }
+
+  return queue.map((item, index) => formatQueueItem(item, index, currentIndex));
 }

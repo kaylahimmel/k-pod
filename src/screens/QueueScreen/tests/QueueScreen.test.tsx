@@ -103,10 +103,10 @@ describe('QueueScreen', () => {
 
       const { getByText } = renderQueueScreen();
 
-      expect(getByText('NOW PLAYING')).toBeTruthy();
+      expect(getByText('Now Playing')).toBeTruthy();
     });
 
-    it("should show 'Paused' indicator when playback is paused", () => {
+    it("should still show 'Now Playing' label when playback is paused", () => {
       queueStore.setState({
         queue: [createMockQueueItem()],
         currentIndex: 0,
@@ -117,7 +117,7 @@ describe('QueueScreen', () => {
 
       const { getByText } = renderQueueScreen();
 
-      expect(getByText('PAUSED')).toBeTruthy();
+      expect(getByText('Now Playing')).toBeTruthy();
     });
   });
 });

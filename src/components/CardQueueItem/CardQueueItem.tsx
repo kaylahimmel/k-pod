@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { COLORS } from '../../constants';
 import { FormattedQueueItem } from '../../screens/QueueScreen/Queue.types';
 import { styles } from './CardQueueItem.styles';
@@ -11,7 +12,9 @@ interface CardQueueItemProps {
   drag: () => void;
   isActive: boolean;
   onRemove: () => void;
+  onPlay: () => void;
   onPress: () => void;
+  isDraggable?: boolean;
 }
 
 export const CardQueueItem = ({
@@ -19,64 +22,116 @@ export const CardQueueItem = ({
   drag,
   isActive,
   onRemove,
+  onPlay,
   onPress,
-}: CardQueueItemProps) => (
-  <ScaleDecorator>
-    <TouchableOpacity
-      style={[styles.queueItemContainer, isActive && styles.queueItemDragging]}
-      onPress={onPress}
-      onLongPress={drag}
-      delayLongPress={150}
+  isDraggable = true,
+}: CardQueueItemProps) => {
+  const renderRightActions = (
+    _progress: Animated.AnimatedInterpolation<number>,
+    dragX: Animated.AnimatedInterpolation<number>,
+  ) => {
+    const scale = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [1, 0],
+      extrapolate: 'clamp',
+    });
+
+    return (
+      <TouchableOpacity
+        style={styles.deleteAction}
+        onPress={onRemove}
+        activeOpacity={0.8}
+      >
+        <Animated.View style={{ transform: [{ scale }] }}>
+          <Ionicons name='trash' size={24} color={COLORS.background} />
+        </Animated.View>
+      </TouchableOpacity>
+    );
+  };
+
+  const cardContent = (
+    <Swipeable
+      renderRightActions={renderRightActions}
+      overshootRight={false}
+      friction={2}
     >
-      <View style={styles.queueItemContent}>
-        <TouchableOpacity
-          style={styles.dragHandle}
-          onLongPress={drag}
-          delayLongPress={0}
-        >
-          <Ionicons name='menu' size={20} color={COLORS.textSecondary} />
-        </TouchableOpacity>
-
-        {item.podcastArtworkUrl ? (
-          <Image
-            source={{ uri: item.podcastArtworkUrl }}
-            style={styles.queueItemArtwork}
-          />
-        ) : (
-          <View style={styles.queueItemArtwork}>
-            <Ionicons
-              name='musical-notes'
-              size={24}
-              color={COLORS.textSecondary}
-            />
-          </View>
-        )}
-
-        <View style={styles.queueItemInfo}>
-          <Text style={styles.queueItemTitle} numberOfLines={2}>
-            {item.displayTitle}
-          </Text>
-          <Text style={styles.queueItemPodcast} numberOfLines={1}>
-            {item.podcastTitle}
-          </Text>
-          <View style={styles.queueItemMeta}>
-            <Text style={styles.queueItemDuration}>
-              {item.formattedDuration}
-            </Text>
-            <Text style={styles.queueItemPosition}>{item.positionLabel}</Text>
-          </View>
-        </View>
-
-        <View style={styles.queueItemActions}>
+      <TouchableOpacity
+        style={[
+          styles.queueItemContainer,
+          item.isCurrentlyPlaying && styles.queueItemPlaying,
+          isActive && styles.queueItemDragging,
+        ]}
+        onPress={onPress}
+        onLongPress={item.isCurrentlyPlaying ? undefined : drag}
+        delayLongPress={150}
+      >
+        <View style={styles.queueItemContent}>
           <TouchableOpacity
-            style={styles.removeButton}
-            onPress={onRemove}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={styles.dragHandle}
+            onLongPress={item.isCurrentlyPlaying ? undefined : drag}
+            delayLongPress={0}
+            disabled={item.isCurrentlyPlaying}
           >
-            <Ionicons name='close-circle' size={24} color={COLORS.danger} />
+            <Ionicons
+              name='menu'
+              size={20}
+              color={
+                item.isCurrentlyPlaying ? COLORS.played : COLORS.textSecondary
+              }
+            />
           </TouchableOpacity>
+
+          {item.podcastArtworkUrl ? (
+            <Image
+              source={{ uri: item.podcastArtworkUrl }}
+              style={styles.queueItemArtwork}
+            />
+          ) : (
+            <View style={styles.queueItemArtwork}>
+              <Ionicons
+                name='musical-notes'
+                size={24}
+                color={COLORS.textSecondary}
+              />
+            </View>
+          )}
+
+          <View style={styles.queueItemInfo}>
+            <Text style={styles.queueItemTitle} numberOfLines={2}>
+              {item.displayTitle}
+            </Text>
+            <Text style={styles.queueItemPodcast} numberOfLines={1}>
+              {item.podcastTitle}
+            </Text>
+            <View style={styles.queueItemMeta}>
+              <Text style={styles.queueItemDuration}>
+                {item.formattedDuration}
+              </Text>
+              {item.isCurrentlyPlaying && (
+                <Text style={styles.queueItemPosition}>
+                  {item.positionLabel}
+                </Text>
+              )}
+            </View>
+          </View>
+
+          <View style={styles.queueItemActions}>
+            <TouchableOpacity
+              style={styles.playButton}
+              onPress={onPlay}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name='play-circle' size={32} color={COLORS.primary} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  </ScaleDecorator>
-);
+      </TouchableOpacity>
+    </Swipeable>
+  );
+
+  return isDraggable ? (
+    <ScaleDecorator>{cardContent}</ScaleDecorator>
+  ) : (
+    cardContent
+  );
+};
