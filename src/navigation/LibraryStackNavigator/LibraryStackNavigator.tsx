@@ -10,9 +10,6 @@ import {
 
 const Stack = createNativeStackNavigator<LibraryStackParamList>();
 
-// =============================================================================
-// Library Stack Navigator
-// =============================================================================
 export const LibraryStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={defaultScreenOptions}>

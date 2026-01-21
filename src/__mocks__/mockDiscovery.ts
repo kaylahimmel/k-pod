@@ -147,3 +147,17 @@ export const MOCK_ITUNES_LOOKUP_RESPONSE: ITunesSearchResponse = {
     },
   ],
 };
+
+/**
+ * Pre-configured mock discovery podcast for preview screen tests
+ */
+export const MOCK_PREVIEW_DISCOVERY_PODCAST: DiscoveryPodcast = {
+  id: 'discovery-preview-1',
+  title: 'Preview Test Podcast',
+  author: 'Preview Test Author',
+  feedUrl: 'https://example.com/preview/feed.xml',
+  artworkUrl: 'https://example.com/preview/art.jpg',
+  genre: 'Technology',
+  episodeCount: 50,
+  description: 'A great podcast about technology and software development.',
+};
