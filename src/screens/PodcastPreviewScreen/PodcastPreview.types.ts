@@ -1,4 +1,4 @@
-import { DiscoveryPodcast, Episode } from '../../models';
+import { DiscoveryPodcast } from '../../models';
 
 export interface PodcastPreviewViewProps {
   podcast: DiscoveryPodcast;

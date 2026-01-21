@@ -6,6 +6,7 @@ export {
   MOCK_ITUNES_NO_FEED_RESPONSE,
   MOCK_ITUNES_EMPTY_RESPONSE,
   MOCK_ITUNES_LOOKUP_RESPONSE,
+  MOCK_PREVIEW_DISCOVERY_PODCAST,
 } from './mockDiscovery';
 
 // Library mocks (Podcast, Episode)

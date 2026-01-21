@@ -70,6 +70,18 @@ jest.mock('react-native-draggable-flatlist', () => {
   };
 });
 
+// Mock useToast hook to avoid Animated API issues in tests
+jest.mock('./src/hooks/useToast', () => ({
+  useToast: () => ({
+    message: '',
+    visible: false,
+    translateY: { setValue: jest.fn() },
+    opacity: { setValue: jest.fn() },
+    showToast: jest.fn(),
+    dismissToast: jest.fn(),
+  }),
+}));
+
 // Mock AsyncStorage for persist middleware
 jest.mock('@react-native-async-storage/async-storage', () => ({
   __esModule: true,
