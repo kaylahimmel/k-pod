@@ -3,7 +3,11 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { SearchResultsScreen } from '../SearchResultsScreen';
 import { podcastStore } from '../../../stores';
 import { DiscoveryService } from '../../../services';
-import { createMockDiscoveryPodcasts } from '../../../__mocks__';
+import {
+  createMockDiscoveryPodcasts,
+  createMockNavigation,
+  createMockRoute,
+} from '../../../__mocks__';
 
 // Mock the DiscoveryService
 jest.mock('../../../services', () => ({
@@ -15,16 +19,13 @@ jest.mock('../../../services', () => ({
   },
 }));
 
-const mockNavigation = {
-  navigate: jest.fn(),
-  goBack: jest.fn(),
-} as unknown as Parameters<typeof SearchResultsScreen>[0]['navigation'];
+const mockNavigation = createMockNavigation() as unknown as Parameters<
+  typeof SearchResultsScreen
+>[0]['navigation'];
 
-const mockRoute = {
-  key: 'search-results-screen',
-  name: 'SearchResults' as const,
-  params: { query: 'test podcast' },
-} as Parameters<typeof SearchResultsScreen>[0]['route'];
+const mockRoute = createMockRoute('SearchResults', {
+  query: 'test podcast',
+}) as Parameters<typeof SearchResultsScreen>[0]['route'];
 
 describe('SearchResultsScreen', () => {
   const mockResults = createMockDiscoveryPodcasts(3);

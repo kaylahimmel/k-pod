@@ -4,7 +4,11 @@ import { Alert } from 'react-native';
 import { DiscoverScreen } from '../DiscoverScreen';
 import { podcastStore } from '../../../stores';
 import { DiscoveryService } from '../../../services';
-import { createMockDiscoveryPodcast } from '../../../__mocks__';
+import {
+  createMockDiscoveryPodcast,
+  createMockNavigation,
+  createMockRoute,
+} from '../../../__mocks__';
 
 // Mock DiscoveryService
 jest.mock('../../../services', () => ({
@@ -17,17 +21,13 @@ jest.mock('../../../services', () => ({
 // Mock Alert
 jest.spyOn(Alert, 'alert');
 
-const mockNavigation = {
-  navigate: jest.fn(),
-  setOptions: jest.fn(),
-  goBack: jest.fn(),
-} as any;
+const mockNavigation = createMockNavigation() as Parameters<
+  typeof DiscoverScreen
+>[0]['navigation'];
 
-const mockRoute = {
-  key: 'discover-screen',
-  name: 'Discover' as const,
-  params: undefined,
-};
+const mockRoute = createMockRoute('Discover') as Parameters<
+  typeof DiscoverScreen
+>[0]['route'];
 
 describe('DiscoverScreen', () => {
   beforeEach(() => {

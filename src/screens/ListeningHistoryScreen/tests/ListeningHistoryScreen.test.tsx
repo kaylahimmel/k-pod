@@ -2,7 +2,11 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 import { ListeningHistoryScreen } from '../ListeningHistoryScreen';
 import { StorageService } from '../../../services';
-import { createMockListeningHistoryItems } from '../../../__mocks__';
+import {
+  createMockListeningHistoryItems,
+  createMockNavigation,
+  createMockRoute,
+} from '../../../__mocks__';
 
 // Mock StorageService
 jest.mock('../../../services', () => ({
@@ -12,17 +16,13 @@ jest.mock('../../../services', () => ({
   },
 }));
 
-const mockNavigation = {
-  navigate: jest.fn(),
-  goBack: jest.fn(),
-  setOptions: jest.fn(),
-} as unknown as Parameters<typeof ListeningHistoryScreen>[0]['navigation'];
+const mockNavigation = createMockNavigation() as unknown as Parameters<
+  typeof ListeningHistoryScreen
+>[0]['navigation'];
 
-const mockRoute = {
-  key: 'listening-history-screen',
-  name: 'ListeningHistory' as const,
-  params: undefined,
-} as Parameters<typeof ListeningHistoryScreen>[0]['route'];
+const mockRoute = createMockRoute('ListeningHistory') as Parameters<
+  typeof ListeningHistoryScreen
+>[0]['route'];
 
 describe('ListeningHistoryScreen', () => {
   beforeEach(() => {

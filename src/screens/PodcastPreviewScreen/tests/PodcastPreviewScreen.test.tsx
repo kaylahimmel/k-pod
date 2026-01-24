@@ -7,6 +7,8 @@ import {
   createMockDiscoveryPodcast,
   createMockPodcast,
   MOCK_PREVIEW_DISCOVERY_PODCAST,
+  createMockNavigation,
+  createMockRoute,
 } from '../../../__mocks__';
 
 // Mock the services
@@ -32,17 +34,13 @@ const mockRSSPodcast = createMockPodcast({
   ],
 });
 
-const mockNavigation = {
-  navigate: jest.fn(),
-  setOptions: jest.fn(),
-  goBack: jest.fn(),
-} as unknown as Parameters<typeof PodcastPreviewScreen>[0]['navigation'];
+const mockNavigation = createMockNavigation() as unknown as Parameters<
+  typeof PodcastPreviewScreen
+>[0]['navigation'];
 
-const mockRoute = {
-  key: 'podcast-preview-screen',
-  name: 'PodcastPreview' as const,
-  params: { podcast: MOCK_PREVIEW_DISCOVERY_PODCAST },
-} as Parameters<typeof PodcastPreviewScreen>[0]['route'];
+const mockRoute = createMockRoute('PodcastPreview', {
+  podcast: MOCK_PREVIEW_DISCOVERY_PODCAST,
+}) as Parameters<typeof PodcastPreviewScreen>[0]['route'];
 
 describe('PodcastPreviewScreen', () => {
   beforeEach(() => {

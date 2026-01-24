@@ -3,7 +3,11 @@ import { render } from '@testing-library/react-native';
 import { ProfileScreen } from '../ProfileScreen';
 import { podcastStore } from '../../../stores';
 import { StorageService } from '../../../services';
-import { createMockPodcasts } from '../../../__mocks__';
+import {
+  createMockPodcasts,
+  createMockNavigation,
+  createMockRoute,
+} from '../../../__mocks__';
 
 // Mock StorageService
 jest.mock('../../../services', () => ({
@@ -12,17 +16,13 @@ jest.mock('../../../services', () => ({
   },
 }));
 
-const mockNavigation = {
-  navigate: jest.fn(),
-  setOptions: jest.fn(),
-  goBack: jest.fn(),
-} as unknown as Parameters<typeof ProfileScreen>[0]['navigation'];
+const mockNavigation = createMockNavigation() as unknown as Parameters<
+  typeof ProfileScreen
+>[0]['navigation'];
 
-const mockRoute = {
-  key: 'profile-screen',
-  name: 'Profile' as const,
-  params: undefined,
-} as Parameters<typeof ProfileScreen>[0]['route'];
+const mockRoute = createMockRoute('Profile') as Parameters<
+  typeof ProfileScreen
+>[0]['route'];
 
 describe('ProfileScreen', () => {
   beforeEach(() => {

@@ -2,13 +2,15 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { SettingsScreen } from '../SettingsScreen';
 import { settingsStore } from '../../../stores';
+import { createMockNavigation, createMockRoute } from '../../../__mocks__';
 
-const mockNavigation = {} as Parameters<typeof SettingsScreen>[0]['navigation'];
+const mockNavigation = createMockNavigation() as Parameters<
+  typeof SettingsScreen
+>[0]['navigation'];
 
-const mockRoute = {
-  key: 'settings-screen',
-  name: 'Settings' as const,
-} as Parameters<typeof SettingsScreen>[0]['route'];
+const mockRoute = createMockRoute('Settings') as Parameters<
+  typeof SettingsScreen
+>[0]['route'];
 
 describe('SettingsScreen', () => {
   beforeEach(() => {

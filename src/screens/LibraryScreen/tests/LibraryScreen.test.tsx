@@ -2,31 +2,20 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { LibraryScreen } from '../LibraryScreen';
 import { podcastStore } from '../../../stores';
+import { createMockNavigation, createMockRoute } from '../../../__mocks__';
 
 const mockNavigate = jest.fn();
 const mockSetOptions = jest.fn();
 
 const mockNavigation = {
+  ...createMockNavigation(),
   navigate: mockNavigate,
   setOptions: mockSetOptions,
-  goBack: jest.fn(),
-  dispatch: jest.fn(),
-  reset: jest.fn(),
-  isFocused: jest.fn(() => true),
-  canGoBack: jest.fn(() => true),
-  getId: jest.fn(),
-  getParent: jest.fn(),
-  getState: jest.fn(),
-  addListener: jest.fn(() => jest.fn()),
-  removeListener: jest.fn(),
-  setParams: jest.fn(),
-} as any;
+} as Parameters<typeof LibraryScreen>[0]['navigation'];
 
-const mockRoute = {
-  key: 'Library',
-  name: 'Library' as const,
-  params: undefined,
-};
+const mockRoute = createMockRoute('Library') as Parameters<
+  typeof LibraryScreen
+>[0]['route'];
 
 describe('LibraryScreen', () => {
   beforeEach(() => {
