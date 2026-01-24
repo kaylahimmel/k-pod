@@ -5,6 +5,7 @@ import { RootStackParamList } from './types';
 import { TabNavigator } from './TabNavigator';
 import { modalScreenOptions } from './screenOptions';
 import { styles } from './RootNavigator.styles';
+import { FullPlayerScreen } from '../screens';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -15,11 +16,9 @@ const PlaceholderModal = ({ title }: { title: string }) => (
   </View>
 );
 
-// TODO: Replace with actual modal screen imports
-// import { FullPlayerScreen } from "../screens/FullPlayerScreen";
+// TODO: Replace with actual modal screen import
 // import { AddPodcastModal } from "../screens/AddPodcastModal";
 
-const FullPlayerPlaceholder = () => <PlaceholderModal title='Full Player' />;
 const AddPodcastModalPlaceholder = () => (
   <PlaceholderModal title='Add Podcast' />
 );
@@ -31,7 +30,7 @@ export const RootNavigator = () => {
       <Stack.Group screenOptions={modalScreenOptions}>
         <Stack.Screen
           name='FullPlayer'
-          component={FullPlayerPlaceholder}
+          component={FullPlayerScreen}
           options={{ title: 'Now Playing' }}
         />
         <Stack.Screen

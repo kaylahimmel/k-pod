@@ -1,5 +1,6 @@
 export * from './DiscoverScreen/DiscoverScreen';
 export * from './EpisodeDetailScreen/EpisodeDetailScreen';
+export * from './FullPlayerScreen/FullPlayerScreen';
 export * from './LibraryScreen/LibraryScreen';
 export * from './ListeningHistoryScreen/ListeningHistoryScreen';
 export * from './PodcastDetailScreen/PodcastDetailScreen';
