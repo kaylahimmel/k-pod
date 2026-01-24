@@ -1,4 +1,5 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { COLORS } from '../constants';
 
 /**
  * Default screen options for all stack navigators
@@ -6,9 +7,9 @@ import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
  */
 export const defaultScreenOptions: NativeStackNavigationOptions = {
   headerStyle: {
-    backgroundColor: 'COLORS.cardBackground',
+    backgroundColor: COLORS.cardBackground,
   },
-  headerTintColor: 'COLORS.primary',
+  headerTintColor: COLORS.primary,
   headerTitleStyle: {
     fontWeight: '600',
     fontSize: 17,
@@ -16,7 +17,7 @@ export const defaultScreenOptions: NativeStackNavigationOptions = {
   headerBackButtonDisplayMode: 'minimal',
   headerShadowVisible: true,
   contentStyle: {
-    backgroundColor: 'COLORS.background',
+    backgroundColor: COLORS.background,
   },
 };
 
@@ -26,15 +27,15 @@ export const defaultScreenOptions: NativeStackNavigationOptions = {
 export const modalScreenOptions: NativeStackNavigationOptions = {
   presentation: 'modal',
   headerStyle: {
-    backgroundColor: 'COLORS.cardBackground',
+    backgroundColor: COLORS.cardBackground,
   },
-  headerTintColor: 'COLORS.primary',
+  headerTintColor: COLORS.primary,
   headerTitleStyle: {
     fontWeight: '600',
     fontSize: 17,
   },
   contentStyle: {
-    backgroundColor: 'COLORS.background',
+    backgroundColor: COLORS.background,
   },
 };
 
@@ -43,6 +44,6 @@ export const modalScreenOptions: NativeStackNavigationOptions = {
  */
 export const transparentHeaderOptions: NativeStackNavigationOptions = {
   headerTransparent: true,
-  headerTintColor: 'COLORS.cardBackground',
+  headerTintColor: COLORS.cardBackground,
   headerTitle: '',
 };

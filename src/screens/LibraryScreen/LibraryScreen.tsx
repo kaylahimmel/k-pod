@@ -1,5 +1,5 @@
 import React, { useCallback, useLayoutEffect } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LibraryScreenProps } from '../../navigation/types';
 import { LibraryView } from './LibraryView';
@@ -20,19 +20,24 @@ export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
   }, [navigation]);
 
   // Configure header right button for adding podcasts
+  // paddingLeft compensates for iOS native header button container offset on physical devices
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
+        <Pressable
           onPress={handleAddPodcastPressNav}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={({ pressed }) => ({
+            opacity: pressed ? 0.6 : 1,
+            paddingLeft: 4,
+            paddingTop: 1,
+          })}
         >
           <Ionicons
             name='add-circle-outline'
             size={28}
             color={COLORS.primary}
           />
-        </TouchableOpacity>
+        </Pressable>
       ),
     });
   }, [navigation, handleAddPodcastPressNav]);
