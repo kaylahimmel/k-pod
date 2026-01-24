@@ -1,32 +1,48 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ProfileStackParamList } from '../types';
 import { defaultScreenOptions } from '../screenOptions';
-import { styles } from '../StackNavigator.styles';
 import { ProfileScreen } from '../../screens/ProfileScreen';
+import { ListeningHistoryScreen } from '../../screens/ListeningHistoryScreen';
+import { COLORS } from '../../constants';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
 /** Placeholder Screens (to be replaced with actual Screen components)
  */
 const PlaceholderScreen = ({ name }: { name: string }) => (
-  <View style={styles.placeholder}>
-    <Text style={styles.placeholderText}>{name}</Text>
-    <Text style={styles.placeholderSubtext}>Coming soon</Text>
+  <View style={placeholderStyles.container}>
+    <Text style={placeholderStyles.text}>{name}</Text>
+    <Text style={placeholderStyles.subtext}>Coming soon</Text>
   </View>
 );
 
-// TODO: Replace with actual screen imports when implemented
-// import { ListeningHistoryScreen } from "../../screens/ListeningHistoryScreen";
+// TODO: Replace with actual screen import when implemented (Phase 8)
 // import { ChangePasswordScreen } from "../../screens/ChangePasswordScreen";
 
-const ListeningHistoryScreenPlaceholder = () => (
-  <PlaceholderScreen name='Listening History' />
-);
 const ChangePasswordScreenPlaceholder = () => (
   <PlaceholderScreen name='Change Password' />
 );
+
+const placeholderStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.background,
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+  },
+  subtext: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    marginTop: 8,
+  },
+});
 
 export const ProfileStackNavigator = () => {
   return (
@@ -38,7 +54,7 @@ export const ProfileStackNavigator = () => {
       />
       <Stack.Screen
         name='ListeningHistory'
-        component={ListeningHistoryScreenPlaceholder}
+        component={ListeningHistoryScreen}
         options={{ title: 'Listening History' }}
       />
       <Stack.Screen
