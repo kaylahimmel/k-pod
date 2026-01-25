@@ -49,6 +49,7 @@ export interface FullPlayerViewModel {
   speedDisplay: FormattedSpeed;
   upNextItem: FormattedUpNextItem | null;
   hasUpNext: boolean;
+  isEpisodeInQueue: boolean;
 
   // Player state
   isPlaying: boolean;
@@ -64,6 +65,7 @@ export interface FullPlayerViewModel {
   handleSpeedChange: (speed: PlaybackSpeed) => void;
   handleAddToQueue: () => void;
   handleDismiss: () => void;
+  handleBack: () => void;
 }
 
 /**

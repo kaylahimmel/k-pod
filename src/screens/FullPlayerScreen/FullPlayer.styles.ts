@@ -7,9 +7,26 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingTop: 8,
+    paddingBottom: 40,
+  },
+
+  // Header section
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+    marginBottom: 8,
+  },
+  headerButton: {
+    padding: 8,
+  },
+  headerButtonPlaceholder: {
+    width: 40,
+    height: 40,
   },
 
   // Artwork section
@@ -40,6 +57,25 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.textSecondary,
     textAlign: 'center',
+  },
+
+  // Description section
+  descriptionContainer: {
+    marginBottom: 24,
+    paddingHorizontal: 8,
+  },
+  descriptionText: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    lineHeight: 20,
+  },
+  seeMoreButton: {
+    marginTop: 4,
+  },
+  seeMoreText: {
+    fontSize: 14,
+    color: COLORS.primary,
+    fontWeight: '500',
   },
 
   // Progress/Seek bar section

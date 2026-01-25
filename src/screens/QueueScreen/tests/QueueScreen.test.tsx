@@ -10,7 +10,7 @@ import {
   createMockRoute,
 } from '../../../__mocks__';
 
-const mockNavigation = createMockNavigation() as Parameters<
+const mockNavigation = createMockNavigation() as unknown as Parameters<
   typeof QueueScreen
 >[0]['navigation'];
 

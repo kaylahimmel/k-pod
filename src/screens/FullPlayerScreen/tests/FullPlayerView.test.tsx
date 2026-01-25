@@ -250,16 +250,40 @@ describe('FullPlayerView', () => {
       expect(queue[0].podcast.id).toBe('player-podcast-1');
     });
 
-    it('should add multiple episodes to queue with unique IDs', () => {
-      const { getByText } = renderView();
+    it('should hide Add to Queue button after episode is added', () => {
+      const { getByText, queryByText } = renderView();
+
+      // Button should be visible initially
+      expect(getByText('Add to Queue')).toBeTruthy();
 
       fireEvent.press(getByText('Add to Queue'));
-      fireEvent.press(getByText('Add to Queue'));
 
+      // Button should be hidden after adding
+      expect(queryByText('Add to Queue')).toBeNull();
+
+      // Verify episode was added
       const queue = queueStore.getState().queue;
-      expect(queue).toHaveLength(2);
-      // Each queue item should have a unique ID
-      expect(queue[0].id).not.toBe(queue[1].id);
+      expect(queue).toHaveLength(1);
+    });
+
+    it('should not show Add to Queue button when episode is already in queue', () => {
+      // Pre-add the episode to the queue
+      queueStore.setState({
+        queue: [
+          {
+            id: 'existing-queue-item',
+            episode: MOCK_PLAYER_EPISODE,
+            podcast: MOCK_PLAYER_PODCAST,
+            position: 0,
+          },
+        ],
+        currentIndex: 0,
+      });
+
+      const { queryByText } = renderView();
+
+      // Button should not be visible when episode is already in queue
+      expect(queryByText('Add to Queue')).toBeNull();
     });
   });
 
@@ -304,6 +328,71 @@ describe('FullPlayerView', () => {
       const { getByText } = renderView();
 
       expect(getByText(queueItems[1].podcast.title)).toBeTruthy();
+    });
+  });
+
+  describe('Header Navigation', () => {
+    it('should display back button', () => {
+      const { getByLabelText } = renderView();
+
+      expect(getByLabelText('Go back')).toBeTruthy();
+    });
+
+    it('should display close button', () => {
+      const { getByLabelText } = renderView();
+
+      expect(getByLabelText('Close player')).toBeTruthy();
+    });
+
+    it('should call onDismiss when back button is pressed', () => {
+      const { getByLabelText } = renderView();
+
+      fireEvent.press(getByLabelText('Go back'));
+
+      expect(mockOnDismiss).toHaveBeenCalled();
+    });
+
+    it('should call onDismiss when close button is pressed', () => {
+      const { getByLabelText } = renderView();
+
+      fireEvent.press(getByLabelText('Close player'));
+
+      expect(mockOnDismiss).toHaveBeenCalled();
+    });
+  });
+
+  describe('Episode Description', () => {
+    it('should display episode description preview', () => {
+      const { getByText } = renderView();
+
+      expect(getByText('A test episode for the full player')).toBeTruthy();
+    });
+
+    it('should display See more button', () => {
+      const { getByText } = renderView();
+
+      expect(getByText('See more')).toBeTruthy();
+    });
+
+    it('should toggle to See less when expanded', () => {
+      const { getByText, queryByText } = renderView();
+
+      fireEvent.press(getByText('See more'));
+
+      expect(queryByText('See more')).toBeNull();
+      expect(getByText('See less')).toBeTruthy();
+    });
+
+    it('should toggle back to See more when collapsed', () => {
+      const { getByText, queryByText } = renderView();
+
+      // Expand
+      fireEvent.press(getByText('See more'));
+      // Collapse
+      fireEvent.press(getByText('See less'));
+
+      expect(getByText('See more')).toBeTruthy();
+      expect(queryByText('See less')).toBeNull();
     });
   });
 });

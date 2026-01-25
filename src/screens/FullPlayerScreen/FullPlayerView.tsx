@@ -17,6 +17,7 @@ import { COLORS } from '../../constants';
 import { PlaybackSpeed } from '../../models';
 import { useSettingsStore, useToast } from '../../hooks';
 import { Toast } from '../../components';
+import { stripHtml } from '../../utils';
 
 export const FullPlayerView = ({
   episode,
@@ -27,6 +28,7 @@ export const FullPlayerView = ({
   const { settings } = useSettingsStore();
   const toast = useToast();
   const [speedPickerVisible, setSpeedPickerVisible] = useState(false);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 
   const handleAddToQueue = () => {
     viewModel.handleAddToQueue();
@@ -40,7 +42,22 @@ export const FullPlayerView = ({
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Episode Artwork */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={viewModel.handleBack}
+          accessibilityLabel='Go back'
+        >
+          <Ionicons name='chevron-back' size={28} color={COLORS.textPrimary} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={viewModel.handleDismiss}
+          accessibilityLabel='Close player'
+        >
+          <Ionicons name='close' size={28} color={COLORS.textPrimary} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.artworkContainer}>
         <Image
           source={{ uri: podcast.artworkUrl }}
@@ -48,8 +65,6 @@ export const FullPlayerView = ({
           resizeMode='cover'
         />
       </View>
-
-      {/* Episode Info */}
       <View style={styles.infoContainer}>
         <Text style={styles.episodeTitle} numberOfLines={2}>
           {episode.title}
@@ -58,8 +73,24 @@ export const FullPlayerView = ({
           {podcast.title}
         </Text>
       </View>
-
-      {/* Progress Slider */}
+      {episode.description && (
+        <View style={styles.descriptionContainer}>
+          <Text
+            style={styles.descriptionText}
+            numberOfLines={descriptionExpanded ? undefined : 2}
+          >
+            {stripHtml(episode.description)}
+          </Text>
+          <TouchableOpacity
+            style={styles.seeMoreButton}
+            onPress={() => setDescriptionExpanded(!descriptionExpanded)}
+          >
+            <Text style={styles.seeMoreText}>
+              {descriptionExpanded ? 'See less' : 'See more'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
       <View style={styles.progressContainer}>
         <Slider
           style={styles.slider}
@@ -78,10 +109,7 @@ export const FullPlayerView = ({
           </Text>
         </View>
       </View>
-
-      {/* Playback Controls */}
       <View style={styles.controlsContainer}>
-        {/* Skip Backward */}
         <TouchableOpacity
           style={styles.skipButton}
           onPress={viewModel.handleSkipBackward}
@@ -90,8 +118,6 @@ export const FullPlayerView = ({
           <Ionicons name='play-back' size={32} color={COLORS.textPrimary} />
           <Text style={styles.skipLabel}>{settings.skipBackwardSeconds}s</Text>
         </TouchableOpacity>
-
-        {/* Play/Pause */}
         <TouchableOpacity
           style={styles.playPauseButton}
           onPress={viewModel.handlePlayPause}
@@ -103,8 +129,6 @@ export const FullPlayerView = ({
             color={COLORS.cardBackground}
           />
         </TouchableOpacity>
-
-        {/* Skip Forward */}
         <TouchableOpacity
           style={styles.skipButton}
           onPress={viewModel.handleSkipForward}
@@ -114,8 +138,6 @@ export const FullPlayerView = ({
           <Text style={styles.skipLabel}>{settings.skipForwardSeconds}s</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Speed Control */}
       <View style={styles.speedContainer}>
         <TouchableOpacity
           style={styles.speedButton}
@@ -128,19 +150,22 @@ export const FullPlayerView = ({
         </TouchableOpacity>
       </View>
 
-      {/* Actions */}
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={handleAddToQueue}
-          accessibilityLabel='Add to queue'
-        >
-          <Ionicons name='list-outline' size={20} color={COLORS.textPrimary} />
-          <Text style={styles.actionButtonText}>Add to Queue</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Up Next Preview */}
+      {!viewModel.isEpisodeInQueue && (
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={handleAddToQueue}
+            accessibilityLabel='Add to queue'
+          >
+            <Ionicons
+              name='list-outline'
+              size={20}
+              color={COLORS.textPrimary}
+            />
+            <Text style={styles.actionButtonText}>Add to Queue</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       {viewModel.hasUpNext && viewModel.upNextItem && (
         <View style={styles.upNextContainer}>
           <Text style={styles.upNextHeader}>Up Next</Text>
@@ -164,8 +189,6 @@ export const FullPlayerView = ({
           </View>
         </View>
       )}
-
-      {/* Speed Picker Modal */}
       <Modal
         visible={speedPickerVisible}
         transparent
@@ -211,8 +234,6 @@ export const FullPlayerView = ({
           </View>
         </Pressable>
       </Modal>
-
-      {/* Toast */}
       <Toast
         message={toast.message}
         visible={toast.visible}

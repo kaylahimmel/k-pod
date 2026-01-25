@@ -53,6 +53,11 @@ export const useFullPlayerViewModel = (
 
   const hasUpNext = upNextItem !== null;
 
+  // Check if current episode is already in the queue
+  const isEpisodeInQueue = useMemo(() => {
+    return queue.some((item) => item.episode.id === episode.id);
+  }, [queue, episode.id]);
+
   // Playback control handlers
   const handlePlayPause = useCallback(() => {
     setIsPlaying(!isPlaying);
@@ -100,6 +105,11 @@ export const useFullPlayerViewModel = (
     onDismiss();
   }, [onDismiss]);
 
+  // Back button navigates back (same as dismiss for modal)
+  const handleBack = useCallback(() => {
+    onDismiss();
+  }, [onDismiss]);
+
   return {
     // Display data
     episode,
@@ -108,6 +118,7 @@ export const useFullPlayerViewModel = (
     speedDisplay,
     upNextItem,
     hasUpNext,
+    isEpisodeInQueue,
 
     // Player state
     isPlaying,
@@ -123,5 +134,6 @@ export const useFullPlayerViewModel = (
     handleSpeedChange,
     handleAddToQueue,
     handleDismiss,
+    handleBack,
   };
 };
