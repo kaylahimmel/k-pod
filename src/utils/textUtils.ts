@@ -19,13 +19,21 @@ export function truncateText(text: string, maxLength: number): string {
 export function stripHtml(html: string): string {
   if (!html) return '';
   return html
-    .replace(/<[^>]*>/g, '')
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
-    .replace(/\s+/g, ' ')
+    .replace(/&rsquo;/g, "'") // Right single quote
+    .replace(/&lsquo;/g, "'") // Left single quote
+    .replace(/&rdquo;/g, '"') // Right double quote
+    .replace(/&ldquo;/g, '"') // Left double quote
+    .replace(/&mdash;/g, '—') // Em dash
+    .replace(/&ndash;/g, '–') // En dash
+    .replace(/&hellip;/g, '…') // Ellipsis
+    .replace(/&#\d+;/g, '') // Remove remaining numeric entities
+    .replace(/\s+/g, ' ') // Collapse whitespace
     .trim();
 }

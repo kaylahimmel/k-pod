@@ -34,3 +34,27 @@ export {
 
 // Queue mocks (QueueItem)
 export { createMockQueueItem, createMockQueueItems } from './mockQueue';
+
+// Navigation mocks (for screen testing)
+export { createMockNavigation, createMockRoute } from './mockNavigation';
+
+// FullPlayer mocks (pre-configured for player testing)
+export {
+  MOCK_PLAYER_EPISODE,
+  MOCK_PLAYER_PODCAST,
+  createMockPlayerEpisode,
+  createMockPlayerPodcast,
+} from './mockFullPlayer';
+
+// Service mocks (for mocking API/storage services in tests)
+export {
+  createMockStorageService,
+  createMockDiscoveryService,
+  createMockRSSService,
+  createMockAudioPlayerService,
+  MOCK_STORAGE_SERVICE,
+  MOCK_DISCOVERY_SERVICE,
+  MOCK_RSS_SERVICE,
+  MOCK_AUDIO_PLAYER_SERVICE,
+  MOCK_ALL_SERVICES,
+} from './mockServices';

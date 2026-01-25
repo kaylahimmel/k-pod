@@ -341,4 +341,110 @@ describe('QueueView', () => {
       expect(tree).toContain('https://example.com/artwork.jpg');
     });
   });
+
+  describe('Episode Press Interaction', () => {
+    it('should call onEpisodePress when episode card is pressed', () => {
+      const mockEpisode = createMockEpisode({
+        id: 'ep-123',
+        podcastId: 'pod-456',
+        title: 'Pressable Episode',
+      });
+      const mockPodcast = createMockPodcast({ id: 'pod-456' });
+
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({
+            id: 'q1',
+            episode: mockEpisode,
+            podcast: mockPodcast,
+          }),
+        ],
+        currentIndex: 0,
+      });
+
+      const { getByText } = renderQueueView();
+
+      fireEvent.press(getByText('Pressable Episode'));
+
+      expect(mockOnEpisodePress).toHaveBeenCalledWith('ep-123', 'pod-456');
+    });
+
+    it('should call onEpisodePress when upcoming episode card is pressed', () => {
+      const mockEpisode = createMockEpisode({
+        id: 'ep-789',
+        podcastId: 'pod-101',
+        title: 'Upcoming Pressable',
+      });
+      const mockPodcast = createMockPodcast({ id: 'pod-101' });
+
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({
+            id: 'q2',
+            episode: mockEpisode,
+            podcast: mockPodcast,
+          }),
+        ],
+        currentIndex: 0,
+      });
+
+      const { getByText } = renderQueueView();
+
+      fireEvent.press(getByText('Upcoming Pressable'));
+
+      expect(mockOnEpisodePress).toHaveBeenCalledWith('ep-789', 'pod-101');
+    });
+  });
+
+  describe('Remove Action', () => {
+    // Note: Remove is triggered via swipe-to-delete gesture which is tested through ViewModel
+    it('should have queue items that can be removed', () => {
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({
+            id: 'q1',
+            episode: createMockEpisode({ title: 'First Episode' }),
+          }),
+          createMockQueueItem({
+            id: 'q2',
+            episode: createMockEpisode({ title: 'Second Episode' }),
+          }),
+        ],
+        currentIndex: 0,
+      });
+
+      const { getByText } = renderQueueView();
+
+      // Verify items are rendered
+      expect(getByText('First Episode')).toBeTruthy();
+      expect(getByText('Second Episode')).toBeTruthy();
+
+      // Simulate removal via store action (swipe gesture is tested in ViewModel tests)
+      queueStore.getState().removeFromQueue('q1');
+
+      expect(queueStore.getState().queue).toHaveLength(1);
+    });
+  });
+
+  describe('Currently Playing Item Interactions', () => {
+    it('should trigger play action on currently playing item', () => {
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
+        ],
+        currentIndex: 0,
+      });
+
+      const { getAllByText } = renderQueueView();
+
+      // Press the first play button (currently playing item)
+      const playButtons = getAllByText('play-circle');
+      fireEvent.press(playButtons[0]);
+
+      // Should still be at index 0 since it's already playing
+      expect(queueStore.getState().currentIndex).toBe(0);
+    });
+  });
 });

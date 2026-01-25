@@ -6,19 +6,17 @@ import {
   createMockEpisode,
   createMockPodcast,
   createMockQueueItem,
+  createMockNavigation,
+  createMockRoute,
 } from '../../../__mocks__';
 
-const mockNavigation = {
-  navigate: jest.fn(),
-  setOptions: jest.fn(),
-  goBack: jest.fn(),
-} as any;
+const mockNavigation = createMockNavigation() as unknown as Parameters<
+  typeof QueueScreen
+>[0]['navigation'];
 
-const mockRoute = {
-  key: 'queue-screen',
-  name: 'Queue' as const,
-  params: undefined,
-};
+const mockRoute = createMockRoute('Queue') as Parameters<
+  typeof QueueScreen
+>[0]['route'];
 
 describe('QueueScreen', () => {
   beforeEach(() => {

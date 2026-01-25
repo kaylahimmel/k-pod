@@ -3,20 +3,23 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { EpisodeDetailScreen } from '../EpisodeDetailScreen';
 import { podcastStore, queueStore } from '../../../stores';
-import { createMockPodcast, createMockEpisode } from '../../../__mocks__';
+import {
+  createMockPodcast,
+  createMockEpisode,
+  createMockNavigation,
+  createMockRoute,
+} from '../../../__mocks__';
 
 jest.spyOn(Alert, 'alert');
 
-const mockNavigation = {
-  navigate: jest.fn(),
-  goBack: jest.fn(),
-} as unknown as Parameters<typeof EpisodeDetailScreen>[0]['navigation'];
+const mockNavigation = createMockNavigation() as unknown as Parameters<
+  typeof EpisodeDetailScreen
+>[0]['navigation'];
 
-const mockRoute = {
-  key: 'episode-detail-screen',
-  name: 'EpisodeDetail' as const,
-  params: { episodeId: 'ep-1', podcastId: 'podcast-1' },
-} as Parameters<typeof EpisodeDetailScreen>[0]['route'];
+const mockRoute = createMockRoute('EpisodeDetail', {
+  episodeId: 'ep-1',
+  podcastId: 'podcast-1',
+}) as Parameters<typeof EpisodeDetailScreen>[0]['route'];
 
 describe('EpisodeDetailScreen', () => {
   const mockEpisode = createMockEpisode({

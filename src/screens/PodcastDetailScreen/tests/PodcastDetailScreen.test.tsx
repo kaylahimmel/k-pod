@@ -7,20 +7,19 @@ import {
   createMockPodcast,
   createMockEpisode,
   createMockQueueItem,
+  createMockNavigation,
+  createMockRoute,
 } from '../../../__mocks__';
 
 jest.spyOn(Alert, 'alert');
 
-const mockNavigation = {
-  navigate: jest.fn(),
-  goBack: jest.fn(),
-} as unknown as Parameters<typeof PodcastDetailScreen>[0]['navigation'];
+const mockNavigation = createMockNavigation() as unknown as Parameters<
+  typeof PodcastDetailScreen
+>[0]['navigation'];
 
-const mockRoute = {
-  key: 'podcast-detail-screen',
-  name: 'PodcastDetail' as const,
-  params: { podcastId: 'podcast-1' },
-} as Parameters<typeof PodcastDetailScreen>[0]['route'];
+const mockRoute = createMockRoute('PodcastDetail', {
+  podcastId: 'podcast-1',
+}) as Parameters<typeof PodcastDetailScreen>[0]['route'];
 
 describe('PodcastDetailScreen', () => {
   const mockPodcast = createMockPodcast({
