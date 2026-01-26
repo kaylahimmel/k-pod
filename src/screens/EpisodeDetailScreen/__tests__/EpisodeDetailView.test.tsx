@@ -4,6 +4,20 @@ import { EpisodeDetailView } from '../EpisodeDetailView';
 import { podcastStore, queueStore } from '../../../stores';
 import { createMockPodcast, createMockEpisode } from '../../../__mocks__';
 
+const mockShowToast = jest.fn();
+
+jest.mock('../../../hooks', () => ({
+  ...jest.requireActual('../../../hooks'),
+  useToast: () => ({
+    showToast: mockShowToast,
+    message: '',
+    visible: false,
+    translateY: { value: 0 },
+    opacity: { value: 0 },
+    dismissToast: jest.fn(),
+  }),
+}));
+
 describe('EpisodeDetailView', () => {
   const mockOnPlayEpisode = jest.fn();
   const mockOnGoBack = jest.fn();
@@ -27,6 +41,7 @@ describe('EpisodeDetailView', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockShowToast.mockClear();
     podcastStore.setState({
       podcasts: [mockPodcast],
       loading: false,
@@ -181,7 +196,9 @@ describe('EpisodeDetailView', () => {
 
       await waitFor(() => {
         expect(addToQueueSpy).toHaveBeenCalled();
-        expect(getByText(/"Test Episode Title" added to queue/)).toBeTruthy();
+        expect(mockShowToast).toHaveBeenCalledWith(
+          '"Test Episode Title" added to queue',
+        );
       });
     });
 
@@ -203,7 +220,9 @@ describe('EpisodeDetailView', () => {
       fireEvent.press(getByText('In Queue'));
 
       await waitFor(() => {
-        expect(getByText('This episode is already in your queue')).toBeTruthy();
+        expect(mockShowToast).toHaveBeenCalledWith(
+          'This episode is already in your queue',
+        );
       });
     });
   });

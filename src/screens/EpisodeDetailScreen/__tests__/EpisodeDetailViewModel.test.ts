@@ -1,19 +1,16 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useEpisodeDetailViewModel } from '../EpisodeDetailViewModel';
-import { podcastStore, queueStore } from '../../../stores';
 import { createMockEpisode, createMockPodcast } from '../../../__mocks__';
 
-// Mock the stores
-jest.mock('../../../stores', () => ({
-  podcastStore: jest.fn(),
-  queueStore: jest.fn(),
-}));
-
-// Mock useToast
+// Mock variables must be prefixed with 'mock'
 const mockShowToast = jest.fn();
+const mockUsePodcastStore = jest.fn();
+const mockUseQueueStore = jest.fn();
+
+// Mock the hooks
 jest.mock('../../../hooks', () => ({
-  usePodcastStore: () => (podcastStore as unknown as jest.Mock)(),
-  useQueueStore: () => (queueStore as unknown as jest.Mock)(),
+  usePodcastStore: () => mockUsePodcastStore(),
+  useQueueStore: () => mockUseQueueStore(),
   useToast: () => ({
     showToast: mockShowToast,
     message: '',
@@ -44,11 +41,11 @@ describe('useEpisodeDetailViewModel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockShowToast.mockClear();
-    (podcastStore as unknown as jest.Mock).mockReturnValue({
+    mockUsePodcastStore.mockReturnValue({
       podcasts: [mockPodcast],
       loading: false,
     });
-    (queueStore as unknown as jest.Mock).mockReturnValue({
+    mockUseQueueStore.mockReturnValue({
       queue: [],
       addToQueue: mockAddToQueue,
     });
@@ -96,7 +93,7 @@ describe('useEpisodeDetailViewModel', () => {
   });
 
   it('should return loading state', () => {
-    (podcastStore as unknown as jest.Mock).mockReturnValue({
+    mockUsePodcastStore.mockReturnValue({
       podcasts: [mockPodcast],
       loading: true,
     });
@@ -127,7 +124,7 @@ describe('useEpisodeDetailViewModel', () => {
   });
 
   it('should return isInQueue true when episode is in queue', () => {
-    (queueStore as unknown as jest.Mock).mockReturnValue({
+    mockUseQueueStore.mockReturnValue({
       queue: [
         {
           id: 'queue-1',
@@ -215,7 +212,7 @@ describe('useEpisodeDetailViewModel', () => {
     });
 
     it('should show toast when episode already in queue', () => {
-      (queueStore as unknown as jest.Mock).mockReturnValue({
+      mockUseQueueStore.mockReturnValue({
         queue: [
           {
             id: 'queue-1',
