@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from './EpisodeCard.styles';
+import { styles } from './CardEpisode.styles';
 import { COLORS } from '../../constants';
 import { FormattedEpisode } from '../../screens/PodcastDetailScreen/PodcastDetail.types';
 import { Podcast } from '../../models';
 
-interface EpisodeCardProps {
+interface CardEpisodeProps {
   episode: FormattedEpisode;
   podcast: Podcast;
   onPress: () => void;
@@ -15,13 +15,13 @@ interface EpisodeCardProps {
   isInQueue?: boolean;
 }
 
-export const EpisodeCard = ({
+export const CardEpisode = ({
   episode,
   onPress,
   onPlay,
   onAddToQueue,
   isInQueue = false,
-}: EpisodeCardProps) => (
+}: CardEpisodeProps) => (
   <TouchableOpacity
     style={[styles.episodeCard, episode.played && styles.episodeCardPlayed]}
     onPress={onPress}

@@ -3,17 +3,17 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { FormattedPodcast } from '../../screens/LibraryScreen/Library.types';
 import { COLORS } from '../../constants';
-import { styles } from './LibraryPodcastCard.styles';
+import { styles } from './CardLibraryPodcast.styles';
 
-interface LibraryPodcastCardProps {
+interface CardLibraryPodcastProps {
   podcast: FormattedPodcast;
   onPress: () => void;
 }
 
-export const LibraryPodcastCard = ({
+export const CardLibraryPodcast = ({
   podcast,
   onPress,
-}: LibraryPodcastCardProps) => (
+}: CardLibraryPodcastProps) => (
   <TouchableOpacity style={styles.podcastCard} onPress={onPress}>
     <Image
       source={{ uri: podcast.artworkUrl }}
