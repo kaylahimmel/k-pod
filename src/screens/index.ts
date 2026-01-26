@@ -1,3 +1,4 @@
+export * from './AddPodcastModal/AddPodcastModal';
 export * from './DiscoverScreen/DiscoverScreen';
 export * from './EpisodeDetailScreen/EpisodeDetailScreen';
 export * from './FullPlayerScreen/FullPlayerScreen';

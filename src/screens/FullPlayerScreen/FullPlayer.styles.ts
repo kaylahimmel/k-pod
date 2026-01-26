@@ -12,60 +12,53 @@ export const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 40,
   },
-
-  // Header section
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 4,
     marginBottom: 8,
   },
   headerButton: {
-    padding: 8,
+    paddingVertical: 12,
   },
   headerButtonPlaceholder: {
     width: 40,
     height: 40,
   },
-
-  // Artwork section
   artworkContainer: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 20,
   },
   artwork: {
-    width: 280,
-    height: 280,
+    width: 220,
+    height: 220,
     borderRadius: 12,
     backgroundColor: COLORS.border,
   },
-
-  // Episode info section
   infoContainer: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 12,
   },
   episodeTitle: {
     fontSize: 20,
     fontWeight: '600',
     color: COLORS.textPrimary,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   podcastTitle: {
-    fontSize: 16,
+    fontSize: 18,
     color: COLORS.textSecondary,
     textAlign: 'center',
+    paddingBottom: 8,
   },
-
-  // Description section
   descriptionContainer: {
-    marginBottom: 24,
+    marginBottom: 12,
     paddingHorizontal: 8,
   },
   descriptionText: {
-    fontSize: 14,
+    fontSize: 16,
     color: COLORS.textSecondary,
     lineHeight: 20,
   },
@@ -73,18 +66,16 @@ export const styles = StyleSheet.create({
     marginTop: 4,
   },
   seeMoreText: {
-    fontSize: 14,
+    fontSize: 16,
     color: COLORS.primary,
     fontWeight: '500',
   },
-
-  // Progress/Seek bar section
   progressContainer: {
-    marginBottom: 16,
+    marginBottom: 14,
   },
   slider: {
     width: '100%',
-    height: 40,
+    height: 52,
   },
   timeContainer: {
     flexDirection: 'row',
@@ -95,8 +86,6 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.textSecondary,
   },
-
-  // Playback controls section
   controlsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -119,13 +108,11 @@ export const styles = StyleSheet.create({
     padding: 8,
   },
   skipLabel: {
-    fontSize: 10,
+    fontSize: 14,
     color: COLORS.textSecondary,
     textAlign: 'center',
     marginTop: 2,
   },
-
-  // Speed control section
   speedContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -145,15 +132,13 @@ export const styles = StyleSheet.create({
     borderColor: COLORS.primary,
   },
   speedButtonText: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
     color: COLORS.textPrimary,
   },
   speedButtonTextActive: {
     color: COLORS.cardBackground,
   },
-
-  // Actions section
   actionsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -172,12 +157,10 @@ export const styles = StyleSheet.create({
     gap: 8,
   },
   actionButtonText: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '500',
     color: COLORS.textPrimary,
   },
-
-  // Up next section
   upNextContainer: {
     backgroundColor: COLORS.cardBackground,
     borderRadius: 12,
@@ -185,7 +168,7 @@ export const styles = StyleSheet.create({
     marginBottom: 24,
   },
   upNextHeader: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
@@ -213,15 +196,13 @@ export const styles = StyleSheet.create({
     marginBottom: 2,
   },
   upNextPodcastTitle: {
-    fontSize: 12,
+    fontSize: 14,
     color: COLORS.textSecondary,
   },
   upNextDuration: {
-    fontSize: 12,
+    fontSize: 14,
     color: COLORS.textSecondary,
   },
-
-  // Speed picker modal
   speedPickerOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -229,9 +210,9 @@ export const styles = StyleSheet.create({
   },
   speedPickerContainer: {
     backgroundColor: COLORS.cardBackground,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingBottom: 34,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    paddingBottom: 32,
   },
   speedPickerHeader: {
     flexDirection: 'row',
@@ -242,12 +223,12 @@ export const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
   speedPickerTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '600',
     color: COLORS.textPrimary,
   },
   speedPickerDone: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '600',
     color: COLORS.primary,
   },

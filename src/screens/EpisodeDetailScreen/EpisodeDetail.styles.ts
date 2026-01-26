@@ -13,18 +13,18 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingTop: 24,
-    paddingBottom: 16,
+    paddingBottom: 4,
     backgroundColor: COLORS.cardBackground,
   },
   artwork: {
-    width: 200,
-    height: 200,
+    width: 180,
+    height: 180,
     borderRadius: 12,
     marginBottom: 16,
     backgroundColor: COLORS.border,
   },
   podcastTitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: COLORS.textSecondary,
     marginBottom: 4,
     textAlign: 'center',
@@ -34,7 +34,7 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.textPrimary,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 0,
   },
   metaRow: {
     flexDirection: 'row',
@@ -43,7 +43,7 @@ export const styles = StyleSheet.create({
     marginTop: 8,
   },
   metaText: {
-    fontSize: 14,
+    fontSize: 16,
     color: COLORS.textSecondary,
   },
   metaDot: {
@@ -80,9 +80,9 @@ export const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   actionButtonText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
-    color: 'COLORS.cardBackground',
+    color: COLORS.cardBackground,
   },
   actionButtonTextSecondary: {
     color: COLORS.textPrimary,
@@ -99,7 +99,7 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
   },
   descriptionText: {
-    fontSize: 15,
+    fontSize: 16,
     lineHeight: 22,
     color: COLORS.textSecondary,
   },
