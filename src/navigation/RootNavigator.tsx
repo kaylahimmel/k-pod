@@ -1,27 +1,11 @@
 import React from 'react';
-import { View, Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { TabNavigator } from './TabNavigator';
 import { modalScreenOptions } from './screenOptions';
-import { styles } from './RootNavigator.styles';
-import { FullPlayerScreen } from '../screens';
+import { FullPlayerScreen, AddPodcastModal } from '../screens';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-
-const PlaceholderModal = ({ title }: { title: string }) => (
-  <View style={styles.placeholder}>
-    <Text style={styles.placeholderText}>{title}</Text>
-    <Text style={styles.placeholderSubtext}>Coming soon</Text>
-  </View>
-);
-
-// TODO: Replace with actual modal screen import
-// import { AddPodcastModal } from "../screens/AddPodcastModal";
-
-const AddPodcastModalPlaceholder = () => (
-  <PlaceholderModal title='Add Podcast' />
-);
 
 export const RootNavigator = () => {
   return (
@@ -35,7 +19,7 @@ export const RootNavigator = () => {
         />
         <Stack.Screen
           name='AddPodcastModal'
-          component={AddPodcastModalPlaceholder}
+          component={AddPodcastModal}
           options={{ title: 'Add Podcast' }}
         />
       </Stack.Group>

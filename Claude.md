@@ -82,6 +82,7 @@ Screens follow a layered architecture when complexity warrants it:
 - Keep solutions focused on what was asked
 - Don't add features or refactoring beyond the request
 - **Import style** - Use regular imports for types (e.g., `import { AppSettings } from ...`), not `import type { ... }` syntax
+- Default to using the Toast component and useToast hook for consistent UX, only using Alerts for errors
 
 ## Patterns & Conventions
 
