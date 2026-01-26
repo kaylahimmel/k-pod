@@ -1,7 +1,6 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useEpisodeDetailViewModel } from '../EpisodeDetailViewModel';
 import { podcastStore, queueStore } from '../../../stores';
-import { Alert } from 'react-native';
 import { createMockEpisode, createMockPodcast } from '../../../__mocks__';
 
 // Mock the stores
@@ -10,8 +9,20 @@ jest.mock('../../../stores', () => ({
   queueStore: jest.fn(),
 }));
 
-// Mock Alert
-jest.spyOn(Alert, 'alert');
+// Mock useToast
+const mockShowToast = jest.fn();
+jest.mock('../../../hooks', () => ({
+  usePodcastStore: () => (podcastStore as unknown as jest.Mock)(),
+  useQueueStore: () => (queueStore as unknown as jest.Mock)(),
+  useToast: () => ({
+    showToast: mockShowToast,
+    message: '',
+    visible: false,
+    translateY: { value: 0 },
+    opacity: { value: 0 },
+    dismissToast: jest.fn(),
+  }),
+}));
 
 describe('useEpisodeDetailViewModel', () => {
   const mockOnPlayEpisode = jest.fn();
@@ -32,6 +43,7 @@ describe('useEpisodeDetailViewModel', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockShowToast.mockClear();
     (podcastStore as unknown as jest.Mock).mockReturnValue({
       podcasts: [mockPodcast],
       loading: false,
@@ -197,13 +209,12 @@ describe('useEpisodeDetailViewModel', () => {
           position: 0,
         }),
       );
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Added to Queue',
+      expect(mockShowToast).toHaveBeenCalledWith(
         expect.stringContaining('Test Episode'),
       );
     });
 
-    it('should show alert when episode already in queue', () => {
+    it('should show toast when episode already in queue', () => {
       (queueStore as unknown as jest.Mock).mockReturnValue({
         queue: [
           {
@@ -230,9 +241,8 @@ describe('useEpisodeDetailViewModel', () => {
       });
 
       expect(mockAddToQueue).not.toHaveBeenCalled();
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Already in Queue',
-        'This episode is already in your queue.',
+      expect(mockShowToast).toHaveBeenCalledWith(
+        'This episode is already in your queue',
       );
     });
 

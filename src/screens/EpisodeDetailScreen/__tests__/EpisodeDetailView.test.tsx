@@ -1,11 +1,8 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { Alert } from 'react-native';
 import { EpisodeDetailView } from '../EpisodeDetailView';
 import { podcastStore, queueStore } from '../../../stores';
 import { createMockPodcast, createMockEpisode } from '../../../__mocks__';
-
-jest.spyOn(Alert, 'alert');
 
 describe('EpisodeDetailView', () => {
   const mockOnPlayEpisode = jest.fn();
@@ -184,14 +181,11 @@ describe('EpisodeDetailView', () => {
 
       await waitFor(() => {
         expect(addToQueueSpy).toHaveBeenCalled();
-        expect(Alert.alert).toHaveBeenCalledWith(
-          'Added to Queue',
-          expect.stringContaining('Test Episode Title'),
-        );
+        expect(getByText(/"Test Episode Title" added to queue/)).toBeTruthy();
       });
     });
 
-    it('should show alert when pressing In Queue button', async () => {
+    it('should show toast when pressing In Queue button', async () => {
       queueStore.setState({
         queue: [
           {
@@ -209,10 +203,7 @@ describe('EpisodeDetailView', () => {
       fireEvent.press(getByText('In Queue'));
 
       await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith(
-          'Already in Queue',
-          'This episode is already in your queue.',
-        );
+        expect(getByText('This episode is already in your queue')).toBeTruthy();
       });
     });
   });

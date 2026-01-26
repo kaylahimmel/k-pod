@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { Alert } from 'react-native';
 import { EpisodeDetailScreen } from '../EpisodeDetailScreen';
 import { podcastStore, queueStore } from '../../../stores';
 import {
@@ -9,8 +8,6 @@ import {
   createMockNavigation,
   createMockRoute,
 } from '../../../__mocks__';
-
-jest.spyOn(Alert, 'alert');
 
 const mockNavigation = createMockNavigation() as unknown as Parameters<
   typeof EpisodeDetailScreen
@@ -101,14 +98,11 @@ describe('EpisodeDetailScreen', () => {
 
       await waitFor(() => {
         expect(addToQueueSpy).toHaveBeenCalled();
-        expect(Alert.alert).toHaveBeenCalledWith(
-          'Added to Queue',
-          expect.stringContaining('Test Episode'),
-        );
+        expect(getByText(/"Test Episode" added to queue/)).toBeTruthy();
       });
     });
 
-    it('should show already in queue alert when episode is already in queue', async () => {
+    it('should show toast when episode is already in queue', async () => {
       queueStore.setState({
         queue: [
           {
@@ -126,10 +120,7 @@ describe('EpisodeDetailScreen', () => {
       fireEvent.press(getByText('In Queue'));
 
       await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith(
-          'Already in Queue',
-          'This episode is already in your queue.',
-        );
+        expect(getByText('This episode is already in your queue')).toBeTruthy();
       });
     });
   });

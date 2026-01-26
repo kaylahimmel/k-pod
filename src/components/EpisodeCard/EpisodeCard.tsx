@@ -66,9 +66,9 @@ export const EpisodeCard = ({
         disabled={isInQueue}
       >
         <Ionicons
-          name={isInQueue ? 'list' : 'add-circle'}
+          name={isInQueue ? 'checkmark-circle' : 'add-circle'}
           size={32}
-          color={isInQueue ? COLORS.textSecondary : COLORS.primary}
+          color={isInQueue ? COLORS.success : COLORS.primary}
         />
       </TouchableOpacity>
     </View>

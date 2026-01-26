@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from 'react';
-import { Alert } from 'react-native';
 import { formatEpisodeDetail } from './EpisodeDetailPresenter';
 import { Episode, Podcast, QueueItem } from '../../models';
-import { usePodcastStore, useQueueStore } from '../../hooks';
+import { usePodcastStore, useQueueStore, useToast } from '../../hooks';
 
 /**
  * ViewModel for EpisodeDetailScreen
@@ -16,6 +15,7 @@ export const useEpisodeDetailViewModel = (
 ) => {
   const { podcasts, loading } = usePodcastStore();
   const { addToQueue, queue } = useQueueStore();
+  const toast = useToast();
 
   // Find the podcast and episode from the store
   const podcast = useMemo(
@@ -51,7 +51,7 @@ export const useEpisodeDetailViewModel = (
     if (!episode || !podcast) return;
 
     if (isInQueue) {
-      Alert.alert('Already in Queue', 'This episode is already in your queue.');
+      toast.showToast('This episode is already in your queue');
       return;
     }
 
@@ -63,11 +63,8 @@ export const useEpisodeDetailViewModel = (
     };
 
     addToQueue(queueItem);
-    Alert.alert(
-      'Added to Queue',
-      `"${episode.title}" has been added to your queue.`,
-    );
-  }, [episode, podcast, isInQueue, queue.length, addToQueue]);
+    toast.showToast(`"${episode.title}" added to queue`);
+  }, [episode, podcast, isInQueue, queue.length, addToQueue, toast]);
 
   return {
     loading,
@@ -75,6 +72,7 @@ export const useEpisodeDetailViewModel = (
     episode,
     formattedEpisode,
     isInQueue,
+    toast,
     handlePlay,
     handleAddToQueue,
     onGoBack,

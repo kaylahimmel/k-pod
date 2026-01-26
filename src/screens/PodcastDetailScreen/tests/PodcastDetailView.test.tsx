@@ -165,13 +165,13 @@ describe('PodcastDetailView', () => {
 
       const { getAllByText, queryAllByText } = renderPodcastDetailView();
 
-      // Should show 'list' icon instead of 'add-circle'
-      expect(getAllByText('list')).toBeTruthy();
+      // Should show 'checkmark-circle' icon instead of 'add-circle'
+      expect(getAllByText('checkmark-circle').length).toBeGreaterThanOrEqual(1);
       expect(queryAllByText('add-circle')).toHaveLength(0);
 
       // Pressing the disabled button should not trigger any alerts
-      const listIcons = getAllByText('list');
-      fireEvent.press(listIcons[0]);
+      const checkmarkIcons = getAllByText('checkmark-circle');
+      fireEvent.press(checkmarkIcons[checkmarkIcons.length - 1]);
 
       await waitFor(() => {
         expect(Alert.alert).not.toHaveBeenCalled();
