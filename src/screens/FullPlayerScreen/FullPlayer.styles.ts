@@ -161,48 +161,6 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.textPrimary,
   },
-  upNextContainer: {
-    backgroundColor: COLORS.cardBackground,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-  },
-  upNextHeader: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 12,
-  },
-  upNextContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  upNextArtwork: {
-    width: 48,
-    height: 48,
-    borderRadius: 6,
-    backgroundColor: COLORS.border,
-    marginRight: 12,
-  },
-  upNextInfo: {
-    flex: 1,
-  },
-  upNextEpisodeTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: COLORS.textPrimary,
-    marginBottom: 2,
-  },
-  upNextPodcastTitle: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-  },
-  upNextDuration: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-  },
   speedPickerOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

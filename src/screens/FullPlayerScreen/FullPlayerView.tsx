@@ -166,29 +166,6 @@ export const FullPlayerView = ({
           </TouchableOpacity>
         </View>
       )}
-      {viewModel.hasUpNext && viewModel.upNextItem && (
-        <View style={styles.upNextContainer}>
-          <Text style={styles.upNextHeader}>Up Next</Text>
-          <View style={styles.upNextContent}>
-            <Image
-              source={{ uri: viewModel.upNextItem.artworkUrl }}
-              style={styles.upNextArtwork}
-              resizeMode='cover'
-            />
-            <View style={styles.upNextInfo}>
-              <Text style={styles.upNextEpisodeTitle} numberOfLines={1}>
-                {viewModel.upNextItem.episodeTitle}
-              </Text>
-              <Text style={styles.upNextPodcastTitle} numberOfLines={1}>
-                {viewModel.upNextItem.podcastTitle}
-              </Text>
-            </View>
-            <Text style={styles.upNextDuration}>
-              {viewModel.upNextItem.formattedDuration}
-            </Text>
-          </View>
-        </View>
-      )}
       <Modal
         visible={speedPickerVisible}
         transparent
