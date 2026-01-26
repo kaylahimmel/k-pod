@@ -1,5 +1,10 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { View } from 'react-native';
+import {
+  createBottomTabNavigator,
+  BottomTabBarProps,
+  BottomTabBar,
+} from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabParamList } from './types';
 import {
@@ -9,7 +14,16 @@ import {
   ProfileStackNavigator,
   QueueStackNavigator,
 } from './';
+import { MiniPlayer } from '../components';
 import { styles } from './TabNavigator.styles';
+
+// Custom tab bar that renders MiniPlayer above the default tab bar
+const CustomTabBar = (props: BottomTabBarProps) => (
+  <View>
+    <MiniPlayer />
+    <BottomTabBar {...props} />
+  </View>
+);
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -46,6 +60,7 @@ const TAB_ICONS: Record<keyof BottomTabParamList, TabIconConfig> = {
 export const TabNavigator = () => {
   return (
     <Tab.Navigator
+      tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           const iconConfig = TAB_ICONS[route.name];

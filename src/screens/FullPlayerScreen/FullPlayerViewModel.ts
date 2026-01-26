@@ -111,7 +111,6 @@ export const useFullPlayerViewModel = (
   }, [onDismiss]);
 
   return {
-    // Display data
     episode,
     podcast,
     playbackTime,
@@ -119,14 +118,10 @@ export const useFullPlayerViewModel = (
     upNextItem,
     hasUpNext,
     isEpisodeInQueue,
-
-    // Player state
     isPlaying,
     position,
     duration,
     speed,
-
-    // Handlers
     handlePlayPause,
     handleSkipForward,
     handleSkipBackward,

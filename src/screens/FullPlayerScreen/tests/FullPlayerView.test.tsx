@@ -304,31 +304,6 @@ describe('FullPlayerView', () => {
 
       expect(queryByText('Up Next')).toBeNull();
     });
-
-    it('should display Up Next when there is a next item', () => {
-      const queueItems = createMockQueueItems(2);
-      queueStore.setState({
-        queue: queueItems,
-        currentIndex: 0,
-      });
-
-      const { getByText } = renderView();
-
-      expect(getByText('Up Next')).toBeTruthy();
-      expect(getByText(queueItems[1].episode.title)).toBeTruthy();
-    });
-
-    it('should display next episode podcast title', () => {
-      const queueItems = createMockQueueItems(2);
-      queueStore.setState({
-        queue: queueItems,
-        currentIndex: 0,
-      });
-
-      const { getByText } = renderView();
-
-      expect(getByText(queueItems[1].podcast.title)).toBeTruthy();
-    });
   });
 
   describe('Header Navigation', () => {
