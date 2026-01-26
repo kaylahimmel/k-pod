@@ -5,7 +5,7 @@ import { COLORS } from '../../constants';
 import { LibraryViewProps, FormattedPodcast } from './Library.types';
 import {
   SearchBar,
-  LibraryPodcastCard,
+  CardLibraryPodcast,
   StateEmpty,
   StateLoading,
   StateError,
@@ -63,7 +63,7 @@ export const LibraryView = ({
   }
 
   const renderPodcastItem = ({ item }: { item: FormattedPodcast }) => (
-    <LibraryPodcastCard
+    <CardLibraryPodcast
       podcast={item}
       onPress={() => viewModel.handlePodcastPress(item.id)}
     />

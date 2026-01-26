@@ -14,9 +14,9 @@ import { usePodcastDetailViewModel } from './PodcastDetailViewModel';
 import { styles } from './PodcastDetail.styles';
 import { COLORS } from '../../constants';
 import {
-  EpisodeCard,
+  CardEpisode,
   HeaderPodcast,
-  EmptyEpisodes,
+  EpisodesEmpty,
   EpisodeLoadingState,
   EpisodeNotFoundState,
   Toast,
@@ -45,7 +45,7 @@ export const PodcastDetailView = (props: PodcastDetailViewProps) => {
     if (!rawEpisode || !viewModel.podcast) return null;
 
     return (
-      <EpisodeCard
+      <CardEpisode
         podcast={viewModel.podcast}
         episode={item}
         onPress={() => viewModel.onEpisodePress(item.id)}
@@ -104,7 +104,7 @@ export const PodcastDetailView = (props: PodcastDetailViewProps) => {
           />
         }
         ListFooterComponent={renderFooter}
-        ListEmptyComponent={<EmptyEpisodes />}
+        ListEmptyComponent={<EpisodesEmpty />}
         contentContainerStyle={styles.listContent}
         refreshControl={
           <RefreshControl
