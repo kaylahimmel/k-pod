@@ -18,3 +18,4 @@ export * from './StateError/StateError';
 export * from './StateLoading/StateLoading';
 export * from './StateNoResults/StateNoResults';
 export * from './Toast/Toast';
+export * from './MiniPlayer/MiniPlayer';
