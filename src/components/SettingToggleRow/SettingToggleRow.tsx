@@ -21,6 +21,7 @@ export const SettingToggleRow = ({
       value={value}
       onValueChange={onValueChange}
       trackColor={{ false: COLORS.border, true: COLORS.primary }}
+      testID='setting-toggle-switch'
     />
   </View>
 );
