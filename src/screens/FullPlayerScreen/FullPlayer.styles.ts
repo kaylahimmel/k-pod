@@ -18,7 +18,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 4,
     marginBottom: 8,
-    // Negative margins to counteract content's paddingHorizontal and align with screen edges
     marginHorizontal: -16,
   },
   artworkContainer: {

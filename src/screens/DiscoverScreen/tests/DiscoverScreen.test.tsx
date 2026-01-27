@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react-native';
+import { render, waitFor, fireEvent } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { DiscoverScreen } from '../DiscoverScreen';
 import { podcastStore } from '../../../stores';
@@ -62,13 +62,29 @@ describe('DiscoverScreen', () => {
 
   describe('Navigation', () => {
     it('should navigate to PodcastPreview when podcast is pressed', async () => {
-      const { getByText } = renderDiscoverScreen();
-
-      await waitFor(() => {
-        expect(getByText('Trending Podcast')).toBeTruthy();
+      const mockPodcast = createMockDiscoveryPodcast({
+        id: 'nav-test',
+        title: 'Navigation Test Podcast',
+      });
+      (DiscoveryService.getTrendingPodcasts as jest.Mock).mockResolvedValue({
+        success: true,
+        data: [mockPodcast],
       });
 
-      // Note: The navigation is handled internally by DiscoverView callbacks
+      const { findByText } = renderDiscoverScreen();
+
+      const podcastTitle = await findByText('Navigation Test Podcast');
+      fireEvent.press(podcastTitle);
+
+      expect(mockNavigation.navigate).toHaveBeenCalledWith(
+        'PodcastPreview',
+        expect.objectContaining({
+          podcast: expect.objectContaining({
+            id: 'nav-test',
+            title: 'Navigation Test Podcast',
+          }),
+        }),
+      );
     });
   });
 
