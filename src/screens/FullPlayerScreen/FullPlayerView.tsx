@@ -16,7 +16,7 @@ import { styles } from './FullPlayer.styles';
 import { COLORS } from '../../constants';
 import { PlaybackSpeed } from '../../models';
 import { useSettingsStore, useToast } from '../../hooks';
-import { Toast } from '../../components';
+import { Toast, HeaderBackButton, HeaderCloseButton } from '../../components';
 import { stripHtml } from '../../utils';
 
 export const FullPlayerView = ({
@@ -43,20 +43,11 @@ export const FullPlayerView = ({
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.headerButton}
-          onPress={viewModel.handleBack}
-          accessibilityLabel='Go back'
-        >
-          <Ionicons name='chevron-back' size={28} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.headerButton}
+        <HeaderBackButton onPress={viewModel.handleBack} />
+        <HeaderCloseButton
           onPress={viewModel.handleDismiss}
           accessibilityLabel='Close player'
-        >
-          <Ionicons name='close' size={28} color={COLORS.textPrimary} />
-        </TouchableOpacity>
+        />
       </View>
       <View style={styles.artworkContainer}>
         <Image

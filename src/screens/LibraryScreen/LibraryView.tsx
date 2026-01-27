@@ -64,7 +64,10 @@ export const LibraryView = ({
 
   const renderPodcastItem = ({ item }: { item: FormattedPodcast }) => (
     <CardLibraryPodcast
-      podcast={item}
+      artworkUrl={item.artworkUrl}
+      title={item.displayTitle}
+      subtitle={item.author}
+      meta={`${item.episodeCountLabel} • Subscribed ${item.formattedSubscribeDate}`}
       onPress={() => viewModel.handlePodcastPress(item.id)}
     />
   );

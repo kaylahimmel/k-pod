@@ -43,6 +43,7 @@ export const Toast = ({
           onPress={onDismiss}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           style={styles.closeButton}
+          testID='toast-close-button'
         >
           <Ionicons name='close' size={20} color={COLORS.textSecondary} />
         </TouchableOpacity>

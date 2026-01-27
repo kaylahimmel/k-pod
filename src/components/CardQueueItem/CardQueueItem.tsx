@@ -120,6 +120,7 @@ export const CardQueueItem = ({
               style={styles.playButton}
               onPress={onPlay}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              testID='queue-item-play-button'
             >
               <Ionicons name='play-circle' size={32} color={COLORS.primary} />
             </TouchableOpacity>

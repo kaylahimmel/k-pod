@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react-native';
+import { render, waitFor, fireEvent } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { ListeningHistoryScreen } from '../ListeningHistoryScreen';
 import { StorageService } from '../../../services';
 import {
@@ -15,6 +16,9 @@ jest.mock('../../../services', () => ({
     saveHistory: jest.fn().mockResolvedValue(undefined),
   },
 }));
+
+// Spy on Alert
+jest.spyOn(Alert, 'alert');
 
 const mockNavigation = createMockNavigation() as unknown as Parameters<
   typeof ListeningHistoryScreen
@@ -62,6 +66,37 @@ describe('ListeningHistoryScreen', () => {
       expect(
         await findByText(/Start listening to podcasts to see your history/),
       ).toBeTruthy();
+    });
+  });
+
+  describe('Navigation', () => {
+    it('should navigate back when history is cleared', async () => {
+      const mockHistory = createMockListeningHistoryItems(3);
+      (StorageService.loadHistory as jest.Mock).mockResolvedValue(mockHistory);
+
+      // Mock Alert to automatically confirm the destructive action
+      (Alert.alert as jest.Mock).mockImplementation(
+        (title, message, buttons) => {
+          // Find the "Clear" button and call its onPress
+          const clearButton = buttons?.find(
+            (b: { text: string }) => b.text === 'Clear',
+          );
+          if (clearButton?.onPress) {
+            clearButton.onPress();
+          }
+        },
+      );
+
+      const { findByText } = renderScreen();
+
+      // Wait for history to load and find Clear All button
+      const clearButton = await findByText('Clear All');
+      fireEvent.press(clearButton);
+
+      // Verify navigation.goBack was called after clearing
+      await waitFor(() => {
+        expect(mockNavigation.goBack).toHaveBeenCalled();
+      });
     });
   });
 });

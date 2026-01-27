@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { QueueStackParamList } from '../types';
 import { defaultScreenOptions } from '../screenOptions';
 import { QueueScreen, EpisodeDetailScreen } from '../../screens';
+import { NavigationBackButton } from '../../components';
 
 const Stack = createNativeStackNavigator<QueueStackParamList>();
 
@@ -17,7 +18,11 @@ export const QueueStackNavigator = () => {
       <Stack.Screen
         name='EpisodeDetail'
         component={EpisodeDetailScreen}
-        options={{ title: 'Episode' }}
+        options={{
+          title: 'Episode',
+          headerBackVisible: false,
+          headerLeft: () => <NavigationBackButton />,
+        }}
       />
     </Stack.Navigator>
   );

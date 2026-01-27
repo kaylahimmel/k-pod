@@ -58,3 +58,16 @@ export {
   MOCK_AUDIO_PLAYER_SERVICE,
   MOCK_ALL_SERVICES,
 } from './mockServices';
+
+// Component mocks (formatted types for UI component testing)
+export {
+  createMockFormattedDiscoveryPodcast,
+  createMockFormattedDiscoveryPodcasts,
+  createMockFormattedEpisode,
+  createMockFormattedEpisodes,
+  createMockFormattedHistoryItem,
+  createMockFormattedHistoryItems,
+  createMockFormattedQueueItem,
+  createMockFormattedQueueItems,
+  createMockFormattedPodcastDetail,
+} from './mockComponents';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import { QueueScreen } from '../QueueScreen';
 import { queueStore, playerStore } from '../../../stores';
 import {
@@ -79,6 +79,31 @@ describe('QueueScreen', () => {
       // Here we just verify the screen renders correctly
       const { getByText } = renderQueueScreen();
       expect(getByText('Test Episode')).toBeTruthy();
+    });
+
+    it('should navigate to EpisodeDetail when episode is pressed', () => {
+      const episode = createMockEpisode({
+        id: 'test-episode-id',
+        podcastId: 'test-podcast-id',
+      });
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({
+            id: 'q1',
+            episode,
+            podcast: createMockPodcast({ id: 'test-podcast-id' }),
+          }),
+        ],
+        currentIndex: 0,
+      });
+
+      const { getByText } = renderQueueScreen();
+      fireEvent.press(getByText(episode.title));
+
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('EpisodeDetail', {
+        episodeId: 'test-episode-id',
+        podcastId: 'test-podcast-id',
+      });
     });
   });
 

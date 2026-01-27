@@ -18,13 +18,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 4,
     marginBottom: 8,
-  },
-  headerButton: {
-    paddingVertical: 12,
-  },
-  headerButtonPlaceholder: {
-    width: 40,
-    height: 40,
+    marginHorizontal: -16,
   },
   artworkContainer: {
     alignItems: 'center',

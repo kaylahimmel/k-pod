@@ -1,5 +1,6 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { ProfileScreen } from '../ProfileScreen';
 import { podcastStore } from '../../../stores';
 import { StorageService } from '../../../services';
@@ -7,7 +8,11 @@ import {
   createMockPodcasts,
   createMockNavigation,
   createMockRoute,
+  createMockListeningHistoryItems,
 } from '../../../__mocks__';
+
+// Spy on Alert
+jest.spyOn(Alert, 'alert');
 
 // Mock StorageService
 jest.mock('../../../services', () => ({
@@ -70,12 +75,73 @@ describe('ProfileScreen', () => {
 
   describe('Navigation', () => {
     it('should navigate to ListeningHistory when View All History is pressed', async () => {
-      // Note: Since there's no history, the button won't be shown
-      // TO-DO: Make a mock of the history and add test
-      const { queryByText } = renderProfileScreen();
+      // Mock history data so the button appears
+      const mockHistory = createMockListeningHistoryItems(3);
+      (StorageService.loadHistory as jest.Mock).mockResolvedValue(mockHistory);
 
-      // Empty state shows no "View All History" button
-      expect(queryByText('View All History')).toBeNull();
+      const { findByText } = renderProfileScreen();
+
+      const viewAllButton = await findByText('View All History');
+      fireEvent.press(viewAllButton);
+
+      await waitFor(() => {
+        expect(mockNavigation.navigate).toHaveBeenCalledWith(
+          'ListeningHistory',
+        );
+      });
+    });
+
+    it('should navigate to ChangePassword when Change Password is pressed', async () => {
+      const { findByText } = renderProfileScreen();
+
+      const changePasswordButton = await findByText('Change Password');
+      fireEvent.press(changePasswordButton);
+
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('ChangePassword');
+    });
+
+    it('should show confirmation alert when Sign Out is pressed', async () => {
+      const { findByText } = renderProfileScreen();
+
+      const signOutButton = await findByText('Sign Out');
+      fireEvent.press(signOutButton);
+
+      // ViewModel shows confirmation dialog first
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Sign Out',
+        'Are you sure you want to sign out?',
+        expect.arrayContaining([
+          expect.objectContaining({ text: 'Cancel' }),
+          expect.objectContaining({ text: 'Sign Out', style: 'destructive' }),
+        ]),
+      );
+    });
+
+    it('should show signed out message when sign out is confirmed', async () => {
+      // Mock Alert.alert to automatically confirm the sign out
+      (Alert.alert as jest.Mock).mockImplementation(
+        (title, message, buttons) => {
+          if (title === 'Sign Out' && buttons) {
+            const confirmButton = buttons.find(
+              (b: { text: string }) => b.text === 'Sign Out',
+            );
+            if (confirmButton?.onPress) {
+              confirmButton.onPress();
+            }
+          }
+        },
+      );
+
+      const { findByText } = renderProfileScreen();
+
+      const signOutButton = await findByText('Sign Out');
+      fireEvent.press(signOutButton);
+
+      // After confirming, the success message should be shown
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Signed Out',
+        'You have been signed out successfully.',
+      );
     });
   });
 

@@ -137,10 +137,11 @@ RootNavigator
 ## Testing
 
 - Test files: `src/screens/*/__tests__/*.test.ts(x)` and `src/utils/__tests__/*.test.ts(x)`
+- Use or update existing mocks from `src/__mocks__` files whenever possible, adding new mocks as needed
+- Mocks configured in `jest.setup.ts`--continue to update this as needed
 - Achieve at least 75% line coverage in test files, or if not possible, leave // TO-DO comments to circle back on to add once the needed UI, logic, or service has been implemented
 - Run all tests: `yarn test`
 - Watch mode: `yarn run test:watch`
-- Mocks configured in `jest.setup.ts`
 - Look for existing mocks in local test files that can be reused, and move them to the `jest.setup.ts` if so
 - Point out to user any linting or test failures and how to mediate them in the future
 
