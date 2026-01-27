@@ -5,6 +5,7 @@ import { ProfileStackParamList } from '../types';
 import { defaultScreenOptions } from '../screenOptions';
 import { ProfileScreen } from '../../screens/ProfileScreen';
 import { ListeningHistoryScreen } from '../../screens/ListeningHistoryScreen';
+import { NavigationBackButton } from '../../components';
 import { COLORS } from '../../constants';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
@@ -55,12 +56,20 @@ export const ProfileStackNavigator = () => {
       <Stack.Screen
         name='ListeningHistory'
         component={ListeningHistoryScreen}
-        options={{ title: 'Listening History' }}
+        options={{
+          title: 'Listening History',
+          headerBackVisible: false,
+          headerLeft: () => <NavigationBackButton />,
+        }}
       />
       <Stack.Screen
         name='ChangePassword'
         component={ChangePasswordScreenPlaceholder}
-        options={{ title: 'Change Password' }}
+        options={{
+          title: 'Change Password',
+          headerBackVisible: false,
+          headerLeft: () => <NavigationBackButton />,
+        }}
       />
     </Stack.Navigator>
   );

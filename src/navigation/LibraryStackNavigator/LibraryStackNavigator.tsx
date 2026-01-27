@@ -8,6 +8,7 @@ import {
   EpisodeDetailScreen,
   DiscoverScreen,
 } from '../../screens';
+import { NavigationBackButton } from '../../components';
 
 const Stack = createNativeStackNavigator<LibraryStackParamList>();
 
@@ -22,12 +23,20 @@ export const LibraryStackNavigator = () => {
       <Stack.Screen
         name='PodcastDetail'
         component={PodcastDetailScreen}
-        options={{ title: 'Podcast' }}
+        options={{
+          title: 'Podcast',
+          headerBackVisible: false,
+          headerLeft: () => <NavigationBackButton />,
+        }}
       />
       <Stack.Screen
         name='EpisodeDetail'
         component={EpisodeDetailScreen}
-        options={{ title: 'Episode' }}
+        options={{
+          title: 'Episode',
+          headerBackVisible: false,
+          headerLeft: () => <NavigationBackButton />,
+        }}
       />
       <Stack.Screen
         name='Discover'
