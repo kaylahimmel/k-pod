@@ -13,6 +13,8 @@ export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
     props.podcastId,
     props.onPlayEpisode,
     props.onGoBack,
+    props.episode,
+    props.discoveryPodcast,
   );
 
   // Loading state

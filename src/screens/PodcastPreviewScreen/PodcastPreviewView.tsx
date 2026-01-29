@@ -20,17 +20,24 @@ import { COLORS } from '../../constants';
 export const PodcastPreviewView = ({
   podcast,
   onSubscribe,
+  onEpisodePress,
 }: PodcastPreviewViewProps) => {
-  const viewModel = usePodcastPreviewViewModel(podcast, onSubscribe);
+  const viewModel = usePodcastPreviewViewModel(
+    podcast,
+    onSubscribe,
+    onEpisodePress,
+  );
 
   const renderEpisodeCard = (
     episode: FormattedPreviewEpisode,
     index: number,
     isLast: boolean,
   ) => (
-    <View
+    <TouchableOpacity
       key={episode.id}
       style={[styles.episodeCard, isLast && styles.episodeCardLast]}
+      onPress={() => viewModel.handleEpisodePress(episode.id)}
+      activeOpacity={0.7}
     >
       <Text style={styles.episodeTitle} numberOfLines={2}>
         {episode.displayTitle}
@@ -42,7 +49,7 @@ export const PodcastPreviewView = ({
         <Text style={styles.episodeDate}>{episode.formattedPublishDate}</Text>
         <Text style={styles.episodeDuration}>{episode.formattedDuration}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   const renderEpisodesContent = () => {

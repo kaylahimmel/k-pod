@@ -25,6 +25,7 @@ jest.spyOn(Alert, 'alert');
 
 describe('usePodcastPreviewViewModel', () => {
   const mockOnSubscribe = jest.fn();
+  const mockOnEpisodePress = jest.fn();
   const mockAddPodcast = jest.fn();
 
   const mockDiscoveryPodcast = createMockDiscoveryPodcast({
@@ -50,6 +51,16 @@ describe('usePodcastPreviewViewModel', () => {
     ],
   });
 
+  // Helper to render the hook with standard mocks
+  const renderViewModel = () =>
+    renderHook(() =>
+      usePodcastPreviewViewModel(
+        mockDiscoveryPodcast,
+        mockOnSubscribe,
+        mockOnEpisodePress,
+      ),
+    );
+
   beforeEach(() => {
     jest.clearAllMocks();
     (podcastStore as unknown as jest.Mock).mockReturnValue({
@@ -63,9 +74,7 @@ describe('usePodcastPreviewViewModel', () => {
   });
 
   it('should fetch episodes on mount', async () => {
-    const { result } = renderHook(() =>
-      usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-    );
+    const { result } = renderViewModel();
 
     // Initial loading state
     expect(result.current.isLoadingEpisodes).toBe(true);
@@ -87,9 +96,7 @@ describe('usePodcastPreviewViewModel', () => {
       error: 'Failed to fetch RSS',
     });
 
-    const { result } = renderHook(() =>
-      usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-    );
+    const { result } = renderViewModel();
 
     await waitFor(() => {
       expect(result.current.isLoadingEpisodes).toBe(false);
@@ -105,9 +112,7 @@ describe('usePodcastPreviewViewModel', () => {
       data: { ...mockRSSPodcast, episodes: [] },
     });
 
-    const { result } = renderHook(() =>
-      usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-    );
+    const { result } = renderViewModel();
 
     await waitFor(() => {
       expect(result.current.isLoadingEpisodes).toBe(false);
@@ -117,9 +122,7 @@ describe('usePodcastPreviewViewModel', () => {
   });
 
   it('should format podcast preview correctly', async () => {
-    const { result } = renderHook(() =>
-      usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-    );
+    const { result } = renderViewModel();
 
     await waitFor(() => {
       expect(result.current.isLoadingEpisodes).toBe(false);
@@ -131,9 +134,7 @@ describe('usePodcastPreviewViewModel', () => {
 
   describe('subscribeButtonState', () => {
     it('should show default state when not subscribed', async () => {
-      const { result } = renderHook(() =>
-        usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-      );
+      const { result } = renderViewModel();
 
       await waitFor(() => {
         expect(result.current.isLoadingEpisodes).toBe(false);
@@ -154,9 +155,7 @@ describe('usePodcastPreviewViewModel', () => {
         addPodcast: mockAddPodcast,
       });
 
-      const { result } = renderHook(() =>
-        usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-      );
+      const { result } = renderViewModel();
 
       await waitFor(() => {
         expect(result.current.isLoadingEpisodes).toBe(false);
@@ -184,9 +183,7 @@ describe('usePodcastPreviewViewModel', () => {
           data: mockRSSPodcast,
         });
 
-      const { result } = renderHook(() =>
-        usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-      );
+      const { result } = renderViewModel();
 
       await waitFor(() => {
         expect(result.current.hasEpisodeError).toBe(true);
@@ -203,9 +200,7 @@ describe('usePodcastPreviewViewModel', () => {
 
   describe('handleSubscribe', () => {
     it('should subscribe to podcast successfully', async () => {
-      const { result } = renderHook(() =>
-        usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-      );
+      const { result } = renderViewModel();
 
       await waitFor(() => {
         expect(result.current.isLoadingEpisodes).toBe(false);
@@ -220,9 +215,7 @@ describe('usePodcastPreviewViewModel', () => {
     });
 
     it('should preserve discovery metadata when subscribing', async () => {
-      const { result } = renderHook(() =>
-        usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-      );
+      const { result } = renderViewModel();
 
       await waitFor(() => {
         expect(result.current.isLoadingEpisodes).toBe(false);
@@ -248,9 +241,7 @@ describe('usePodcastPreviewViewModel', () => {
           error: 'Failed to subscribe',
         });
 
-      const { result } = renderHook(() =>
-        usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-      );
+      const { result } = renderViewModel();
 
       await waitFor(() => {
         expect(result.current.isLoadingEpisodes).toBe(false);
@@ -275,9 +266,7 @@ describe('usePodcastPreviewViewModel', () => {
         })
         .mockRejectedValueOnce(new Error('Unexpected error'));
 
-      const { result } = renderHook(() =>
-        usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-      );
+      const { result } = renderViewModel();
 
       await waitFor(() => {
         expect(result.current.isLoadingEpisodes).toBe(false);
@@ -299,9 +288,7 @@ describe('usePodcastPreviewViewModel', () => {
         addPodcast: mockAddPodcast,
       });
 
-      const { result } = renderHook(() =>
-        usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-      );
+      const { result } = renderViewModel();
 
       await waitFor(() => {
         expect(result.current.isLoadingEpisodes).toBe(false);
@@ -319,9 +306,7 @@ describe('usePodcastPreviewViewModel', () => {
 
   describe('toggleDescription', () => {
     it('should toggle showFullDescription state', async () => {
-      const { result } = renderHook(() =>
-        usePodcastPreviewViewModel(mockDiscoveryPodcast, mockOnSubscribe),
-      );
+      const { result } = renderViewModel();
 
       await waitFor(() => {
         expect(result.current.isLoadingEpisodes).toBe(false);

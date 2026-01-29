@@ -1,32 +1,67 @@
 import { useCallback, useMemo } from 'react';
 import { formatEpisodeDetail } from './EpisodeDetailPresenter';
-import { Episode, Podcast, QueueItem } from '../../models';
+import { Episode, Podcast, QueueItem, DiscoveryPodcast } from '../../models';
 import { usePodcastStore, useQueueStore, useToast } from '../../hooks';
+
+/**
+ * Creates a Podcast-like object from DiscoveryPodcast for use with player and queue
+ * This allows playing episodes from unsubscribed podcasts
+ */
+const createPodcastFromDiscovery = (
+  discoveryPodcast: DiscoveryPodcast,
+  episode: Episode,
+): Podcast => ({
+  id: discoveryPodcast.id,
+  title: discoveryPodcast.title,
+  author: discoveryPodcast.author,
+  rssUrl: discoveryPodcast.feedUrl,
+  artworkUrl: discoveryPodcast.artworkUrl,
+  description: discoveryPodcast.description || '',
+  subscribeDate: new Date().toISOString(),
+  lastUpdated: new Date().toISOString(),
+  episodes: [episode],
+});
 
 /**
  * ViewModel for EpisodeDetailScreen
  * Manages state and logic for displaying episode details
+ * Supports both subscribed podcasts (store lookup) and unsubscribed podcasts (direct data)
  */
 export const useEpisodeDetailViewModel = (
   episodeId: string,
   podcastId: string,
   onPlayEpisode: (episode: Episode, podcast: Podcast) => void,
   onGoBack: () => void,
+  // Optional: Pass episode/podcast directly for unsubscribed podcasts
+  propEpisode?: Episode,
+  propDiscoveryPodcast?: DiscoveryPodcast,
 ) => {
   const { podcasts, loading } = usePodcastStore();
   const { addToQueue, queue } = useQueueStore();
   const toast = useToast();
 
-  // Find the podcast and episode from the store
-  const podcast = useMemo(
+  // Find the podcast and episode from the store (for subscribed podcasts)
+  const storePodcast = useMemo(
     () => podcasts.find((p) => p.id === podcastId),
     [podcasts, podcastId],
   );
 
-  const episode = useMemo(
-    () => podcast?.episodes.find((e) => e.id === episodeId),
-    [podcast, episodeId],
+  const storeEpisode = useMemo(
+    () => storePodcast?.episodes.find((e) => e.id === episodeId),
+    [storePodcast, episodeId],
   );
+
+  // Use prop data if provided, otherwise fall back to store lookup
+  const episode = propEpisode || storeEpisode;
+
+  // Create a podcast object from discovery data if needed
+  const podcast = useMemo(() => {
+    if (storePodcast) return storePodcast;
+    if (propDiscoveryPodcast && propEpisode) {
+      return createPodcastFromDiscovery(propDiscoveryPodcast, propEpisode);
+    }
+    return undefined;
+  }, [storePodcast, propDiscoveryPodcast, propEpisode]);
 
   // Format episode for display using presenter
   const formattedEpisode = useMemo(() => {

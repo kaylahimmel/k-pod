@@ -5,6 +5,7 @@ import { defaultScreenOptions } from '../screenOptions';
 import { DiscoverScreen } from '../../screens/DiscoverScreen';
 import { SearchResultsScreen } from '../../screens/SearchResultsScreen';
 import { PodcastPreviewScreen } from '../../screens/PodcastPreviewScreen';
+import { EpisodeDetailScreen } from '../../screens/EpisodeDetailScreen';
 import { NavigationBackButton } from '../../components';
 
 const Stack = createNativeStackNavigator<DiscoverStackParamList>();
@@ -31,6 +32,15 @@ export const DiscoverStackNavigator = () => {
         component={PodcastPreviewScreen}
         options={{
           title: 'Podcast',
+          headerBackVisible: false,
+          headerLeft: () => <NavigationBackButton />,
+        }}
+      />
+      <Stack.Screen
+        name='EpisodeDetail'
+        component={EpisodeDetailScreen}
+        options={{
+          title: 'Episode',
           headerBackVisible: false,
           headerLeft: () => <NavigationBackButton />,
         }}
