@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react-native';
+import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { usePodcastDetailViewModel } from '../PodcastDetailViewModel';
 import { podcastStore, queueStore } from '../../../stores';
@@ -7,8 +7,15 @@ import {
   createMockEpisode,
   createMockQueueItem,
 } from '../../../__mocks__';
+import { RSSService } from '../../../services/RSSService';
 
 jest.spyOn(Alert, 'alert');
+
+jest.mock('../../../services/RSSService', () => ({
+  RSSService: {
+    refreshEpisodes: jest.fn(),
+  },
+}));
 
 describe('usePodcastDetailViewModel', () => {
   const mockOnEpisodePress = jest.fn();
@@ -87,23 +94,50 @@ describe('usePodcastDetailViewModel', () => {
   });
 
   describe('handleEpisodeRefresh', () => {
-    it('should set refreshing to true then false', async () => {
-      jest.useFakeTimers();
+    it('should set refreshing to true then false after refresh completes', async () => {
+      (RSSService.refreshEpisodes as jest.Mock).mockResolvedValue({
+        success: true,
+        data: [mockEpisode],
+      });
+
       const { result } = renderViewModel();
 
-      act(() => {
+      await act(async () => {
         result.current.handleEpisodeRefresh();
       });
 
-      expect(result.current.refreshing).toBe(true);
+      // After async operation completes, refreshing should be false
+      await waitFor(() => {
+        expect(result.current.refreshing).toBe(false);
+      });
+    });
 
-      act(() => {
-        jest.advanceTimersByTime(1000);
+    it('should call RSSService.refreshEpisodes with correct params', async () => {
+      (RSSService.refreshEpisodes as jest.Mock).mockResolvedValue({
+        success: true,
+        data: [mockEpisode],
       });
 
-      expect(result.current.refreshing).toBe(false);
+      const { result } = renderViewModel();
 
-      jest.useRealTimers();
+      await act(async () => {
+        result.current.handleEpisodeRefresh();
+      });
+
+      expect(RSSService.refreshEpisodes).toHaveBeenCalledWith(
+        'podcast-1',
+        mockPodcast.rssUrl,
+      );
+    });
+
+    it('should not call refresh if podcast is not found', async () => {
+      const { result } = renderViewModel('non-existent');
+
+      await act(async () => {
+        result.current.handleEpisodeRefresh();
+      });
+
+      expect(RSSService.refreshEpisodes).not.toHaveBeenCalled();
     });
   });
 

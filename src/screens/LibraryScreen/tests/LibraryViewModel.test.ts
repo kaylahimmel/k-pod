@@ -1,7 +1,14 @@
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { useLibraryViewModel } from '../LibraryViewModel';
 import { podcastStore } from '../../../stores';
-import { createMockPodcasts } from '../../../__mocks__';
+import { createMockPodcasts, createMockEpisode } from '../../../__mocks__';
+import { RSSService } from '../../../services/RSSService';
+
+jest.mock('../../../services/RSSService', () => ({
+  RSSService: {
+    refreshEpisodes: jest.fn(),
+  },
+}));
 
 describe('LibraryViewModel', () => {
   const mockOnPodcastPress = jest.fn();
@@ -153,25 +160,60 @@ describe('LibraryViewModel', () => {
   });
 
   describe('Refresh', () => {
-    it('should set refreshing to true then false when handleRefresh is called', async () => {
-      jest.useFakeTimers();
-      const { result } = renderViewModel();
-
-      act(() => {
-        result.current.handleRefresh();
+    it('should set refreshing to false after refresh completes', async () => {
+      const podcasts = createMockPodcasts(2);
+      podcastStore.setState({
+        podcasts,
+        loading: false,
+        error: null,
       });
 
-      expect(result.current.refreshing).toBe(true);
+      (RSSService.refreshEpisodes as jest.Mock).mockResolvedValue({
+        success: true,
+        data: [createMockEpisode()],
+      });
 
-      act(() => {
-        jest.advanceTimersByTime(1000);
+      const { result } = renderViewModel();
+
+      await act(async () => {
+        result.current.handleRefresh();
       });
 
       await waitFor(() => {
         expect(result.current.refreshing).toBe(false);
       });
+    });
 
-      jest.useRealTimers();
+    it('should call RSSService.refreshEpisodes for each podcast', async () => {
+      const podcasts = createMockPodcasts(2);
+      podcastStore.setState({
+        podcasts,
+        loading: false,
+        error: null,
+      });
+
+      (RSSService.refreshEpisodes as jest.Mock).mockResolvedValue({
+        success: true,
+        data: [],
+      });
+
+      const { result } = renderViewModel();
+
+      await act(async () => {
+        result.current.handleRefresh();
+      });
+
+      expect(RSSService.refreshEpisodes).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not call refresh when there are no podcasts', async () => {
+      const { result } = renderViewModel();
+
+      await act(async () => {
+        result.current.handleRefresh();
+      });
+
+      expect(RSSService.refreshEpisodes).not.toHaveBeenCalled();
     });
   });
 
