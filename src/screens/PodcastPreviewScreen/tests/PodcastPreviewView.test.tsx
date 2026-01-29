@@ -18,6 +18,7 @@ jest.mock('../../../services', () => ({
 
 describe('PodcastPreviewView', () => {
   const mockOnSubscribe = jest.fn();
+  const mockOnEpisodePress = jest.fn();
 
   const mockRSSPodcast = createMockPodcast({
     id: 'rss-1',
@@ -60,7 +61,11 @@ describe('PodcastPreviewView', () => {
 
   const renderPodcastPreviewView = (podcast = MOCK_PREVIEW_DISCOVERY_PODCAST) =>
     render(
-      <PodcastPreviewView podcast={podcast} onSubscribe={mockOnSubscribe} />,
+      <PodcastPreviewView
+        podcast={podcast}
+        onSubscribe={mockOnSubscribe}
+        onEpisodePress={mockOnEpisodePress}
+      />,
     );
 
   describe('Header Section', () => {

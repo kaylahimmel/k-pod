@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { PodcastPreviewScreenProps } from '../../navigation/types';
 import { PodcastPreviewView } from './PodcastPreviewView';
+import { Episode } from '../../models';
 
 export const PodcastPreviewScreen = ({
   navigation,
@@ -13,7 +14,26 @@ export const PodcastPreviewScreen = ({
     navigation.goBack();
   }, [navigation]);
 
-  return <PodcastPreviewView podcast={podcast} onSubscribe={handleSubscribe} />;
+  // Navigate to episode detail
+  const handleEpisodePress = useCallback(
+    (episode: Episode) => {
+      navigation.navigate('EpisodeDetail', {
+        episodeId: episode.id,
+        podcastId: podcast.id,
+        episode,
+        podcast,
+      });
+    },
+    [navigation, podcast],
+  );
+
+  return (
+    <PodcastPreviewView
+      podcast={podcast}
+      onSubscribe={handleSubscribe}
+      onEpisodePress={handleEpisodePress}
+    />
+  );
 };
 
 export default PodcastPreviewScreen;

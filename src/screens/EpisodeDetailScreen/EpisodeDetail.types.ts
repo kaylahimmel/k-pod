@@ -1,10 +1,13 @@
-import { Episode, Podcast } from '../../models';
+import { Episode, Podcast, DiscoveryPodcast } from '../../models';
 
 export interface EpisodeDetailViewProps {
   episodeId: string;
   podcastId: string;
   onPlayEpisode: (episode: Episode, podcast: Podcast) => void;
   onGoBack: () => void;
+  // Optional: Pass episode/podcast directly for unsubscribed podcasts
+  episode?: Episode;
+  discoveryPodcast?: DiscoveryPodcast;
 }
 
 export interface FormattedEpisodeDetail {

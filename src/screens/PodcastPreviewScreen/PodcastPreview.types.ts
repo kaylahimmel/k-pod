@@ -1,8 +1,9 @@
-import { DiscoveryPodcast } from '../../models';
+import { DiscoveryPodcast, Episode } from '../../models';
 
 export interface PodcastPreviewViewProps {
   podcast: DiscoveryPodcast;
   onSubscribe: () => void;
+  onEpisodePress: (episode: Episode) => void;
 }
 
 export interface FormattedPreviewEpisode {

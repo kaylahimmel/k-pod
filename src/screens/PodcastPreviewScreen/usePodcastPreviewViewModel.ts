@@ -30,6 +30,7 @@ export interface SubscribeButtonState {
 export const usePodcastPreviewViewModel = (
   podcast: DiscoveryPodcast,
   onSubscribe: () => void,
+  onEpisodePress: (episode: Episode) => void,
 ) => {
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(true);
@@ -161,6 +162,17 @@ export const usePodcastPreviewViewModel = (
     setShowFullDescription((prev) => !prev);
   }, []);
 
+  // Handle episode press - find the full episode and call the callback
+  const handleEpisodePress = useCallback(
+    (episodeId: string) => {
+      const episode = episodes.find((ep) => ep.id === episodeId);
+      if (episode) {
+        onEpisodePress(episode);
+      }
+    },
+    [episodes, onEpisodePress],
+  );
+
   return {
     formattedPodcast,
     formattedEpisodes,
@@ -175,6 +187,7 @@ export const usePodcastPreviewViewModel = (
     handleRetryEpisodes,
     handleSubscribe,
     toggleDescription,
+    handleEpisodePress,
   };
 };
 
