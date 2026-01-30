@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 import { formatPodcastDetail } from './PodcastDetailPresenter';
 import { Episode, Podcast, QueueItem } from '../../models';
 import { usePodcastStore, useQueueStore, useToast } from '../../hooks';
+import { RSSService } from '../../services/RSSService';
 
 // ViewModel: Manages state and logic
 export const usePodcastDetailViewModel = (
@@ -15,17 +16,38 @@ export const usePodcastDetailViewModel = (
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showAllEpisodes, setShowAllEpisodes] = useState(false);
   const toast = useToast();
-  const { podcasts, loading } = usePodcastStore();
+  const { podcasts, loading, updatePodcastEpisodes } = usePodcastStore();
   const { addToQueue, queue } = useQueueStore();
   const podcast = podcasts.find((p) => p.id === podcastId);
   // Format podcast for display
   const formattedPodcast = podcast ? formatPodcastDetail(podcast) : null;
 
-  const handleEpisodeRefresh = useCallback(() => {
+  // Refreshes episodes for this podcast by fetching latest from RSS feed
+  const handleEpisodeRefresh = useCallback(async () => {
+    if (!podcast) return;
+
     setRefreshing(true);
-    // TODO: Add refresh logic when RSS service integration is complete
-    setTimeout(() => setRefreshing(false), 1000);
-  }, [setRefreshing]);
+
+    const result = await RSSService.refreshEpisodes(podcast.id, podcast.rssUrl);
+
+    if (result.success && result.data) {
+      const existingIds = new Set(podcast.episodes.map((ep) => ep.id));
+      const newEpisodes = result.data.filter((ep) => !existingIds.has(ep.id));
+      updatePodcastEpisodes(podcast.id, result.data);
+
+      if (newEpisodes.length > 0) {
+        toast.showToast(
+          `Found ${newEpisodes.length} new episode${newEpisodes.length === 1 ? '' : 's'}`,
+        );
+      } else {
+        toast.showToast('No new episodes');
+      }
+    } else {
+      toast.showToast('Failed to refresh episodes');
+    }
+
+    setRefreshing(false);
+  }, [podcast, updatePodcastEpisodes, toast]);
 
   const handleEpisodeUnsubscribe = useCallback(() => {
     Alert.alert(

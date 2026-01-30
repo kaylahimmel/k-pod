@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { usePodcastStore } from '../../hooks';
+import { usePodcastStore, useToast } from '../../hooks';
+import { RSSService } from '../../services/RSSService';
 import { preparePodcastsForDisplay } from './LibraryPresenter';
 import { SortOption } from './Library.types';
 
@@ -10,7 +11,8 @@ export const useLibraryViewModel = (
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption] = useState<SortOption>('recent');
   const [refreshing, setRefreshing] = useState(false);
-  const { podcasts, loading, error } = usePodcastStore();
+  const { podcasts, loading, error, updatePodcastEpisodes } = usePodcastStore();
+  const toast = useToast();
   const displayPodcasts = preparePodcastsForDisplay(
     podcasts,
     searchQuery,
@@ -22,11 +24,41 @@ export const useLibraryViewModel = (
   const hasNoSearchResults =
     displayPodcasts.length === 0 && searchQuery.length > 0;
 
-  const handleRefresh = useCallback(() => {
+  // Refreshes all subscribed podcasts by fetching latest episodes from RSS feeds
+  const handleRefresh = useCallback(async () => {
+    if (podcasts.length === 0) return;
+
     setRefreshing(true);
-    // TODO: Add refresh logic when RSS service integration is complete
-    setTimeout(() => setRefreshing(false), 1000);
-  }, []);
+    let successCount = 0;
+    let newEpisodeCount = 0;
+
+    // Refresh all podcasts in parallel
+    const refreshPromises = podcasts.map(async (podcast) => {
+      const result = await RSSService.refreshEpisodes(
+        podcast.id,
+        podcast.rssUrl,
+      );
+      if (result.success && result.data) {
+        const existingIds = new Set(podcast.episodes.map((ep) => ep.id));
+        const newEpisodes = result.data.filter((ep) => !existingIds.has(ep.id));
+        newEpisodeCount += newEpisodes.length;
+        updatePodcastEpisodes(podcast.id, result.data);
+        successCount++;
+      }
+    });
+
+    await Promise.all(refreshPromises);
+    setRefreshing(false);
+
+    // Show feedback to user
+    if (newEpisodeCount > 0) {
+      toast.showToast(
+        `Found ${newEpisodeCount} new episode${newEpisodeCount === 1 ? '' : 's'}`,
+      );
+    } else if (successCount === podcasts.length) {
+      toast.showToast('All podcasts up to date');
+    }
+  }, [podcasts, updatePodcastEpisodes, toast]);
 
   const handleSearchQueryChange = useCallback((text: string) => {
     setSearchQuery(text);

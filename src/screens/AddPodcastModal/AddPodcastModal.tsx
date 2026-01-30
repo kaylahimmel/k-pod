@@ -8,6 +8,8 @@ export const AddPodcastModal = ({ navigation }: AddPodcastModalScreenProps) => {
   }, [navigation]);
 
   const handleGoToDiscover = useCallback(() => {
+    // Dismiss the modal first, then navigate to Discover tab
+    navigation.goBack();
     navigation.navigate('Main', {
       screen: 'DiscoverTab',
       params: { screen: 'Discover' },
