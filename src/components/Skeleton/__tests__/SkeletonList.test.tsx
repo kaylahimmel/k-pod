@@ -37,7 +37,7 @@ describe('SkeletonList', () => {
   });
 
   it('renders with custom card width', () => {
-    const { toJSON } = render(<SkeletonList cardWidth="90%" />);
+    const { toJSON } = render(<SkeletonList cardWidth='90%' />);
     expect(toJSON()).toBeTruthy();
   });
 

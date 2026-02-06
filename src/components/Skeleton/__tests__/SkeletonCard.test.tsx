@@ -23,7 +23,7 @@ describe('SkeletonCard', () => {
   });
 
   it('renders with percentage width', () => {
-    const { toJSON } = render(<SkeletonCard width="80%" height={100} />);
+    const { toJSON } = render(<SkeletonCard width='80%' height={100} />);
     expect(toJSON()).toBeTruthy();
   });
 

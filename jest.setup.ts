@@ -96,3 +96,25 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
     multiRemove: jest.fn(() => Promise.resolve()),
   },
 }));
+
+// Mock AudioPlayerService to avoid expo-av native module requirements
+jest.mock('./src/services/AudioPlayerService', () => ({
+  AudioPlayerService: {
+    loadEpisode: jest.fn().mockResolvedValue({ success: true }),
+    play: jest.fn().mockResolvedValue({ success: true }),
+    pause: jest.fn().mockResolvedValue({ success: true }),
+    stop: jest.fn().mockResolvedValue({ success: true }),
+    seek: jest.fn().mockResolvedValue({ success: true }),
+    setPlaybackSpeed: jest.fn().mockResolvedValue({ success: true }),
+    skipForward: jest.fn().mockResolvedValue({ success: true }),
+    skipBackward: jest.fn().mockResolvedValue({ success: true }),
+    getStatus: jest
+      .fn()
+      .mockResolvedValue({ success: true, data: { positionMillis: 0 } }),
+    getCurrentEpisodeId: jest.fn().mockReturnValue(null),
+    setOnProgress: jest.fn(),
+    setOnEnd: jest.fn(),
+    setOnError: jest.fn(),
+    cleanup: jest.fn().mockResolvedValue(undefined),
+  },
+}));
