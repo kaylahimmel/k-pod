@@ -3,8 +3,7 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { playerStore } from '../../stores/playerStore';
-import { queueStore } from '../../stores/queueStore';
+import { usePlaybackController } from '../../hooks';
 import { COLORS } from '../../constants';
 import { RootStackParamList } from '../../navigation/types';
 import { styles } from './MiniPlayer.styles';
@@ -12,42 +11,31 @@ import { styles } from './MiniPlayer.styles';
 export const MiniPlayer = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const currentEpisode = playerStore((state) => state.currentEpisode);
-  const isPlaying = playerStore((state) => state.isPlaying);
-  const setIsPlaying = playerStore((state) => state.setIsPlaying);
-  const position = playerStore((state) => state.position);
-  const duration = playerStore((state) => state.duration);
-  const queue = queueStore((state) => state.queue);
+  const playbackController = usePlaybackController();
 
-  // Find the podcast for the current episode from the queue
-  const currentPodcast = useMemo(() => {
-    if (!currentEpisode) return null;
-    const queueItem = queue.find(
-      (item) => item.episode.id === currentEpisode.id,
-    );
-    return queueItem?.podcast ?? null;
-  }, [currentEpisode, queue]);
+  // Get the current podcast directly from playback controller
+  const currentPodcast = playbackController.currentPodcast;
 
   // Calculate progress percentage
   const progressPercentage = useMemo(() => {
-    if (duration === 0) return 0;
-    return (position / duration) * 100;
-  }, [position, duration]);
+    if (playbackController.duration === 0) return 0;
+    return (playbackController.position / playbackController.duration) * 100;
+  }, [playbackController.position, playbackController.duration]);
 
   const handlePress = useCallback(() => {
-    if (currentEpisode && currentPodcast) {
+    if (playbackController.currentEpisode && currentPodcast) {
       navigation.navigate('FullPlayer', {
-        episode: currentEpisode,
+        episode: playbackController.currentEpisode,
         podcast: currentPodcast,
       });
     }
-  }, [currentEpisode, currentPodcast, navigation]);
+  }, [playbackController.currentEpisode, currentPodcast, navigation]);
 
   const handlePlayPause = useCallback(() => {
-    setIsPlaying(!isPlaying);
-  }, [isPlaying, setIsPlaying]);
+    playbackController.togglePlayPause();
+  }, [playbackController]);
 
-  const hasEpisode = currentEpisode !== null;
+  const hasEpisode = playbackController.currentEpisode !== null;
 
   // Empty state when no episode is playing
   if (!hasEpisode) {
@@ -108,7 +96,7 @@ export const MiniPlayer = () => {
             numberOfLines={1}
             testID='mini-player-title'
           >
-            {currentEpisode.title}
+            {playbackController.currentEpisode?.title}
           </Text>
           <Text
             style={styles.podcastName}
@@ -125,7 +113,7 @@ export const MiniPlayer = () => {
           testID='mini-player-play-button'
         >
           <Ionicons
-            name={isPlaying ? 'pause' : 'play'}
+            name={playbackController.isPlaying ? 'pause' : 'play'}
             size={24}
             color={COLORS.cardBackground}
           />

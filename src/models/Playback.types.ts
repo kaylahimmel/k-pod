@@ -1,4 +1,5 @@
 import { Episode } from './Episode.types';
+import { Podcast } from './Podcast.types';
 
 /**
  * Playback speed options (0.5x to 2x in 0.1 increments)
@@ -38,11 +39,13 @@ export type OnErrorCallback = (error: string) => void;
 
 export interface PlayerStore {
   currentEpisode: Episode | null;
+  currentPodcast: Podcast | null;
   isPlaying: boolean;
   position: number; // Current playback position in seconds
   duration: number; // Total episode duration in seconds
   speed: PlaybackSpeed; // Playback speed (0.5 to 2.0)
   setCurrentEpisode: (episode: Episode | null) => void;
+  setCurrentPodcast: (podcast: Podcast | null) => void;
   setIsPlaying: (isPlaying: boolean) => void;
   setPosition: (position: number) => void;
   setDuration: (duration: number) => void;

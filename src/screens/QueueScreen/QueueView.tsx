@@ -39,8 +39,8 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
     );
   }
 
-  const currentlyPlayingItem = viewModel.displayQueue[0];
-  const upcomingItems = viewModel.displayQueue.slice(1);
+  const currentlyPlayingItem = viewModel.currentlyPlaying;
+  const upcomingItems = viewModel.upcomingItems;
 
   return (
     <GestureHandlerRootView style={styles.container}>
