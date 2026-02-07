@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import DraggableFlatList, {
   RenderItemParams,
@@ -11,6 +11,13 @@ import { CardQueueItem, HeaderQueue, StateEmpty } from '../../components';
 
 export const QueueView = ({ onEpisodePress, onPlayItem }: QueueViewProps) => {
   const viewModel = useQueueViewModel(onEpisodePress, onPlayItem);
+
+  // Get currently playing item and all other items (must be before early return)
+  const currentlyPlayingItem = viewModel.currentlyPlaying;
+  const otherItems = useMemo(
+    () => viewModel.displayQueue.filter((item) => !item.isCurrentlyPlaying),
+    [viewModel.displayQueue],
+  );
 
   const renderItem = ({
     item,
@@ -38,12 +45,6 @@ export const QueueView = ({ onEpisodePress, onPlayItem }: QueueViewProps) => {
       </View>
     );
   }
-
-  // Get currently playing item and all other items
-  const currentlyPlayingItem = viewModel.currentlyPlaying;
-  const otherItems = viewModel.displayQueue.filter(
-    (item) => !item.isCurrentlyPlaying,
-  );
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -96,6 +97,13 @@ export const QueueView = ({ onEpisodePress, onPlayItem }: QueueViewProps) => {
               keyExtractor={(item) => item.id}
               renderItem={renderItem}
               contentContainerStyle={styles.listContent}
+              activationDistance={10}
+              animationConfig={{
+                damping: 20,
+                stiffness: 120,
+                mass: 0.3,
+                overshootClamping: true,
+              }}
             />
           )}
         </View>

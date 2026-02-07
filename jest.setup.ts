@@ -49,6 +49,9 @@ jest.mock('react-native-draggable-flatlist', () => {
   const ScaleDecorator = ({ children }: { children: React.ReactNode }) =>
     React.createElement(View, null, children);
 
+  const OpacityDecorator = ({ children }: { children: React.ReactNode }) =>
+    React.createElement(View, null, children);
+
   const DraggableFlatList = ({
     data,
     renderItem,
@@ -67,6 +70,7 @@ jest.mock('react-native-draggable-flatlist', () => {
     __esModule: true,
     default: DraggableFlatList,
     ScaleDecorator,
+    OpacityDecorator,
   };
 });
 
