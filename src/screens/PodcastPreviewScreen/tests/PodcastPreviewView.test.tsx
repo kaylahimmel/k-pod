@@ -19,6 +19,7 @@ jest.mock('../../../services', () => ({
 describe('PodcastPreviewView', () => {
   const mockOnSubscribe = jest.fn();
   const mockOnEpisodePress = jest.fn();
+  const mockOnPlayEpisode = jest.fn();
 
   const mockRSSPodcast = createMockPodcast({
     id: 'rss-1',
@@ -65,6 +66,7 @@ describe('PodcastPreviewView', () => {
         podcast={podcast}
         onSubscribe={mockOnSubscribe}
         onEpisodePress={mockOnEpisodePress}
+        onPlayEpisode={mockOnPlayEpisode}
       />,
     );
 

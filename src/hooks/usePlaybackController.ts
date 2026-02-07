@@ -4,6 +4,7 @@ import { useQueueStore } from './useQueueStore';
 import { useSettingsStore } from './useSettingsStore';
 import { AudioPlayerService } from '../services/AudioPlayerService';
 import { Episode, Podcast, PlaybackSpeed, QueueItem } from '../models';
+import { queueStore } from '../stores';
 
 /**
  * PlaybackController Hook
@@ -132,7 +133,8 @@ export const usePlaybackController = () => {
   /**
    * Load and play an episode
    * If the episode is in the queue, update currentIndex
-   * If not in queue, just play it (doesn't affect queue)
+   * If not in queue, add it to the queue and play
+   * Reads fresh queue state to avoid stale closure issues
    */
   const playEpisode = useCallback(
     async (episode: Episode, podcast: Podcast) => {
@@ -141,12 +143,15 @@ export const usePlaybackController = () => {
       // Check if this is a different episode than currently playing
       const isDifferentEpisode = currentEpisode?.id !== episode.id;
 
+      // Get fresh queue state to avoid stale closure
+      const { queue: freshQueue } = queueStore.getState();
+
       // If it's the same episode, just update podcast and ensure it's in queue
       if (!isDifferentEpisode) {
         setCurrentPodcast(podcast);
 
         // Check if this episode is in the queue
-        const queueIndex = queue.findIndex(
+        const queueIndex = freshQueue.findIndex(
           (item) => item.episode.id === episode.id,
         );
         if (queueIndex !== -1) {
@@ -159,8 +164,8 @@ export const usePlaybackController = () => {
             podcast,
             position: 0,
           };
-          // Insert at the beginning of the queue
-          setQueue([newQueueItem, ...queue]);
+          // Insert at the beginning of the queue using fresh queue
+          setQueue([newQueueItem, ...freshQueue]);
           setCurrentIndex(0);
         }
         return; // Don't reload the same episode
@@ -176,8 +181,11 @@ export const usePlaybackController = () => {
         setDuration(0);
         setIsPlaying(false); // Set to false while loading new episode
 
+        // Get fresh queue state again in case it changed
+        const { queue: currentQueue } = queueStore.getState();
+
         // Check if this episode is in the queue, add it if not
-        let queueIndex = queue.findIndex(
+        let queueIndex = currentQueue.findIndex(
           (item) => item.episode.id === episode.id,
         );
 
@@ -189,8 +197,8 @@ export const usePlaybackController = () => {
             podcast,
             position: 0,
           };
-          // Insert at the beginning of the queue
-          setQueue([newQueueItem, ...queue]);
+          // Insert at the beginning of the queue using fresh queue
+          setQueue([newQueueItem, ...currentQueue]);
           queueIndex = 0;
         }
 
@@ -217,7 +225,6 @@ export const usePlaybackController = () => {
     },
     [
       currentEpisode?.id,
-      queue,
       setCurrentIndex,
       setQueue,
       setCurrentEpisode,
@@ -327,14 +334,148 @@ export const usePlaybackController = () => {
   }, [currentIndex, queue, playEpisode]);
 
   /**
-   * Play a specific queue item by index
+   * Play a specific queue item
+   * Moves the item to the current playing position and plays it
    */
   const playQueueItem = useCallback(
     async (queueItem: QueueItem) => {
-      await playEpisode(queueItem.episode, queueItem.podcast);
+      if (isLoadingRef.current) return;
+
+      // Find the index of this queue item in the current queue
+      const itemIndex = queue.findIndex((item) => item.id === queueItem.id);
+
+      if (itemIndex === -1) {
+        // Item not found in queue, shouldn't happen but handle gracefully
+        return;
+      }
+
+      // Check if this is a different episode than currently playing
+      const isDifferentEpisode = currentEpisode?.id !== queueItem.episode.id;
+
+      if (!isDifferentEpisode) {
+        // Same episode - just ensure currentIndex is correct and reorder if needed
+        if (itemIndex !== currentIndex) {
+          // Move item to current position
+          const newQueue = [...queue];
+          const [movedItem] = newQueue.splice(itemIndex, 1);
+          newQueue.splice(currentIndex, 0, movedItem);
+          setQueue(newQueue);
+        }
+        setCurrentPodcast(queueItem.podcast);
+        return;
+      }
+
+      isLoadingRef.current = true;
+
+      try {
+        // Reorder queue: move the selected item to the current playing position
+        const newQueue = [...queue];
+        const [movedItem] = newQueue.splice(itemIndex, 1);
+        newQueue.splice(currentIndex, 0, movedItem);
+
+        // Update queue with new order
+        setQueue(newQueue);
+
+        // currentIndex stays the same since we moved the item TO currentIndex
+
+        // Update player store for instant UI feedback
+        setCurrentEpisode(queueItem.episode);
+        setCurrentPodcast(queueItem.podcast);
+        setPosition(0);
+        setDuration(0);
+        setIsPlaying(false); // Set to false while loading
+
+        // Load the episode
+        const loadResult = await AudioPlayerService.loadEpisode(
+          queueItem.episode,
+        );
+        if (!loadResult.success) {
+          console.error('Failed to load episode:', loadResult.error);
+          return;
+        }
+
+        // Set playback speed
+        await AudioPlayerService.setPlaybackSpeed(speed);
+
+        // Start playback
+        const playResult = await AudioPlayerService.play();
+        if (playResult.success) {
+          setIsPlaying(true);
+        }
+      } finally {
+        isLoadingRef.current = false;
+      }
     },
-    [playEpisode],
+    [
+      queue,
+      currentIndex,
+      currentEpisode?.id,
+      setQueue,
+      setCurrentEpisode,
+      setCurrentPodcast,
+      setPosition,
+      setDuration,
+      setIsPlaying,
+      speed,
+    ],
   );
+
+  /**
+   * Stop current playback and play the next episode in the queue
+   * Used when the currently playing episode needs to be removed (e.g., unsubscribe)
+   * Note: After removeFromQueue adjusts currentIndex, it already points to the next item
+   * This function reads fresh state from the store and directly loads/plays to avoid
+   * stale closure values in other callbacks
+   */
+  const stopCurrentAndPlayNext = useCallback(async () => {
+    // Stop current playback
+    await AudioPlayerService.stop();
+
+    // Get fresh queue state (not from closure) since removeFromQueue was just called
+    const { queue: currentQueue, currentIndex: currentIdx } =
+      queueStore.getState();
+
+    // After removeFromQueue, currentIndex already points to the next item
+    if (currentIdx < currentQueue.length) {
+      const nextItem = currentQueue[currentIdx];
+
+      // Update player store immediately for instant UI feedback
+      setCurrentEpisode(nextItem.episode);
+      setCurrentPodcast(nextItem.podcast);
+      setPosition(0);
+      setDuration(0);
+      setIsPlaying(false);
+
+      // Note: We don't call setCurrentIndex here because removeFromQueue already set it correctly
+
+      // Load the episode
+      const loadResult = await AudioPlayerService.loadEpisode(nextItem.episode);
+      if (loadResult.success) {
+        // Set playback speed
+        await AudioPlayerService.setPlaybackSpeed(speed);
+
+        // Start playback
+        const playResult = await AudioPlayerService.play();
+        if (playResult.success) {
+          setIsPlaying(true);
+        }
+      }
+    } else {
+      // No next episode - reset player state
+      setCurrentEpisode(null);
+      setCurrentPodcast(null);
+      setIsPlaying(false);
+      setPosition(0);
+      setDuration(0);
+    }
+  }, [
+    speed,
+    setCurrentEpisode,
+    setCurrentPodcast,
+    setIsPlaying,
+    setPosition,
+    setDuration,
+  ]);
 
   return {
     // State
@@ -355,6 +496,7 @@ export const usePlaybackController = () => {
     playNext,
     playPrevious,
     playQueueItem,
+    stopCurrentAndPlayNext,
 
     // Queue info
     hasNext: currentIndex < queue.length - 1,

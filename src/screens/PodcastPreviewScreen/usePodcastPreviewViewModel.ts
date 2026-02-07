@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { usePodcastStore, useToast } from '../../hooks';
+import { usePodcastStore, useToast, useQueueStore } from '../../hooks';
 import { RSSService } from '../../services';
-import { DiscoveryPodcast, Episode, Podcast } from '../../models';
+import { DiscoveryPodcast, Episode, Podcast, QueueItem } from '../../models';
 import {
   formatPodcastPreview,
   formatPreviewEpisodes,
@@ -31,6 +31,7 @@ export const usePodcastPreviewViewModel = (
   podcast: DiscoveryPodcast,
   onSubscribe: () => void,
   onEpisodePress: (episode: Episode) => void,
+  onPlayEpisode: (episode: Episode, podcast: Podcast) => void,
 ) => {
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(true);
@@ -39,6 +40,7 @@ export const usePodcastPreviewViewModel = (
   const [isSubscribing, setIsSubscribing] = useState(false);
 
   const { podcasts, addPodcast } = usePodcastStore();
+  const { queue, addToQueue } = useQueueStore();
   const toast = useToast();
   const subscribedFeedUrls = podcasts.map((p) => p.rssUrl);
 
@@ -173,6 +175,71 @@ export const usePodcastPreviewViewModel = (
     [episodes, onEpisodePress],
   );
 
+  // Get raw episode data by ID
+  const getEpisodeRawData = useCallback(
+    (episodeId: string) => {
+      return episodes.find((ep) => ep.id === episodeId);
+    },
+    [episodes],
+  );
+
+  // Check if episode is in queue
+  const isEpisodeInQueue = useCallback(
+    (episodeId: string) => {
+      return queue.some((item) => item.episode.id === episodeId);
+    },
+    [queue],
+  );
+
+  // Convert DiscoveryPodcast to Podcast format for playback
+  const convertToPodcast = useCallback((): Podcast => {
+    const now = new Date().toISOString();
+    return {
+      id: podcast.id,
+      title: podcast.title,
+      author: podcast.author || '',
+      description: podcast.description || '',
+      artworkUrl: podcast.artworkUrl,
+      rssUrl: podcast.feedUrl,
+      episodes: episodes,
+      subscribeDate: now,
+      lastUpdated: now,
+    };
+  }, [podcast, episodes]);
+
+  // Handle play episode
+  const handleEpisodePlayEpisode = useCallback(
+    (episode: Episode) => {
+      const podcastData = convertToPodcast();
+      onPlayEpisode(episode, podcastData);
+    },
+    [convertToPodcast, onPlayEpisode],
+  );
+
+  // Handle add to queue
+  const handleEpisodeAddToQueue = useCallback(
+    (episode: Episode) => {
+      const podcastData = convertToPodcast();
+
+      // Check if already in queue
+      const isInQueue = queue.some((item) => item.episode.id === episode.id);
+      if (isInQueue) {
+        return;
+      }
+
+      const queueItem: QueueItem = {
+        id: `${episode.id}-${Date.now()}`,
+        episode,
+        podcast: podcastData,
+        position: queue.length,
+      };
+
+      addToQueue(queueItem);
+      toast.showToast(`Added "${episode.title}" to queue`);
+    },
+    [convertToPodcast, addToQueue, toast, queue],
+  );
+
   return {
     formattedPodcast,
     formattedEpisodes,
@@ -188,6 +255,11 @@ export const usePodcastPreviewViewModel = (
     handleSubscribe,
     toggleDescription,
     handleEpisodePress,
+    getEpisodeRawData,
+    isEpisodeInQueue,
+    handleEpisodePlayEpisode,
+    handleEpisodeAddToQueue,
+    convertToPodcast,
   };
 };
 

@@ -9,8 +9,8 @@ import { FormattedQueueItem, QueueViewProps } from './Queue.types';
 import { styles } from './Queue.styles';
 import { CardQueueItem, HeaderQueue, StateEmpty } from '../../components';
 
-export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
-  const viewModel = useQueueViewModel(onEpisodePress);
+export const QueueView = ({ onEpisodePress, onPlayItem }: QueueViewProps) => {
+  const viewModel = useQueueViewModel(onEpisodePress, onPlayItem);
 
   const renderItem = ({
     item,
@@ -39,8 +39,11 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
     );
   }
 
+  // Get currently playing item and all other items
   const currentlyPlayingItem = viewModel.currentlyPlaying;
-  const upcomingItems = viewModel.upcomingItems;
+  const otherItems = viewModel.displayQueue.filter(
+    (item) => !item.isCurrentlyPlaying,
+  );
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -53,7 +56,7 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
 
       {viewModel.hasItems && (
         <View style={styles.queueListContainer}>
-          {/* Currently Playing Episode - Fixed at top */}
+          {/* Currently Playing Episode - Fixed at top, not draggable */}
           {currentlyPlayingItem && (
             <View>
               <CardQueueItem
@@ -72,13 +75,24 @@ export const QueueView = ({ onEpisodePress }: QueueViewProps) => {
             </View>
           )}
 
-          {/* Upcoming Episodes - Draggable */}
-          {upcomingItems.length > 0 && (
+          {/* All Other Episodes - Draggable */}
+          {otherItems.length > 0 && (
             <DraggableFlatList
-              data={upcomingItems}
-              onDragEnd={({ from, to }) =>
-                viewModel.handleReorder(from + 1, to + 1)
-              }
+              data={otherItems}
+              onDragEnd={({ from, to }) => {
+                // Map draggable list indices to actual queue indices
+                const fromItem = otherItems[from];
+                const toItem = otherItems[to];
+
+                const actualFromIndex = viewModel.displayQueue.findIndex(
+                  (item) => item.id === fromItem.id,
+                );
+                const actualToIndex = viewModel.displayQueue.findIndex(
+                  (item) => item.id === toItem.id,
+                );
+
+                viewModel.handleReorder(actualFromIndex, actualToIndex);
+              }}
               keyExtractor={(item) => item.id}
               renderItem={renderItem}
               contentContainerStyle={styles.listContent}

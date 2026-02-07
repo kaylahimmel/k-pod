@@ -1,5 +1,8 @@
+import { QueueItem } from '../../models';
+
 export interface QueueViewProps {
   onEpisodePress?: (episodeId: string, podcastId: string) => void;
+  onPlayItem?: (item: QueueItem) => void;
 }
 
 export interface FormattedQueueItem {

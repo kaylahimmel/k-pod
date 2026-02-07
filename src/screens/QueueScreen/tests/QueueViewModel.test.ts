@@ -279,47 +279,84 @@ describe('QueueViewModel', () => {
   });
 
   describe('handlePlayItem', () => {
-    it('should move item to top and set currentIndex to 0', () => {
+    it('should call onPlayItem callback with the queue item', () => {
+      const mockOnPlayItem = jest.fn();
+      const mockQueueItem = createMockQueueItem({ id: 'q3' });
+
       queueStore.setState({
         queue: [
           createMockQueueItem({ id: 'q1' }),
           createMockQueueItem({ id: 'q2' }),
-          createMockQueueItem({ id: 'q3' }),
+          mockQueueItem,
         ],
         currentIndex: 0,
       });
 
-      const { result } = renderHook(() => useQueueViewModel());
+      const { result } = renderHook(() =>
+        useQueueViewModel(undefined, mockOnPlayItem),
+      );
       const formattedItem = result.current.displayQueue[2]; // Third item
 
       act(() => {
         result.current.handlePlayItem(formattedItem);
       });
 
-      const state = queueStore.getState();
-      expect(state.currentIndex).toBe(0);
-      expect(state.queue[0].id).toBe('q3');
+      // Verify callback was called with correct item
+      expect(mockOnPlayItem).toHaveBeenCalledWith(mockQueueItem);
     });
 
-    it('should only set currentIndex when item is already at top', () => {
+    it('should not call onPlayItem when callback is not provided', () => {
       queueStore.setState({
         queue: [
           createMockQueueItem({ id: 'q1' }),
           createMockQueueItem({ id: 'q2' }),
         ],
-        currentIndex: 1,
+        currentIndex: 0,
       });
 
       const { result } = renderHook(() => useQueueViewModel());
       const formattedItem = result.current.displayQueue[0]; // First item
 
-      act(() => {
-        result.current.handlePlayItem(formattedItem);
+      // Should not throw
+      expect(() => {
+        act(() => {
+          result.current.handlePlayItem(formattedItem);
+        });
+      }).not.toThrow();
+    });
+
+    it('should not call onPlayItem when item is not found in queue', () => {
+      const mockOnPlayItem = jest.fn();
+
+      queueStore.setState({
+        queue: [createMockQueueItem({ id: 'q1' })],
+        currentIndex: 0,
       });
 
-      const state = queueStore.getState();
-      expect(state.currentIndex).toBe(0);
-      expect(state.queue[0].id).toBe('q1');
+      const { result } = renderHook(() =>
+        useQueueViewModel(undefined, mockOnPlayItem),
+      );
+
+      // Create a fake formatted item that doesn't exist in queue
+      const fakeItem: FormattedQueueItem = {
+        id: 'non-existent',
+        episodeId: 'fake-ep',
+        episodeTitle: 'Fake',
+        displayTitle: 'Fake',
+        podcastTitle: 'Fake Podcast',
+        podcastArtworkUrl: '',
+        duration: 1800,
+        formattedDuration: '30:00',
+        position: 0,
+        positionLabel: '#1',
+        isCurrentlyPlaying: false,
+      };
+
+      act(() => {
+        result.current.handlePlayItem(fakeItem);
+      });
+
+      expect(mockOnPlayItem).not.toHaveBeenCalled();
     });
   });
 

@@ -13,7 +13,13 @@ import {
   FormattedPreviewEpisode,
 } from './PodcastPreview.types';
 import { usePodcastPreviewViewModel } from './usePodcastPreviewViewModel';
-import { Toast, StateLoading, StateError, StateEmpty } from '../../components';
+import {
+  Toast,
+  StateLoading,
+  StateError,
+  StateEmpty,
+  CardEpisode,
+} from '../../components';
 import { styles } from './PodcastPreview.styles';
 import { COLORS } from '../../constants';
 
@@ -21,36 +27,44 @@ export const PodcastPreviewView = ({
   podcast,
   onSubscribe,
   onEpisodePress,
+  onPlayEpisode,
 }: PodcastPreviewViewProps) => {
   const viewModel = usePodcastPreviewViewModel(
     podcast,
     onSubscribe,
     onEpisodePress,
+    onPlayEpisode,
   );
 
-  const renderEpisodeCard = (
-    episode: FormattedPreviewEpisode,
-    index: number,
-    isLast: boolean,
-  ) => (
-    <TouchableOpacity
-      key={episode.id}
-      style={[styles.episodeCard, isLast && styles.episodeCardLast]}
-      onPress={() => viewModel.handleEpisodePress(episode.id)}
-      activeOpacity={0.7}
-    >
-      <Text style={styles.episodeTitle} numberOfLines={2}>
-        {episode.displayTitle}
-      </Text>
-      <Text style={styles.episodeDescription} numberOfLines={2}>
-        {episode.truncatedDescription}
-      </Text>
-      <View style={styles.episodeMeta}>
-        <Text style={styles.episodeDate}>{episode.formattedPublishDate}</Text>
-        <Text style={styles.episodeDuration}>{episode.formattedDuration}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const renderEpisodeCard = (episode: FormattedPreviewEpisode) => {
+    const rawEpisode = viewModel.getEpisodeRawData(episode.id);
+    const podcastData = viewModel.convertToPodcast();
+    if (!rawEpisode) return null;
+
+    // Transform FormattedPreviewEpisode to match CardEpisode's expected FormattedEpisode
+    const formattedForCard = {
+      ...episode,
+      podcastId: podcast.id,
+      audioUrl: rawEpisode.audioUrl,
+      played: false, // Preview episodes are never played yet
+    };
+
+    return (
+      <CardEpisode
+        key={episode.id}
+        podcast={podcastData}
+        episode={formattedForCard}
+        onPress={() => rawEpisode && viewModel.handleEpisodePress(episode.id)}
+        onPlay={() =>
+          rawEpisode && viewModel.handleEpisodePlayEpisode(rawEpisode)
+        }
+        onAddToQueue={() =>
+          rawEpisode && viewModel.handleEpisodeAddToQueue(rawEpisode)
+        }
+        isInQueue={viewModel.isEpisodeInQueue(episode.id)}
+      />
+    );
+  };
 
   const renderEpisodesContent = () => {
     if (viewModel.isLoadingEpisodes) {
@@ -78,12 +92,8 @@ export const PodcastPreviewView = ({
 
     return (
       <View style={styles.episodesList}>
-        {viewModel.formattedEpisodes.map((episode, index) =>
-          renderEpisodeCard(
-            episode,
-            index,
-            index === viewModel.formattedEpisodes.length - 1,
-          ),
+        {viewModel.formattedEpisodes.map((episode) =>
+          renderEpisodeCard(episode),
         )}
       </View>
     );

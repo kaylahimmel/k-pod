@@ -14,9 +14,30 @@ export const queueStore = create<QueueStore>()(
           queue: [...state.queue, item],
         })),
       removeFromQueue: (itemId) =>
-        set((state) => ({
-          queue: state.queue.filter((item) => item.id !== itemId),
-        })),
+        set((state) => {
+          const itemIndex = state.queue.findIndex((item) => item.id === itemId);
+          if (itemIndex === -1) {
+            return state; // Item not found
+          }
+
+          const newQueue = state.queue.filter((item) => item.id !== itemId);
+          let newCurrentIndex = state.currentIndex;
+
+          // Adjust currentIndex based on which item was removed
+          if (itemIndex < state.currentIndex) {
+            // Item removed before current index - decrement currentIndex
+            newCurrentIndex = Math.max(0, state.currentIndex - 1);
+          } else if (itemIndex === state.currentIndex) {
+            // Currently playing item was removed - keep same index (points to next item)
+            // But make sure it doesn't exceed the new queue length
+            newCurrentIndex = Math.min(state.currentIndex, newQueue.length - 1);
+          }
+
+          return {
+            queue: newQueue,
+            currentIndex: Math.max(0, newCurrentIndex), // Ensure non-negative
+          };
+        }),
       reorderQueue: (fromIndex, toIndex) =>
         set((state) => {
           const newQueue = [...state.queue];

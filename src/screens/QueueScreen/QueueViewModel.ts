@@ -13,6 +13,7 @@ import { FormattedQueueItem } from './Queue.types';
 
 export const useQueueViewModel = (
   onEpisodePress?: (episodeId: string, podcastId: string) => void,
+  onPlayItem?: (item: QueueItem) => void,
 ) => {
   const {
     queue,
@@ -110,18 +111,14 @@ export const useQueueViewModel = (
 
   const handlePlayItem = useCallback(
     (item: FormattedQueueItem) => {
-      // Find the actual index in the queue
-      const actualIndex = queue.findIndex((q) => q.id === item.id);
-      if (actualIndex !== -1) {
-        // If the item is not already at the top, move it there
-        if (actualIndex !== 0) {
-          reorderQueue(actualIndex, 0);
-        }
-        // Always set currentIndex to 0 since that's where the playing item will be
-        setCurrentIndex(0);
+      // Find the actual queue item
+      const queueItem = queue.find((q) => q.id === item.id);
+      if (queueItem && onPlayItem) {
+        // Call the play handler from usePlaybackController
+        onPlayItem(queueItem);
       }
     },
-    [queue, reorderQueue, setCurrentIndex],
+    [queue, onPlayItem],
   );
 
   const handleEpisodePress = useCallback(
