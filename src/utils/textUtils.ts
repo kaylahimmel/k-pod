@@ -17,7 +17,7 @@ export function truncateText(text: string, maxLength: number): string {
  * @returns Plain text string
  */
 export function stripHtml(html: string): string {
-  if (!html) return '';
+  if (!html || typeof html !== 'string') return '';
   return html
     .replace(/<[^>]*>/g, '') // Remove HTML tags
     .replace(/&nbsp;/g, ' ')

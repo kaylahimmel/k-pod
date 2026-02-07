@@ -5,7 +5,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { COLORS } from '../../constants';
 import { FormattedQueueItem } from '../../screens/QueueScreen/Queue.types';
 import { styles } from './CardQueueItem.styles';
-import { ScaleDecorator } from 'react-native-draggable-flatlist';
+import { OpacityDecorator } from 'react-native-draggable-flatlist';
 
 interface CardQueueItemProps {
   item: FormattedQueueItem;
@@ -131,7 +131,7 @@ export const CardQueueItem = ({
   );
 
   return isDraggable ? (
-    <ScaleDecorator>{cardContent}</ScaleDecorator>
+    <OpacityDecorator>{cardContent}</OpacityDecorator>
   ) : (
     cardContent
   );

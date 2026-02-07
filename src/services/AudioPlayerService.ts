@@ -186,17 +186,23 @@ async function stop(): Promise<ServiceResult<void>> {
 }
 
 /**
- * Skip forward or backward by 15 seconds
+ * Skip forward by specified seconds
  */
-async function skipForward(seconds: number = 15) {
+async function skipForward(seconds: number = 15): Promise<ServiceResult<void>> {
   const status = await getStatus();
   if (status.success) {
     const newPosition = status.data.positionMillis / 1000 + seconds;
     return seek(newPosition);
   }
+  return { success: false, error: 'Failed to get current status' };
 }
 
-async function skipBackward(seconds: number = 15) {
+/**
+ * Skip backward by specified seconds
+ */
+async function skipBackward(
+  seconds: number = 15,
+): Promise<ServiceResult<void>> {
   const status = await getStatus();
   if (status.success) {
     const newPosition = Math.max(
@@ -205,6 +211,7 @@ async function skipBackward(seconds: number = 15) {
     );
     return seek(newPosition);
   }
+  return { success: false, error: 'Failed to get current status' };
 }
 
 /**

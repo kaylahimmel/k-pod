@@ -70,10 +70,16 @@ describe('FullPlayerScreen', () => {
       expect(getByText('1x')).toBeTruthy();
     });
 
-    it('should display Add to Queue button', () => {
-      const { getByText } = renderScreen();
+    it('should not display Add to Queue button since episode is auto-added', () => {
+      const { queryByText } = renderScreen();
 
-      expect(getByText('Add to Queue')).toBeTruthy();
+      // Episode is automatically added to queue, so button should be hidden
+      expect(queryByText('Add to Queue')).toBeNull();
+
+      // Verify episode was automatically added to queue
+      const queue = queueStore.getState().queue;
+      expect(queue).toHaveLength(1);
+      expect(queue[0].episode.id).toBe('player-episode-1');
     });
   });
 
@@ -88,7 +94,10 @@ describe('FullPlayerScreen', () => {
 
   describe('Player State', () => {
     it('should show pause button when playing', () => {
-      playerStore.setState({ isPlaying: true });
+      playerStore.setState({
+        currentEpisode: MOCK_PLAYER_EPISODE,
+        isPlaying: true,
+      });
 
       const { getByLabelText } = renderScreen();
 
@@ -105,6 +114,7 @@ describe('FullPlayerScreen', () => {
 
     it('should display current playback position', () => {
       playerStore.setState({
+        currentEpisode: MOCK_PLAYER_EPISODE,
         position: 125, // 2:05
         duration: 3600,
       });

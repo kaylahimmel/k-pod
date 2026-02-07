@@ -1,7 +1,7 @@
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { usePodcastPreviewViewModel } from '../usePodcastPreviewViewModel';
 import { RSSService } from '../../../services';
-import { podcastStore } from '../../../stores';
+import { podcastStore, queueStore } from '../../../stores';
 import { Alert } from 'react-native';
 import {
   createMockDiscoveryPodcast,
@@ -18,6 +18,7 @@ jest.mock('../../../services', () => ({
 // Mock the stores
 jest.mock('../../../stores', () => ({
   podcastStore: jest.fn(),
+  queueStore: jest.fn(),
 }));
 
 // Mock Alert
@@ -26,6 +27,7 @@ jest.spyOn(Alert, 'alert');
 describe('usePodcastPreviewViewModel', () => {
   const mockOnSubscribe = jest.fn();
   const mockOnEpisodePress = jest.fn();
+  const mockOnPlayEpisode = jest.fn();
   const mockAddPodcast = jest.fn();
 
   const mockDiscoveryPodcast = createMockDiscoveryPodcast({
@@ -58,6 +60,7 @@ describe('usePodcastPreviewViewModel', () => {
         mockDiscoveryPodcast,
         mockOnSubscribe,
         mockOnEpisodePress,
+        mockOnPlayEpisode,
       ),
     );
 
@@ -66,6 +69,11 @@ describe('usePodcastPreviewViewModel', () => {
     (podcastStore as unknown as jest.Mock).mockReturnValue({
       podcasts: [],
       addPodcast: mockAddPodcast,
+    });
+    (queueStore as unknown as jest.Mock).mockReturnValue({
+      queue: [],
+      addToQueue: jest.fn(),
+      removeFromQueue: jest.fn(),
     });
     (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValue({
       success: true,

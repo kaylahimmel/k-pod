@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, act } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { QueueView } from '../QueueView';
 import { queueStore, playerStore } from '../../../stores';
@@ -230,7 +230,9 @@ describe('QueueView', () => {
       expect(queueStore.getState().queue).toHaveLength(2);
 
       // Test the store action directly since we're testing state management
-      queueStore.getState().removeFromQueue('q2');
+      act(() => {
+        queueStore.getState().removeFromQueue('q2');
+      });
 
       expect(queueStore.getState().queue).toHaveLength(1);
       expect(queueStore.getState().queue[0].id).toBe('q1');
@@ -272,29 +274,31 @@ describe('QueueView', () => {
       alertSpy.mockRestore();
     });
 
-    it('should move episode to top and update currentIndex when play button is tapped', () => {
+    it('should call onPlayItem when play button is tapped', () => {
+      const mockOnPlayItem = jest.fn();
+      const mockQueueItem = createMockQueueItem({
+        id: 'q2',
+        episode: createMockEpisode({ title: 'Tap Me' }),
+      });
+
       queueStore.setState({
-        queue: [
-          createMockQueueItem({ id: 'q1' }),
-          createMockQueueItem({
-            id: 'q2',
-            episode: createMockEpisode({ title: 'Tap Me' }),
-          }),
-        ],
+        queue: [createMockQueueItem({ id: 'q1' }), mockQueueItem],
         currentIndex: 0,
       });
 
-      const { getAllByText } = renderQueueView();
+      const { getAllByText } = render(
+        <QueueView
+          onEpisodePress={mockOnEpisodePress}
+          onPlayItem={mockOnPlayItem}
+        />,
+      );
 
       // Find the play button icon for the second item and tap it
       const playButtons = getAllByText('play-circle');
       fireEvent.press(playButtons[1]); // Second item's play button
 
-      const state = queueStore.getState();
-      // The episode should move to position 0
-      expect(state.currentIndex).toBe(0);
-      expect(state.queue[0].id).toBe('q2');
-      expect(state.queue[1].id).toBe('q1');
+      // Should call onPlayItem with the queue item
+      expect(mockOnPlayItem).toHaveBeenCalledWith(mockQueueItem);
     });
   });
 
@@ -311,7 +315,9 @@ describe('QueueView', () => {
 
       // Simulate reorder from position 1 to position 2 in upcoming items
       // (which is position 2 to 3 in the actual queue)
-      queueStore.getState().reorderQueue(2, 1);
+      act(() => {
+        queueStore.getState().reorderQueue(2, 1);
+      });
 
       const queue = queueStore.getState().queue;
       expect(queue[0].id).toBe('q1');
@@ -421,7 +427,9 @@ describe('QueueView', () => {
       expect(getByText('Second Episode')).toBeTruthy();
 
       // Simulate removal via store action (swipe gesture is tested in ViewModel tests)
-      queueStore.getState().removeFromQueue('q1');
+      act(() => {
+        queueStore.getState().removeFromQueue('q1');
+      });
 
       expect(queueStore.getState().queue).toHaveLength(1);
     });

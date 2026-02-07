@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react';
-import { usePlayerStore, useQueueStore, useSettingsStore } from '../../hooks';
+import { useCallback, useMemo, useEffect } from 'react';
+import { usePlaybackController, useQueueStore, useToast } from '../../hooks';
 import { Episode, Podcast, PlaybackSpeed } from '../../models';
 import {
   formatPlaybackTime,
@@ -18,27 +18,36 @@ export const useFullPlayerViewModel = (
   podcast: Podcast,
   onDismiss: () => void,
 ): FullPlayerViewModel => {
-  // Store connections
-  const {
-    isPlaying,
-    position,
-    duration,
-    speed,
-    setIsPlaying,
-    setPosition,
-    setSpeed,
-  } = usePlayerStore();
-
+  // Playback controller
+  const playbackController = usePlaybackController();
   const { queue, currentIndex, addToQueue } = useQueueStore();
-  const { settings } = useSettingsStore();
+  const toast = useToast();
+
+  // Load and play the episode when the screen opens
+  useEffect(() => {
+    playbackController.playEpisode(episode, podcast);
+    // Only re-run when the episode ID changes (indicating a different episode)
+    // We use episode.id instead of episode/podcast/playbackController because:
+    // - `playbackController` is recreated on every render and would cause infinite loops
+    // - `episode` and `podcast` objects may have same IDs but different references
+    // - We only care about episode.id changing, which indicates a truly different episode
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [episode.id]);
 
   // Formatted display data
   const playbackTime = useMemo(
-    () => formatPlaybackTime(position, duration),
-    [position, duration],
+    () =>
+      formatPlaybackTime(
+        playbackController.position,
+        playbackController.duration,
+      ),
+    [playbackController.position, playbackController.duration],
   );
 
-  const speedDisplay = useMemo(() => formatSpeedDisplay(speed), [speed]);
+  const speedDisplay = useMemo(
+    () => formatSpeedDisplay(playbackController.speed),
+    [playbackController.speed],
+  );
 
   // Get the next item in queue for "up next" preview
   const nextQueueItem = useMemo(
@@ -58,36 +67,31 @@ export const useFullPlayerViewModel = (
     return queue.some((item) => item.episode.id === episode.id);
   }, [queue, episode.id]);
 
-  // Playback control handlers
+  // Playback control handlers - delegate to PlaybackController
   const handlePlayPause = useCallback(() => {
-    setIsPlaying(!isPlaying);
-  }, [isPlaying, setIsPlaying]);
+    playbackController.togglePlayPause();
+  }, [playbackController]);
 
   const handleSkipForward = useCallback(() => {
-    const newPosition = Math.min(
-      position + settings.skipForwardSeconds,
-      duration,
-    );
-    setPosition(newPosition);
-  }, [position, duration, settings.skipForwardSeconds, setPosition]);
+    playbackController.skipForward();
+  }, [playbackController]);
 
   const handleSkipBackward = useCallback(() => {
-    const newPosition = Math.max(position - settings.skipBackwardSeconds, 0);
-    setPosition(newPosition);
-  }, [position, settings.skipBackwardSeconds, setPosition]);
+    playbackController.skipBackward();
+  }, [playbackController]);
 
   const handleSeek = useCallback(
     (newPosition: number) => {
-      setPosition(newPosition);
+      playbackController.seek(newPosition);
     },
-    [setPosition],
+    [playbackController],
   );
 
   const handleSpeedChange = useCallback(
     (newSpeed: PlaybackSpeed) => {
-      setSpeed(newSpeed);
+      playbackController.changeSpeed(newSpeed);
     },
-    [setSpeed],
+    [playbackController],
   );
 
   // Add current episode to queue (at end)
@@ -99,7 +103,8 @@ export const useFullPlayerViewModel = (
       position: queue.length,
     };
     addToQueue(queueItem);
-  }, [episode, podcast, queue.length, addToQueue]);
+    toast.showToast(`"${episode.title}" added to queue`);
+  }, [episode, podcast, queue.length, addToQueue, toast]);
 
   const handleDismiss = useCallback(() => {
     onDismiss();
@@ -118,10 +123,10 @@ export const useFullPlayerViewModel = (
     upNextItem,
     hasUpNext,
     isEpisodeInQueue,
-    isPlaying,
-    position,
-    duration,
-    speed,
+    isPlaying: playbackController.isPlaying,
+    position: playbackController.position,
+    duration: playbackController.duration,
+    speed: playbackController.speed,
     handlePlayPause,
     handleSkipForward,
     handleSkipBackward,

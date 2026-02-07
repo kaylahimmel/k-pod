@@ -1,3 +1,6 @@
+// Unmock AudioPlayerService for this test file
+jest.unmock('../AudioPlayerService');
+
 import { AudioPlayerService } from '../AudioPlayerService';
 
 // Import Audio after mocking

@@ -14,6 +14,7 @@ jest.mock('react-native-gesture-handler', () => ({
 // Mock react-native-draggable-flatlist
 jest.mock('react-native-draggable-flatlist', () => ({
   ScaleDecorator: ({ children }: { children: React.ReactNode }) => children,
+  OpacityDecorator: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 describe('CardQueueItem', () => {
@@ -96,7 +97,7 @@ describe('CardQueueItem', () => {
     expect(toJSON()).toBeTruthy();
   });
 
-  it('renders without ScaleDecorator when isDraggable is false', () => {
+  it('renders without OpacityDecorator when isDraggable is false', () => {
     const { toJSON } = render(
       <CardQueueItem
         item={mockQueueItem}
