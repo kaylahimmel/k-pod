@@ -14,8 +14,8 @@ import { FullPlayerViewModel } from './FullPlayer.types';
  * Manages playback state, controls, and queue interactions
  */
 export const useFullPlayerViewModel = (
-  episode: Episode,
-  podcast: Podcast,
+  initialEpisode: Episode,
+  initialPodcast: Podcast,
   onDismiss: () => void,
 ): FullPlayerViewModel => {
   // Playback controller
@@ -23,16 +23,21 @@ export const useFullPlayerViewModel = (
   const { queue, currentIndex, addToQueue } = useQueueStore();
   const toast = useToast();
 
+  // Use the currently playing episode/podcast from the controller
+  // This ensures the screen updates when auto-advance happens
+  const episode = playbackController.currentEpisode || initialEpisode;
+  const podcast = playbackController.currentPodcast || initialPodcast;
+
   // Load and play the episode when the screen opens
   useEffect(() => {
-    playbackController.playEpisode(episode, podcast);
-    // Only re-run when the episode ID changes (indicating a different episode)
-    // We use episode.id instead of episode/podcast/playbackController because:
+    playbackController.playEpisode(initialEpisode, initialPodcast);
+    // Only re-run when the initial episode ID changes (indicating a different episode was passed in)
+    // We use initialEpisode.id instead of episode/podcast/playbackController because:
     // - `playbackController` is recreated on every render and would cause infinite loops
     // - `episode` and `podcast` objects may have same IDs but different references
-    // - We only care about episode.id changing, which indicates a truly different episode
+    // - We only care about initialEpisode.id changing, which indicates a truly different episode
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [episode.id]);
+  }, [initialEpisode.id]);
 
   // Formatted display data
   const playbackTime = useMemo(

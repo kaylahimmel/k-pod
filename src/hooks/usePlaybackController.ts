@@ -2,7 +2,9 @@ import { useEffect, useCallback, useRef } from 'react';
 import { usePlayerStore } from './usePlayerStore';
 import { useQueueStore } from './useQueueStore';
 import { useSettingsStore } from './useSettingsStore';
+import { useHistoryStore } from './useHistoryStore';
 import { AudioPlayerService } from '../services/AudioPlayerService';
+import { StorageService } from '../services';
 import { Episode, Podcast, PlaybackSpeed, QueueItem } from '../models';
 import { queueStore } from '../stores';
 
@@ -31,11 +33,20 @@ export const usePlaybackController = () => {
 
   const { settings } = useSettingsStore();
 
+  const { addToHistory } = useHistoryStore();
+
   // Track if we're currently loading an episode to prevent duplicate loads
   const isLoadingRef = useRef(false);
 
+  // Track the last saved position to avoid saving too frequently
+  const lastSavedPositionRef = useRef<number>(0);
+
+  // Track the last position to detect completion threshold
+  const lastPositionRef = useRef<number>(0);
+
   /**
    * Progress callback: Update position and duration in store
+   * Also saves position periodically (every 10 seconds) to storage
    */
   const handleProgress = useCallback(
     (newPosition: number, newDuration: number) => {
@@ -43,15 +54,37 @@ export const usePlaybackController = () => {
       if (newDuration > 0 && newDuration !== duration) {
         setDuration(newDuration);
       }
+
+      // Save position to storage every 10 seconds
+      if (
+        currentEpisode &&
+        Math.abs(newPosition - lastSavedPositionRef.current) >= 10
+      ) {
+        lastSavedPositionRef.current = newPosition;
+        StorageService.savePlaybackPosition(currentEpisode.id, newPosition);
+      }
+
+      // Track last position for completion detection
+      lastPositionRef.current = newPosition;
     },
-    [setPosition, setDuration, duration],
+    [setPosition, setDuration, duration, currentEpisode],
   );
 
   /**
    * End callback: Auto-advance to next episode in queue if enabled
+   * Also tracks completed episodes in listening history
    */
   const handleEnd = useCallback(() => {
     setIsPlaying(false);
+
+    // Track this episode as completed in history (100% completion)
+    if (currentEpisode && currentPodcast && duration > 0) {
+      const completionPercentage = 100;
+      addToHistory(currentEpisode, currentPodcast, completionPercentage);
+
+      // Clear saved playback position since episode is complete
+      StorageService.removePlaybackPosition(currentEpisode.id);
+    }
 
     // Check if auto-play next is enabled
     if (!settings.autoPlayNext) {
@@ -94,6 +127,10 @@ export const usePlaybackController = () => {
     settings.autoPlayNext,
     currentIndex,
     queue,
+    currentEpisode,
+    currentPodcast,
+    duration,
+    addToHistory,
     setCurrentIndex,
     setCurrentEpisode,
     setCurrentPodcast,
@@ -211,6 +248,17 @@ export const usePlaybackController = () => {
           return;
         }
 
+        // Check for saved playback position and resume from there
+        const savedPosition = await StorageService.loadPlaybackPosition(
+          episode.id,
+        );
+        if (savedPosition > 0) {
+          await AudioPlayerService.seek(savedPosition);
+          setPosition(savedPosition);
+          lastSavedPositionRef.current = savedPosition;
+          lastPositionRef.current = savedPosition;
+        }
+
         // Set playback speed
         await AudioPlayerService.setPlaybackSpeed(speed);
 
@@ -238,6 +286,7 @@ export const usePlaybackController = () => {
 
   /**
    * Toggle play/pause
+   * Saves position when pausing
    */
   const togglePlayPause = useCallback(async () => {
     if (!currentEpisode) return;
@@ -246,6 +295,29 @@ export const usePlaybackController = () => {
       const result = await AudioPlayerService.pause();
       if (result.success) {
         setIsPlaying(false);
+
+        // Save current position on pause
+        if (position > 0) {
+          await StorageService.savePlaybackPosition(
+            currentEpisode.id,
+            position,
+          );
+          lastSavedPositionRef.current = position;
+
+          // Track partially completed episodes (>90% listened) in history
+          if (duration > 0 && currentPodcast) {
+            const completionPercentage = (position / duration) * 100;
+            if (completionPercentage >= 90) {
+              await addToHistory(
+                currentEpisode,
+                currentPodcast,
+                completionPercentage,
+              );
+              // Clear saved position since it's essentially complete
+              await StorageService.removePlaybackPosition(currentEpisode.id);
+            }
+          }
+        }
       }
     } else {
       const result = await AudioPlayerService.play();
@@ -253,7 +325,15 @@ export const usePlaybackController = () => {
         setIsPlaying(true);
       }
     }
-  }, [currentEpisode, isPlaying, setIsPlaying]);
+  }, [
+    currentEpisode,
+    currentPodcast,
+    isPlaying,
+    position,
+    duration,
+    setIsPlaying,
+    addToHistory,
+  ]);
 
   /**
    * Seek to a specific position

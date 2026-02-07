@@ -1,10 +1,10 @@
 // Unmock AudioPlayerService for this test file
-jest.unmock('../AudioPlayerService');
-
 import { AudioPlayerService } from '../AudioPlayerService';
 
 // Import Audio after mocking
 import { Audio } from 'expo-av';
+
+jest.unmock('../AudioPlayerService');
 
 // ===========================================
 // MOCK SETUP
@@ -349,6 +349,276 @@ describe('AudioPlayerService', () => {
 
       expect(mockSoundInstance.unloadAsync).toHaveBeenCalled();
       expect(AudioPlayerService.getCurrentEpisodeId()).toBeNull();
+    });
+  });
+
+  // -----------------------------------------
+  // Error Handling Tests
+  // -----------------------------------------
+  describe('error handling', () => {
+    it('should handle play error', async () => {
+      mockSoundInstance.playAsync.mockRejectedValueOnce(
+        new Error('Playback failed'),
+      );
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      const result = await AudioPlayerService.play();
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('Failed to play');
+      }
+    });
+
+    it('should handle pause error', async () => {
+      mockSoundInstance.pauseAsync.mockRejectedValueOnce(
+        new Error('Pause failed'),
+      );
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      const result = await AudioPlayerService.pause();
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('Failed to pause');
+      }
+    });
+
+    it('should handle stop error', async () => {
+      mockSoundInstance.stopAsync.mockRejectedValueOnce(
+        new Error('Stop failed'),
+      );
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      const result = await AudioPlayerService.stop();
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('Failed to stop');
+      }
+    });
+
+    it('should handle seek error', async () => {
+      mockSoundInstance.setPositionAsync.mockRejectedValueOnce(
+        new Error('Seek failed'),
+      );
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      const result = await AudioPlayerService.seek(60);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('Failed to seek');
+      }
+    });
+
+    it('should handle setPlaybackSpeed error', async () => {
+      mockSoundInstance.setRateAsync.mockRejectedValueOnce(
+        new Error('Speed change failed'),
+      );
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      const result = await AudioPlayerService.setPlaybackSpeed(1.5);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('Failed to set speed');
+      }
+    });
+
+    it('should handle getStatus when not loaded', async () => {
+      mockSoundInstance.getStatusAsync.mockResolvedValueOnce({
+        isLoaded: false,
+      } as any);
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      const result = await AudioPlayerService.getStatus();
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Audio not loaded');
+      }
+    });
+
+    it('should handle getStatus error', async () => {
+      mockSoundInstance.getStatusAsync.mockRejectedValueOnce(
+        new Error('Status fetch failed'),
+      );
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      const result = await AudioPlayerService.getStatus();
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('Failed to get status');
+      }
+    });
+
+    it('should handle skipForward when getStatus fails', async () => {
+      mockSoundInstance.getStatusAsync.mockRejectedValueOnce(
+        new Error('Status error'),
+      );
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      const result = await AudioPlayerService.skipForward();
+
+      expect(result.success).toBe(false);
+    });
+
+    it('should handle skipBackward when getStatus fails', async () => {
+      mockSoundInstance.getStatusAsync.mockRejectedValueOnce(
+        new Error('Status error'),
+      );
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      const result = await AudioPlayerService.skipBackward();
+
+      expect(result.success).toBe(false);
+    });
+
+    it('should handle audio mode configuration error', async () => {
+      AudioPlayerService._helpers.resetAudioModeConfig();
+      (Audio.setAudioModeAsync as jest.Mock).mockRejectedValueOnce(
+        new Error('Audio mode error'),
+      );
+
+      const result = await AudioPlayerService.loadEpisode(mockEpisode);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('Failed to configure audio mode');
+      }
+    });
+  });
+
+  // -----------------------------------------
+  // Playback Status Update Callback Tests
+  // -----------------------------------------
+  describe('playback status callbacks', () => {
+    let statusCallback: (status: any) => void;
+
+    beforeEach(async () => {
+      // Capture the status callback when createAsync is called
+      (Audio.Sound.createAsync as jest.Mock).mockImplementation(
+        (source, options, callback) => {
+          statusCallback = callback;
+          return Promise.resolve({ sound: mockSoundInstance });
+        },
+      );
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+    });
+
+    it('should call progress callback with position and duration', () => {
+      const progressCallback = jest.fn();
+      AudioPlayerService.setOnProgress(progressCallback);
+
+      // Simulate status update
+      statusCallback({
+        isLoaded: true,
+        positionMillis: 30000,
+        durationMillis: 3600000,
+      });
+
+      expect(progressCallback).toHaveBeenCalledWith(30, 3600);
+    });
+
+    it('should call end callback when playback finishes', () => {
+      const endCallback = jest.fn();
+      AudioPlayerService.setOnEnd(endCallback);
+
+      // Simulate playback finished
+      statusCallback({
+        isLoaded: true,
+        didJustFinish: true,
+      });
+
+      expect(endCallback).toHaveBeenCalled();
+    });
+
+    it('should call error callback on error status', () => {
+      const errorCallback = jest.fn();
+      AudioPlayerService.setOnError(errorCallback);
+
+      // Simulate error status
+      statusCallback({
+        isLoaded: false,
+        error: 'Audio playback error',
+      });
+
+      expect(errorCallback).toHaveBeenCalledWith('Audio playback error');
+    });
+
+    it('should not call progress callback when not set', () => {
+      AudioPlayerService.setOnProgress(null);
+
+      // Should not throw when callback is null
+      expect(() => {
+        statusCallback({
+          isLoaded: true,
+          positionMillis: 30000,
+        });
+      }).not.toThrow();
+    });
+
+    it('should not call end callback when not set', () => {
+      AudioPlayerService.setOnEnd(null);
+
+      // Should not throw when callback is null
+      expect(() => {
+        statusCallback({
+          isLoaded: true,
+          didJustFinish: true,
+        });
+      }).not.toThrow();
+    });
+
+    it('should not call error callback when not set', () => {
+      AudioPlayerService.setOnError(null);
+
+      // Should not throw when callback is null
+      expect(() => {
+        statusCallback({
+          isLoaded: false,
+          error: 'Some error',
+        });
+      }).not.toThrow();
+    });
+
+    it('should handle status with undefined positionMillis', () => {
+      const progressCallback = jest.fn();
+      AudioPlayerService.setOnProgress(progressCallback);
+
+      statusCallback({
+        isLoaded: true,
+        durationMillis: 3600000,
+      });
+
+      // Should not call progress callback without position
+      expect(progressCallback).not.toHaveBeenCalled();
+    });
+
+    it('should handle status with no durationMillis', () => {
+      const progressCallback = jest.fn();
+      AudioPlayerService.setOnProgress(progressCallback);
+
+      statusCallback({
+        isLoaded: true,
+        positionMillis: 30000,
+      });
+
+      expect(progressCallback).toHaveBeenCalledWith(30, 0);
+    });
+
+    it('should not call error callback when no error in unloaded status', () => {
+      const errorCallback = jest.fn();
+      AudioPlayerService.setOnError(errorCallback);
+
+      statusCallback({
+        isLoaded: false,
+      });
+
+      expect(errorCallback).not.toHaveBeenCalled();
     });
   });
 
