@@ -349,10 +349,12 @@ describe('usePlaybackController', () => {
     it('should auto-advance to next episode when current episode ends', async () => {
       // Set up queue with two episodes
       const queueItem1 = createMockQueueItem({
+        id: 'queue-item-1',
         episode: mockEpisode,
         podcast: mockPodcast,
       });
       const queueItem2 = createMockQueueItem({
+        id: 'queue-item-2',
         episode: mockEpisode2,
         podcast: mockPodcast,
       });
@@ -383,7 +385,10 @@ describe('usePlaybackController', () => {
       });
 
       await waitFor(() => {
-        expect(queueStore.getState().currentIndex).toBe(1);
+        // After removing the completed episode, currentIndex should be 0 (pointing to what was previously index 1)
+        expect(queueStore.getState().currentIndex).toBe(0);
+        // Queue should have one less item (completed episode removed)
+        expect(queueStore.getState().queue).toHaveLength(1);
         expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
           mockEpisode2,
         );

@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { useQueueStore, usePlayerStore } from '../../hooks';
+import { queueStore } from '../../stores';
 import { QueueItem } from '../../models';
 import {
   formatQueueItems,
@@ -12,7 +13,11 @@ import {
 import { FormattedQueueItem } from './Queue.types';
 
 export const useQueueViewModel = (
-  onEpisodePress?: (episodeId: string, podcastId: string) => void,
+  onEpisodePress?: (
+    episodeId: string,
+    podcastId: string,
+    item: QueueItem,
+  ) => void,
   onPlayItem?: (item: QueueItem) => void,
 ) => {
   const {
@@ -72,26 +77,35 @@ export const useQueueViewModel = (
       // Display queue now shows all items, so indices match directly
       reorderQueue(fromIndex, toIndex);
 
+      // Get fresh currentIndex to avoid stale closure issues
+      const { currentIndex: freshCurrentIndex } = queueStore.getState();
+
       // If we're moving the currently playing item, update currentIndex
-      if (fromIndex === currentIndex) {
+      if (fromIndex === freshCurrentIndex) {
         setCurrentIndex(toIndex);
-      } else if (toIndex === currentIndex) {
+      } else if (toIndex === freshCurrentIndex) {
         // If we're moving an item to where the current item is,
         // the current item shifts by one position
-        if (fromIndex < currentIndex) {
-          setCurrentIndex(currentIndex - 1);
+        if (fromIndex < freshCurrentIndex) {
+          setCurrentIndex(freshCurrentIndex - 1);
         } else {
-          setCurrentIndex(currentIndex + 1);
+          setCurrentIndex(freshCurrentIndex + 1);
         }
-      } else if (fromIndex < currentIndex && toIndex >= currentIndex) {
+      } else if (
+        fromIndex < freshCurrentIndex &&
+        toIndex >= freshCurrentIndex
+      ) {
         // Item moved from before current to after current
-        setCurrentIndex(currentIndex - 1);
-      } else if (fromIndex > currentIndex && toIndex <= currentIndex) {
+        setCurrentIndex(freshCurrentIndex - 1);
+      } else if (
+        fromIndex > freshCurrentIndex &&
+        toIndex <= freshCurrentIndex
+      ) {
         // Item moved from after current to before current
-        setCurrentIndex(currentIndex + 1);
+        setCurrentIndex(freshCurrentIndex + 1);
       }
     },
-    [reorderQueue, currentIndex, setCurrentIndex],
+    [reorderQueue, setCurrentIndex],
   );
 
   const handleClearQueue = useCallback(() => {
@@ -125,7 +139,7 @@ export const useQueueViewModel = (
     (item: FormattedQueueItem) => {
       const queueItem = queue.find((q) => q.id === item.id);
       if (queueItem && onEpisodePress) {
-        onEpisodePress(queueItem.episode.id, queueItem.podcast.id);
+        onEpisodePress(queueItem.episode.id, queueItem.podcast.id, queueItem);
       }
     },
     [queue, onEpisodePress],

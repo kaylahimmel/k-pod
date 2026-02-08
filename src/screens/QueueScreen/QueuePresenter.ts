@@ -94,7 +94,10 @@ export function formatQueueItems(
   queue: QueueItem[],
   currentIndex: number,
 ): FormattedQueueItem[] {
-  return queue.map((item, index) => formatQueueItem(item, index, currentIndex));
+  // Filter out any undefined/null items to handle race conditions
+  return queue
+    .filter((item) => item !== undefined && item !== null)
+    .map((item, index) => formatQueueItem(item, index, currentIndex));
 }
 
 /**
@@ -107,7 +110,12 @@ export function getCurrentlyPlayingItem(
   if (queue.length === 0 || currentIndex >= queue.length) {
     return null;
   }
-  return formatQueueItem(queue[currentIndex], currentIndex, currentIndex);
+  const currentItem = queue[currentIndex];
+  // Safety check for undefined/null items
+  if (!currentItem) {
+    return null;
+  }
+  return formatQueueItem(currentItem, currentIndex, currentIndex);
 }
 
 /**
@@ -118,9 +126,12 @@ export function getUpcomingItems(
   currentIndex: number,
 ): FormattedQueueItem[] {
   const upcomingQueue = queue.slice(currentIndex + 1);
-  return upcomingQueue.map((item, index) =>
-    formatQueueItem(item, currentIndex + 1 + index, currentIndex),
-  );
+  // Filter out any undefined/null items to handle race conditions
+  return upcomingQueue
+    .filter((item) => item !== undefined && item !== null)
+    .map((item, index) =>
+      formatQueueItem(item, currentIndex + 1 + index, currentIndex),
+    );
 }
 
 /**
@@ -165,5 +176,8 @@ export function getDisplayQueue(
     return [];
   }
 
-  return queue.map((item, index) => formatQueueItem(item, index, currentIndex));
+  // Filter out any undefined/null items to handle race conditions
+  return queue
+    .filter((item) => item !== undefined && item !== null)
+    .map((item, index) => formatQueueItem(item, index, currentIndex));
 }

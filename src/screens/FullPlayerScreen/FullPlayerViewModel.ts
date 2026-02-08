@@ -1,5 +1,10 @@
 import { useCallback, useMemo, useEffect } from 'react';
-import { usePlaybackController, useQueueStore, useToast } from '../../hooks';
+import {
+  usePlaybackController,
+  useQueueStore,
+  useToast,
+  usePlayerStore,
+} from '../../hooks';
 import { Episode, Podcast, PlaybackSpeed } from '../../models';
 import {
   formatPlaybackTime,
@@ -18,15 +23,32 @@ export const useFullPlayerViewModel = (
   initialPodcast: Podcast,
   onDismiss: () => void,
 ): FullPlayerViewModel => {
-  // Playback controller
+  // Playback controller for actions
   const playbackController = usePlaybackController();
   const { queue, currentIndex, addToQueue } = useQueueStore();
   const toast = useToast();
+  // Get stable references from playerStore for proper re-renders
+  const {
+    currentEpisode: storeCurrentEpisode,
+    currentPodcast: storeCurrentPodcast,
+    position: storePosition,
+    duration: storeDuration,
+    isPlaying: storeIsPlaying,
+    speed: storeSpeed,
+  } = usePlayerStore();
 
-  // Use the currently playing episode/podcast from the controller
+  // Use the currently playing episode/podcast from the store
   // This ensures the screen updates when auto-advance happens
-  const episode = playbackController.currentEpisode || initialEpisode;
-  const podcast = playbackController.currentPodcast || initialPodcast;
+  // Memoize to ensure proper re-renders when currentEpisode changes
+  const episode = useMemo(
+    () => storeCurrentEpisode || initialEpisode,
+    [storeCurrentEpisode, initialEpisode],
+  );
+
+  const podcast = useMemo(
+    () => storeCurrentPodcast || initialPodcast,
+    [storeCurrentPodcast, initialPodcast],
+  );
 
   // Load and play the episode when the screen opens
   useEffect(() => {
@@ -39,19 +61,15 @@ export const useFullPlayerViewModel = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialEpisode.id]);
 
-  // Formatted display data
+  // Formatted display data - use store values for consistent updates
   const playbackTime = useMemo(
-    () =>
-      formatPlaybackTime(
-        playbackController.position,
-        playbackController.duration,
-      ),
-    [playbackController.position, playbackController.duration],
+    () => formatPlaybackTime(storePosition, storeDuration),
+    [storePosition, storeDuration],
   );
 
   const speedDisplay = useMemo(
-    () => formatSpeedDisplay(playbackController.speed),
-    [playbackController.speed],
+    () => formatSpeedDisplay(storeSpeed),
+    [storeSpeed],
   );
 
   // Get the next item in queue for "up next" preview
@@ -128,10 +146,10 @@ export const useFullPlayerViewModel = (
     upNextItem,
     hasUpNext,
     isEpisodeInQueue,
-    isPlaying: playbackController.isPlaying,
-    position: playbackController.position,
-    duration: playbackController.duration,
-    speed: playbackController.speed,
+    isPlaying: storeIsPlaying,
+    position: storePosition,
+    duration: storeDuration,
+    speed: storeSpeed,
     handlePlayPause,
     handleSkipForward,
     handleSkipBackward,

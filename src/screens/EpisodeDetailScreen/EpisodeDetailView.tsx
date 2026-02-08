@@ -27,8 +27,14 @@ export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
     return <EpisodeNotFoundState />;
   }
 
-  const { formattedEpisode, isInQueue, toast, handlePlay, handleAddToQueue } =
-    viewModel;
+  const {
+    formattedEpisode,
+    isInQueue,
+    isCurrentlyPlaying,
+    toast,
+    handlePlay,
+    handleAddToQueue,
+  } = viewModel;
 
   return (
     <>
@@ -65,36 +71,48 @@ export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
           </View>
         </View>
 
-        {/* Action buttons */}
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={handlePlay}
-            activeOpacity={0.7}
-          >
-            <Ionicons name='play' size={20} color={COLORS.cardBackground} />
-            <Text style={styles.actionButtonText}>Play</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.actionButtonSecondary]}
-            onPress={handleAddToQueue}
-            activeOpacity={0.7}
-          >
+        {/* Action buttons or Now Playing indicator */}
+        {isCurrentlyPlaying ? (
+          <View style={styles.nowPlayingContainer}>
             <Ionicons
-              name={isInQueue ? 'checkmark' : 'add'}
-              size={20}
-              color={COLORS.textPrimary}
+              name='musical-notes'
+              size={24}
+              color={COLORS.primary}
+              style={styles.nowPlayingIcon}
             />
-            <Text
-              style={[
-                styles.actionButtonText,
-                styles.actionButtonTextSecondary,
-              ]}
+            <Text style={styles.nowPlayingText}>Now playing</Text>
+          </View>
+        ) : (
+          <View style={styles.actionsContainer}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={handlePlay}
+              activeOpacity={0.7}
             >
-              {isInQueue ? 'In Queue' : 'Add to Queue'}
-            </Text>
-          </TouchableOpacity>
-        </View>
+              <Ionicons name='play' size={20} color={COLORS.cardBackground} />
+              <Text style={styles.actionButtonText}>Play</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.actionButtonSecondary]}
+              onPress={handleAddToQueue}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={isInQueue ? 'checkmark' : 'add'}
+                size={20}
+                color={COLORS.textPrimary}
+              />
+              <Text
+                style={[
+                  styles.actionButtonText,
+                  styles.actionButtonTextSecondary,
+                ]}
+              >
+                {isInQueue ? 'In Queue' : 'Add to Queue'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Episode description */}
         <View style={styles.descriptionContainer}>

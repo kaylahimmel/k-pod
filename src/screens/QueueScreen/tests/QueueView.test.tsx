@@ -356,15 +356,14 @@ describe('QueueView', () => {
         title: 'Pressable Episode',
       });
       const mockPodcast = createMockPodcast({ id: 'pod-456' });
+      const mockQueueItem = createMockQueueItem({
+        id: 'q1',
+        episode: mockEpisode,
+        podcast: mockPodcast,
+      });
 
       queueStore.setState({
-        queue: [
-          createMockQueueItem({
-            id: 'q1',
-            episode: mockEpisode,
-            podcast: mockPodcast,
-          }),
-        ],
+        queue: [mockQueueItem],
         currentIndex: 0,
       });
 
@@ -372,7 +371,11 @@ describe('QueueView', () => {
 
       fireEvent.press(getByText('Pressable Episode'));
 
-      expect(mockOnEpisodePress).toHaveBeenCalledWith('ep-123', 'pod-456');
+      expect(mockOnEpisodePress).toHaveBeenCalledWith(
+        'ep-123',
+        'pod-456',
+        mockQueueItem,
+      );
     });
 
     it('should call onEpisodePress when upcoming episode card is pressed', () => {
@@ -382,16 +385,14 @@ describe('QueueView', () => {
         title: 'Upcoming Pressable',
       });
       const mockPodcast = createMockPodcast({ id: 'pod-101' });
+      const mockQueueItem2 = createMockQueueItem({
+        id: 'q2',
+        episode: mockEpisode,
+        podcast: mockPodcast,
+      });
 
       queueStore.setState({
-        queue: [
-          createMockQueueItem({ id: 'q1' }),
-          createMockQueueItem({
-            id: 'q2',
-            episode: mockEpisode,
-            podcast: mockPodcast,
-          }),
-        ],
+        queue: [createMockQueueItem({ id: 'q1' }), mockQueueItem2],
         currentIndex: 0,
       });
 
@@ -399,7 +400,11 @@ describe('QueueView', () => {
 
       fireEvent.press(getByText('Upcoming Pressable'));
 
-      expect(mockOnEpisodePress).toHaveBeenCalledWith('ep-789', 'pod-101');
+      expect(mockOnEpisodePress).toHaveBeenCalledWith(
+        'ep-789',
+        'pod-101',
+        mockQueueItem2,
+      );
     });
   });
 

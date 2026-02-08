@@ -72,7 +72,7 @@ export const usePlaybackController = () => {
 
   /**
    * End callback: Auto-advance to next episode in queue if enabled
-   * Also tracks completed episodes in listening history
+   * Also tracks completed episodes in listening history and removes them from queue
    */
   const handleEnd = useCallback(() => {
     setIsPlaying(false);
@@ -86,16 +86,29 @@ export const usePlaybackController = () => {
       StorageService.removePlaybackPosition(currentEpisode.id);
     }
 
+    // Get fresh queue state to avoid stale closure issues
+    const {
+      queue: freshQueue,
+      currentIndex: freshCurrentIndex,
+      removeFromQueue,
+    } = queueStore.getState();
+
+    // Get the completed item ID to remove it later
+    const completedItemId = freshQueue[freshCurrentIndex]?.id;
+
     // Check if auto-play next is enabled
     if (!settings.autoPlayNext) {
+      // Not auto-playing, but still remove the completed episode
+      if (completedItemId) {
+        removeFromQueue(completedItemId);
+      }
       return;
     }
 
     // Check if there's a next item in the queue
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < queue.length) {
-      const nextItem = queue[nextIndex];
-      setCurrentIndex(nextIndex);
+    const nextIndex = freshCurrentIndex + 1;
+    if (nextIndex < freshQueue.length) {
+      const nextItem = freshQueue[nextIndex];
 
       // Load and play the next episode
       const loadAndPlayNext = async () => {
@@ -106,6 +119,7 @@ export const usePlaybackController = () => {
         setDuration(0);
 
         // Load the episode (this may take several seconds)
+        // Note: loadEpisode handles unloading the previous sound
         const loadResult = await AudioPlayerService.loadEpisode(
           nextItem.episode,
         );
@@ -121,17 +135,26 @@ export const usePlaybackController = () => {
         }
       };
 
+      // Start loading and playing the next episode
       loadAndPlayNext();
+
+      // Remove the completed episode synchronously after starting the load
+      // This ensures correct queue state and index management
+      if (completedItemId) {
+        removeFromQueue(completedItemId);
+      }
+    } else {
+      // No next episode - just remove the completed one
+      if (completedItemId) {
+        removeFromQueue(completedItemId);
+      }
     }
   }, [
     settings.autoPlayNext,
-    currentIndex,
-    queue,
     currentEpisode,
     currentPodcast,
     duration,
     addToHistory,
-    setCurrentIndex,
     setCurrentEpisode,
     setCurrentPodcast,
     setPosition,

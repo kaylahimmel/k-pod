@@ -6,11 +6,13 @@ import { createMockEpisode, createMockPodcast } from '../../../__mocks__';
 const mockShowToast = jest.fn();
 const mockUsePodcastStore = jest.fn();
 const mockUseQueueStore = jest.fn();
+const mockUsePlayerStore = jest.fn();
 
 // Mock the hooks
 jest.mock('../../../hooks', () => ({
   usePodcastStore: () => mockUsePodcastStore(),
   useQueueStore: () => mockUseQueueStore(),
+  usePlayerStore: () => mockUsePlayerStore(),
   useToast: () => ({
     showToast: mockShowToast,
     message: '',
@@ -48,6 +50,9 @@ describe('useEpisodeDetailViewModel', () => {
     mockUseQueueStore.mockReturnValue({
       queue: [],
       addToQueue: mockAddToQueue,
+    });
+    mockUsePlayerStore.mockReturnValue({
+      currentEpisode: null,
     });
   });
 
