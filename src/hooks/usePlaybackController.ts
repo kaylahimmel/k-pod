@@ -6,7 +6,7 @@ import { useHistoryStore } from './useHistoryStore';
 import { AudioPlayerService } from '../services/AudioPlayerService';
 import { StorageService } from '../services';
 import { Episode, Podcast, PlaybackSpeed, QueueItem } from '../models';
-import { queueStore } from '../stores';
+import { queueStore, playerStore } from '../stores';
 
 /**
  * PlaybackController Hook
@@ -200,11 +200,12 @@ export const usePlaybackController = () => {
     async (episode: Episode, podcast: Podcast) => {
       if (isLoadingRef.current) return;
 
-      // Check if this is a different episode than currently playing
-      const isDifferentEpisode = currentEpisode?.id !== episode.id;
-
-      // Get fresh queue state to avoid stale closure
+      // Get fresh state to avoid stale closure issues
       const { queue: freshQueue } = queueStore.getState();
+      const { currentEpisode: freshCurrentEpisode } = playerStore.getState();
+
+      // Check if this is a different episode than currently playing
+      const isDifferentEpisode = freshCurrentEpisode?.id !== episode.id;
 
       // If it's the same episode, just update podcast and ensure it's in queue
       if (!isDifferentEpisode) {
@@ -234,6 +235,18 @@ export const usePlaybackController = () => {
       isLoadingRef.current = true;
 
       try {
+        // Save the current episode's position before switching
+        // Get fresh values from store to avoid stale closure
+        const { currentEpisode: freshCurrentEpisode, position: freshPosition } =
+          playerStore.getState();
+        if (freshCurrentEpisode && freshPosition > 0) {
+          await StorageService.savePlaybackPosition(
+            freshCurrentEpisode.id,
+            freshPosition,
+          );
+          lastSavedPositionRef.current = freshPosition;
+        }
+
         // Update player store immediately for instant UI feedback
         setCurrentEpisode(episode);
         setCurrentPodcast(podcast);
@@ -295,7 +308,6 @@ export const usePlaybackController = () => {
       }
     },
     [
-      currentEpisode?.id,
       setCurrentIndex,
       setQueue,
       setCurrentEpisode,
@@ -418,23 +430,29 @@ export const usePlaybackController = () => {
    * Play the next episode in the queue
    */
   const playNext = useCallback(async () => {
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < queue.length) {
-      const nextItem = queue[nextIndex];
+    // Get fresh queue state to avoid stale closure
+    const { queue: freshQueue, currentIndex: freshCurrentIndex } =
+      queueStore.getState();
+    const nextIndex = freshCurrentIndex + 1;
+    if (nextIndex < freshQueue.length) {
+      const nextItem = freshQueue[nextIndex];
       await playEpisode(nextItem.episode, nextItem.podcast);
     }
-  }, [currentIndex, queue, playEpisode]);
+  }, [playEpisode]);
 
   /**
    * Play the previous episode in the queue
    */
   const playPrevious = useCallback(async () => {
-    const prevIndex = currentIndex - 1;
+    // Get fresh queue state to avoid stale closure
+    const { queue: freshQueue, currentIndex: freshCurrentIndex } =
+      queueStore.getState();
+    const prevIndex = freshCurrentIndex - 1;
     if (prevIndex >= 0) {
-      const prevItem = queue[prevIndex];
+      const prevItem = freshQueue[prevIndex];
       await playEpisode(prevItem.episode, prevItem.podcast);
     }
-  }, [currentIndex, queue, playEpisode]);
+  }, [playEpisode]);
 
   /**
    * Play a specific queue item
@@ -444,8 +462,15 @@ export const usePlaybackController = () => {
     async (queueItem: QueueItem) => {
       if (isLoadingRef.current) return;
 
+      // Get fresh state to avoid stale closure issues
+      const { queue: freshQueue } = queueStore.getState();
+      const { currentEpisode: freshCurrentEpisode, position: freshPosition } =
+        playerStore.getState();
+
       // Find the index of this queue item in the current queue
-      const itemIndex = queue.findIndex((item) => item.id === queueItem.id);
+      const itemIndex = freshQueue.findIndex(
+        (item) => item.id === queueItem.id,
+      );
 
       if (itemIndex === -1) {
         // Item not found in queue, shouldn't happen but handle gracefully
@@ -453,16 +478,18 @@ export const usePlaybackController = () => {
       }
 
       // Check if this is a different episode than currently playing
-      const isDifferentEpisode = currentEpisode?.id !== queueItem.episode.id;
+      const isDifferentEpisode =
+        freshCurrentEpisode?.id !== queueItem.episode.id;
 
       if (!isDifferentEpisode) {
-        // Same episode - just ensure currentIndex is correct and reorder if needed
-        if (itemIndex !== currentIndex) {
-          // Move item to current position
-          const newQueue = [...queue];
+        // Same episode - just ensure it's at position 0
+        if (itemIndex !== 0) {
+          // Move item to position 0
+          const newQueue = [...freshQueue];
           const [movedItem] = newQueue.splice(itemIndex, 1);
-          newQueue.splice(currentIndex, 0, movedItem);
+          newQueue.splice(0, 0, movedItem);
           setQueue(newQueue);
+          setCurrentIndex(0);
         }
         setCurrentPodcast(queueItem.podcast);
         return;
@@ -471,15 +498,24 @@ export const usePlaybackController = () => {
       isLoadingRef.current = true;
 
       try {
-        // Reorder queue: move the selected item to the current playing position
-        const newQueue = [...queue];
+        // Save the current episode's position before switching
+        if (freshCurrentEpisode && freshPosition > 0) {
+          await StorageService.savePlaybackPosition(
+            freshCurrentEpisode.id,
+            freshPosition,
+          );
+          lastSavedPositionRef.current = freshPosition;
+        }
+
+        // Reorder queue: move the tapped item to position 0 (blue card)
+        // This places the previously playing item at position 1 (first white card)
+        const newQueue = [...freshQueue];
         const [movedItem] = newQueue.splice(itemIndex, 1);
-        newQueue.splice(currentIndex, 0, movedItem);
+        newQueue.splice(0, 0, movedItem); // Always insert at index 0
 
-        // Update queue with new order
+        // Update queue and set currentIndex to 0 (currently playing position)
         setQueue(newQueue);
-
-        // currentIndex stays the same since we moved the item TO currentIndex
+        setCurrentIndex(0);
 
         // Update player store for instant UI feedback
         setCurrentEpisode(queueItem.episode);
@@ -497,6 +533,17 @@ export const usePlaybackController = () => {
           return;
         }
 
+        // Check for saved playback position and resume from there
+        const savedPosition = await StorageService.loadPlaybackPosition(
+          queueItem.episode.id,
+        );
+        if (savedPosition > 0) {
+          await AudioPlayerService.seek(savedPosition);
+          setPosition(savedPosition);
+          lastSavedPositionRef.current = savedPosition;
+          lastPositionRef.current = savedPosition;
+        }
+
         // Set playback speed
         await AudioPlayerService.setPlaybackSpeed(speed);
 
@@ -510,10 +557,8 @@ export const usePlaybackController = () => {
       }
     },
     [
-      queue,
-      currentIndex,
-      currentEpisode?.id,
       setQueue,
+      setCurrentIndex,
       setCurrentEpisode,
       setCurrentPodcast,
       setPosition,
@@ -554,6 +599,17 @@ export const usePlaybackController = () => {
       // Load the episode
       const loadResult = await AudioPlayerService.loadEpisode(nextItem.episode);
       if (loadResult.success) {
+        // Check for saved playback position and resume from there
+        const savedPosition = await StorageService.loadPlaybackPosition(
+          nextItem.episode.id,
+        );
+        if (savedPosition > 0) {
+          await AudioPlayerService.seek(savedPosition);
+          setPosition(savedPosition);
+          lastSavedPositionRef.current = savedPosition;
+          lastPositionRef.current = savedPosition;
+        }
+
         // Set playback speed
         await AudioPlayerService.setPlaybackSpeed(speed);
 
