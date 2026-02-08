@@ -1,4 +1,9 @@
 import { StorageService } from '../StorageService';
+import {
+  createMockQueueItem,
+  createMockListeningHistory,
+} from '../../__mocks__';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // ===========================================
 // MOCK SETUP
@@ -140,6 +145,55 @@ describe('StorageService', () => {
     });
   });
 
+  describe('queue storage', () => {
+    it('should save and load queue', async () => {
+      const queue = [createMockQueueItem({ id: 'q1' })];
+
+      await StorageService.saveQueue(queue);
+      const loaded = await StorageService.loadQueue();
+
+      expect(loaded).toEqual(queue);
+    });
+
+    it('should return empty array when no queue saved', async () => {
+      const loaded = await StorageService.loadQueue();
+      expect(loaded).toEqual([]);
+    });
+  });
+
+  describe('history storage', () => {
+    it('should save and load history', async () => {
+      const history = [createMockListeningHistory()];
+
+      await StorageService.saveHistory(history);
+      const loaded = await StorageService.loadHistory();
+
+      expect(loaded).toHaveLength(1);
+      expect(loaded[0].episode.id).toBe(history[0].episode.id);
+      expect(loaded[0].podcast.id).toBe(history[0].podcast.id);
+      expect(loaded[0].completionPercentage).toBe(
+        history[0].completionPercentage,
+      );
+      // completedAt becomes a string after JSON serialization
+      expect(loaded[0].completedAt).toBe(history[0].completedAt.toISOString());
+    });
+
+    it('should return empty array when no history saved', async () => {
+      const loaded = await StorageService.loadHistory();
+      expect(loaded).toEqual([]);
+    });
+  });
+
+  describe('removePlaybackPosition', () => {
+    it('should remove playback position for episode', async () => {
+      await StorageService.savePlaybackPosition('ep-remove', 1000);
+      expect(await StorageService.loadPlaybackPosition('ep-remove')).toBe(1000);
+
+      await StorageService.removePlaybackPosition('ep-remove');
+      expect(await StorageService.loadPlaybackPosition('ep-remove')).toBe(0);
+    });
+  });
+
   describe('clearAllData', () => {
     it('should remove all app data', async () => {
       // Save some data first
@@ -152,6 +206,38 @@ describe('StorageService', () => {
       // Verify it's gone
       expect(await StorageService.loadPodcasts()).toEqual([]);
       expect(await StorageService.loadPlaybackPosition('ep-1')).toBe(0);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should throw error when saveData fails', async () => {
+      (AsyncStorage.setItem as jest.Mock).mockRejectedValueOnce(
+        new Error('Storage full'),
+      );
+
+      await expect(
+        StorageService.saveData('test-key', { data: 'test' }),
+      ).rejects.toThrow('Storage full');
+    });
+
+    it('should throw error when loadData fails', async () => {
+      (AsyncStorage.getItem as jest.Mock).mockRejectedValueOnce(
+        new Error('Read error'),
+      );
+
+      await expect(StorageService.loadData('test-key')).rejects.toThrow(
+        'Read error',
+      );
+    });
+
+    it('should throw error when removeData fails', async () => {
+      (AsyncStorage.removeItem as jest.Mock).mockRejectedValueOnce(
+        new Error('Remove error'),
+      );
+
+      await expect(StorageService.removeData('test-key')).rejects.toThrow(
+        'Remove error',
+      );
     });
   });
 });

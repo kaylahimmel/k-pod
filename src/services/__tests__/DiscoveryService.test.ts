@@ -192,6 +192,17 @@ describe('DiscoveryService', () => {
       }
     });
 
+    it('should handle non-Error exceptions', async () => {
+      global.fetch = jest.fn(() => Promise.reject('Unknown failure'));
+
+      const result = await DiscoveryService.searchPodcasts({ query: 'test' });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('Unknown error');
+      }
+    });
+
     it('should use custom limit when provided', async () => {
       global.fetch = mockFetchJsonResponse(MOCK_ITUNES_SEARCH_RESPONSE);
 
@@ -236,6 +247,17 @@ describe('DiscoveryService', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toContain('503');
+      }
+    });
+
+    it('should handle non-Error exceptions', async () => {
+      global.fetch = jest.fn(() => Promise.reject('Network failure'));
+
+      const result = await DiscoveryService.getTrendingPodcasts();
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('Unknown error');
       }
     });
   });
@@ -284,6 +306,20 @@ describe('DiscoveryService', () => {
         const ids = result.data.map((p) => p.id);
         const uniqueIds = [...new Set(ids)];
         expect(ids.length).toBe(uniqueIds.length);
+      }
+    });
+
+    it('should handle non-Error exceptions', async () => {
+      global.fetch = jest.fn(() => Promise.reject('Unexpected error'));
+
+      const result = await DiscoveryService.getRecommendations([
+        'Technology',
+        'Science',
+      ]);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('Unknown error');
       }
     });
   });
@@ -338,6 +374,17 @@ describe('DiscoveryService', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toContain('404');
+      }
+    });
+
+    it('should handle non-Error exceptions', async () => {
+      global.fetch = jest.fn(() => Promise.reject('Lookup failed'));
+
+      const result = await DiscoveryService.getPodcastById('123');
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('Unknown error');
       }
     });
   });
