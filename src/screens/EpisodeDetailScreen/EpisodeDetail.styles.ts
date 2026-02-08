@@ -87,6 +87,25 @@ export const styles = StyleSheet.create({
   actionButtonTextSecondary: {
     color: COLORS.textPrimary,
   },
+  nowPlayingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    backgroundColor: COLORS.cardBackground,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  nowPlayingIcon: {
+    marginTop: 2,
+  },
+  nowPlayingText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.primary,
+  },
   descriptionContainer: {
     padding: 24,
     backgroundColor: COLORS.cardBackground,

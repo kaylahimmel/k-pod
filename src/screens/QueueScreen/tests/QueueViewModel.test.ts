@@ -361,21 +361,20 @@ describe('QueueViewModel', () => {
   });
 
   describe('handleEpisodePress', () => {
-    it('should call onEpisodePress callback with correct episode and podcast IDs', () => {
+    it('should call onEpisodePress callback with correct episode and podcast IDs and queue item', () => {
       const mockEpisode = createMockEpisode({
         id: 'ep-123',
         podcastId: 'pod-456',
       });
       const mockPodcast = createMockPodcast({ id: 'pod-456' });
+      const mockQueueItem = createMockQueueItem({
+        id: 'q1',
+        episode: mockEpisode,
+        podcast: mockPodcast,
+      });
 
       queueStore.setState({
-        queue: [
-          createMockQueueItem({
-            id: 'q1',
-            episode: mockEpisode,
-            podcast: mockPodcast,
-          }),
-        ],
+        queue: [mockQueueItem],
         currentIndex: 0,
       });
 
@@ -388,7 +387,11 @@ describe('QueueViewModel', () => {
         result.current.handleEpisodePress(formattedItem);
       });
 
-      expect(mockOnEpisodePress).toHaveBeenCalledWith('ep-123', 'pod-456');
+      expect(mockOnEpisodePress).toHaveBeenCalledWith(
+        'ep-123',
+        'pod-456',
+        mockQueueItem,
+      );
     });
 
     it('should not call onEpisodePress when callback is not provided', () => {

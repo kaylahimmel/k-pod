@@ -51,26 +51,26 @@ export const FullPlayerView = ({
       </View>
       <View style={styles.artworkContainer}>
         <Image
-          source={{ uri: podcast.artworkUrl }}
+          source={{ uri: viewModel.podcast.artworkUrl }}
           style={styles.artwork}
           resizeMode='cover'
         />
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.episodeTitle} numberOfLines={2}>
-          {episode.title}
+          {viewModel.episode.title}
         </Text>
         <Text style={styles.podcastTitle} numberOfLines={1}>
-          {podcast.title}
+          {viewModel.podcast.title}
         </Text>
       </View>
-      {episode.description && (
+      {viewModel.episode.description && (
         <View style={styles.descriptionContainer}>
           <Text
             style={styles.descriptionText}
             numberOfLines={descriptionExpanded ? undefined : 2}
           >
-            {stripHtml(episode.description)}
+            {stripHtml(viewModel.episode.description)}
           </Text>
           <TouchableOpacity
             style={styles.seeMoreButton}

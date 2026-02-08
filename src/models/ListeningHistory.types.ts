@@ -7,3 +7,17 @@ export interface ListeningHistory {
   completedAt: Date; // ISO string of completion date
   completionPercentage: number; // Percentage of episode listened
 }
+
+export interface HistoryStore {
+  history: ListeningHistory[];
+  isLoading: boolean;
+  error: string | null;
+  loadHistory: () => Promise<void>;
+  addToHistory: (
+    episode: Episode,
+    podcast: Podcast,
+    completionPercentage: number,
+  ) => Promise<void>;
+  clearHistory: () => Promise<void>;
+  setHistory: (history: ListeningHistory[]) => void;
+}

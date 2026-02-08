@@ -1,7 +1,12 @@
 import { useCallback, useMemo } from 'react';
 import { formatEpisodeDetail } from './EpisodeDetailPresenter';
 import { Episode, Podcast, QueueItem, DiscoveryPodcast } from '../../models';
-import { usePodcastStore, useQueueStore, useToast } from '../../hooks';
+import {
+  usePodcastStore,
+  useQueueStore,
+  useToast,
+  usePlayerStore,
+} from '../../hooks';
 
 /**
  * Creates a Podcast-like object from DiscoveryPodcast for use with player and queue
@@ -38,6 +43,7 @@ export const useEpisodeDetailViewModel = (
 ) => {
   const { podcasts, loading } = usePodcastStore();
   const { addToQueue, queue } = useQueueStore();
+  const { currentEpisode } = usePlayerStore();
   const toast = useToast();
 
   // Find the podcast and episode from the store (for subscribed podcasts)
@@ -75,6 +81,12 @@ export const useEpisodeDetailViewModel = (
     [queue, episodeId],
   );
 
+  // Check if this episode is currently playing
+  const isCurrentlyPlaying = useMemo(
+    () => currentEpisode?.id === episodeId,
+    [currentEpisode, episodeId],
+  );
+
   // Handler: Play episode
   const handlePlay = useCallback(() => {
     if (!episode || !podcast) return;
@@ -107,6 +119,7 @@ export const useEpisodeDetailViewModel = (
     episode,
     formattedEpisode,
     isInQueue,
+    isCurrentlyPlaying,
     toast,
     handlePlay,
     handleAddToQueue,

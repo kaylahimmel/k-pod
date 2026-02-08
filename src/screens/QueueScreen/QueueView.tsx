@@ -85,12 +85,22 @@ export const QueueView = ({ onEpisodePress, onPlayItem }: QueueViewProps) => {
                 const fromItem = otherItems[from];
                 const toItem = otherItems[to];
 
+                // Safety check: ensure items exist before proceeding
+                if (!fromItem || !toItem) {
+                  return;
+                }
+
                 const actualFromIndex = viewModel.displayQueue.findIndex(
-                  (item) => item.id === fromItem.id,
+                  (item) => item && item.id === fromItem.id,
                 );
                 const actualToIndex = viewModel.displayQueue.findIndex(
-                  (item) => item.id === toItem.id,
+                  (item) => item && item.id === toItem.id,
                 );
+
+                // Ensure valid indices before reordering
+                if (actualFromIndex === -1 || actualToIndex === -1) {
+                  return;
+                }
 
                 viewModel.handleReorder(actualFromIndex, actualToIndex);
               }}

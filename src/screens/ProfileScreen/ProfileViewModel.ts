@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
-import { usePodcastStore } from '../../hooks';
-import { StorageService } from '../../services';
-import { ListeningHistory, User } from '../../models';
+import { usePodcastStore, useHistoryStore } from '../../hooks';
+import { User } from '../../models';
 import {
   formatUser,
   getRecentHistory,
@@ -20,21 +19,26 @@ export const useProfileViewModel = (
   onSignOutPress: () => void,
 ): ProfileViewModelReturn => {
   // Local state
-  const [history, setHistory] = useState<ListeningHistory[]>([]);
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   // Store access
   const { podcasts } = usePodcastStore();
+  const {
+    history,
+    isLoading: isLoadingHistory,
+    loadHistory,
+  } = useHistoryStore();
 
   // Load data on mount
   useEffect(() => {
     const loadProfileData = async () => {
-      setIsLoading(true);
-      try {
-        const loadedHistory = await StorageService.loadHistory();
-        setHistory(loadedHistory);
+      // Load history from store
+      await loadHistory();
 
+      // Load user data
+      setIsLoadingUser(true);
+      try {
         // TODO: Load actual user from auth service when implemented (Phase 8)
         // For now, use mock user data for UI development
         const mockUser: User = {
@@ -47,14 +51,14 @@ export const useProfileViewModel = (
         };
         setUser(mockUser);
       } catch (error) {
-        console.error('Error loading profile data:', error);
+        console.error('Error loading user data:', error);
       } finally {
-        setIsLoading(false);
+        setIsLoadingUser(false);
       }
     };
 
     loadProfileData();
-  }, []);
+  }, [loadHistory]);
 
   // Formatted data from presenter
   const formattedUser = useMemo(() => formatUser(user), [user]);
@@ -68,6 +72,7 @@ export const useProfileViewModel = (
 
   // State flags
   const hasHistory = history.length > 0;
+  const isLoading = isLoadingUser || isLoadingHistory;
 
   // Action handlers
   const handleViewHistoryPress = useCallback(() => {

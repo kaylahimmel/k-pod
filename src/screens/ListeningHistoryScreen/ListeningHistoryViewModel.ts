@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { StorageService } from '../../services';
-import { ListeningHistory } from '../../models';
+import { useHistoryStore } from '../../hooks';
 import {
   formatAllHistory,
   getHistorySummary,
@@ -15,25 +14,17 @@ import { ListeningHistoryViewModelReturn } from './ListeningHistory.types';
 export const useListeningHistoryViewModel = (
   onClearHistory: () => void,
 ): ListeningHistoryViewModelReturn => {
-  const [rawHistory, setRawHistory] = useState<ListeningHistory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    history: rawHistory,
+    isLoading,
+    loadHistory,
+    clearHistory: clearHistoryStore,
+  } = useHistoryStore();
 
   // Load history on mount
   useEffect(() => {
-    const loadHistoryData = async () => {
-      setIsLoading(true);
-      try {
-        const loadedHistory = await StorageService.loadHistory();
-        setRawHistory(loadedHistory);
-      } catch (error) {
-        console.error('Error loading listening history:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadHistoryData();
-  }, []);
+    loadHistory();
+  }, [loadHistory]);
 
   // Formatted history from presenter
   const history = useMemo(() => formatAllHistory(rawHistory), [rawHistory]);
@@ -57,8 +48,7 @@ export const useListeningHistoryViewModel = (
           style: 'destructive',
           onPress: async () => {
             try {
-              await StorageService.saveHistory([]);
-              setRawHistory([]);
+              await clearHistoryStore();
               onClearHistory();
             } catch (error) {
               console.error('Error clearing history:', error);
@@ -71,7 +61,7 @@ export const useListeningHistoryViewModel = (
         },
       ],
     );
-  }, [onClearHistory]);
+  }, [clearHistoryStore, onClearHistory]);
 
   return {
     history,

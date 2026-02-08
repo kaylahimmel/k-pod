@@ -4,3 +4,4 @@ export * from './useQueueStore';
 export * from './useSettingsStore';
 export * from './useToast';
 export * from './usePlaybackController';
+export * from './useHistoryStore';

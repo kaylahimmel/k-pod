@@ -1,7 +1,11 @@
 import { QueueItem } from '../../models';
 
 export interface QueueViewProps {
-  onEpisodePress?: (episodeId: string, podcastId: string) => void;
+  onEpisodePress?: (
+    episodeId: string,
+    podcastId: string,
+    item: QueueItem,
+  ) => void;
   onPlayItem?: (item: QueueItem) => void;
 }
 

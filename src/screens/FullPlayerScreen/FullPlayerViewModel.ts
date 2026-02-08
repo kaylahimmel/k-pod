@@ -1,5 +1,10 @@
 import { useCallback, useMemo, useEffect } from 'react';
-import { usePlaybackController, useQueueStore, useToast } from '../../hooks';
+import {
+  usePlaybackController,
+  useQueueStore,
+  useToast,
+  usePlayerStore,
+} from '../../hooks';
 import { Episode, Podcast, PlaybackSpeed } from '../../models';
 import {
   formatPlaybackTime,
@@ -14,39 +19,57 @@ import { FullPlayerViewModel } from './FullPlayer.types';
  * Manages playback state, controls, and queue interactions
  */
 export const useFullPlayerViewModel = (
-  episode: Episode,
-  podcast: Podcast,
+  initialEpisode: Episode,
+  initialPodcast: Podcast,
   onDismiss: () => void,
 ): FullPlayerViewModel => {
-  // Playback controller
+  // Playback controller for actions
   const playbackController = usePlaybackController();
   const { queue, currentIndex, addToQueue } = useQueueStore();
   const toast = useToast();
+  // Get stable references from playerStore for proper re-renders
+  const {
+    currentEpisode: storeCurrentEpisode,
+    currentPodcast: storeCurrentPodcast,
+    position: storePosition,
+    duration: storeDuration,
+    isPlaying: storeIsPlaying,
+    speed: storeSpeed,
+  } = usePlayerStore();
+
+  // Use the currently playing episode/podcast from the store
+  // This ensures the screen updates when auto-advance happens
+  // Memoize to ensure proper re-renders when currentEpisode changes
+  const episode = useMemo(
+    () => storeCurrentEpisode || initialEpisode,
+    [storeCurrentEpisode, initialEpisode],
+  );
+
+  const podcast = useMemo(
+    () => storeCurrentPodcast || initialPodcast,
+    [storeCurrentPodcast, initialPodcast],
+  );
 
   // Load and play the episode when the screen opens
   useEffect(() => {
-    playbackController.playEpisode(episode, podcast);
-    // Only re-run when the episode ID changes (indicating a different episode)
-    // We use episode.id instead of episode/podcast/playbackController because:
+    playbackController.playEpisode(initialEpisode, initialPodcast);
+    // Only re-run when the initial episode ID changes (indicating a different episode was passed in)
+    // We use initialEpisode.id instead of episode/podcast/playbackController because:
     // - `playbackController` is recreated on every render and would cause infinite loops
     // - `episode` and `podcast` objects may have same IDs but different references
-    // - We only care about episode.id changing, which indicates a truly different episode
+    // - We only care about initialEpisode.id changing, which indicates a truly different episode
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [episode.id]);
+  }, [initialEpisode.id]);
 
-  // Formatted display data
+  // Formatted display data - use store values for consistent updates
   const playbackTime = useMemo(
-    () =>
-      formatPlaybackTime(
-        playbackController.position,
-        playbackController.duration,
-      ),
-    [playbackController.position, playbackController.duration],
+    () => formatPlaybackTime(storePosition, storeDuration),
+    [storePosition, storeDuration],
   );
 
   const speedDisplay = useMemo(
-    () => formatSpeedDisplay(playbackController.speed),
-    [playbackController.speed],
+    () => formatSpeedDisplay(storeSpeed),
+    [storeSpeed],
   );
 
   // Get the next item in queue for "up next" preview
@@ -123,10 +146,10 @@ export const useFullPlayerViewModel = (
     upNextItem,
     hasUpNext,
     isEpisodeInQueue,
-    isPlaying: playbackController.isPlaying,
-    position: playbackController.position,
-    duration: playbackController.duration,
-    speed: playbackController.speed,
+    isPlaying: storeIsPlaying,
+    position: storePosition,
+    duration: storeDuration,
+    speed: storeSpeed,
     handlePlayPause,
     handleSkipForward,
     handleSkipBackward,
