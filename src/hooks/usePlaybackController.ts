@@ -51,23 +51,28 @@ export const usePlaybackController = () => {
   const handleProgress = useCallback(
     (newPosition: number, newDuration: number) => {
       setPosition(newPosition);
-      if (newDuration > 0 && newDuration !== duration) {
+
+      // Get fresh duration to avoid stale closure
+      const { duration: freshDuration, currentEpisode: freshEpisode } =
+        playerStore.getState();
+
+      if (newDuration > 0 && newDuration !== freshDuration) {
         setDuration(newDuration);
       }
 
       // Save position to storage every 10 seconds
       if (
-        currentEpisode &&
+        freshEpisode &&
         Math.abs(newPosition - lastSavedPositionRef.current) >= 10
       ) {
         lastSavedPositionRef.current = newPosition;
-        StorageService.savePlaybackPosition(currentEpisode.id, newPosition);
+        StorageService.savePlaybackPosition(freshEpisode.id, newPosition);
       }
 
       // Track last position for completion detection
       lastPositionRef.current = newPosition;
     },
-    [setPosition, setDuration, duration, currentEpisode],
+    [setPosition, setDuration],
   );
 
   /**
@@ -77,13 +82,20 @@ export const usePlaybackController = () => {
   const handleEnd = useCallback(() => {
     setIsPlaying(false);
 
+    // Get fresh player state to avoid stale closure issues
+    const {
+      currentEpisode: freshEpisode,
+      currentPodcast: freshPodcast,
+      duration: freshDuration,
+    } = playerStore.getState();
+
     // Track this episode as completed in history (100% completion)
-    if (currentEpisode && currentPodcast && duration > 0) {
+    if (freshEpisode && freshPodcast && freshDuration > 0) {
       const completionPercentage = 100;
-      addToHistory(currentEpisode, currentPodcast, completionPercentage);
+      addToHistory(freshEpisode, freshPodcast, completionPercentage);
 
       // Clear saved playback position since episode is complete
-      StorageService.removePlaybackPosition(currentEpisode.id);
+      StorageService.removePlaybackPosition(freshEpisode.id);
     }
 
     // Get fresh queue state to avoid stale closure issues
@@ -151,9 +163,6 @@ export const usePlaybackController = () => {
     }
   }, [
     settings.autoPlayNext,
-    currentEpisode,
-    currentPodcast,
-    duration,
     addToHistory,
     setCurrentEpisode,
     setCurrentPodcast,
@@ -324,32 +333,41 @@ export const usePlaybackController = () => {
    * Saves position when pausing
    */
   const togglePlayPause = useCallback(async () => {
-    if (!currentEpisode) return;
+    // Get fresh state to avoid stale closure issues
+    const {
+      currentEpisode: freshEpisode,
+      currentPodcast: freshPodcast,
+      isPlaying: freshIsPlaying,
+      position: freshPosition,
+      duration: freshDuration,
+    } = playerStore.getState();
 
-    if (isPlaying) {
+    if (!freshEpisode) return;
+
+    if (freshIsPlaying) {
       const result = await AudioPlayerService.pause();
       if (result.success) {
         setIsPlaying(false);
 
         // Save current position on pause
-        if (position > 0) {
+        if (freshPosition > 0) {
           await StorageService.savePlaybackPosition(
-            currentEpisode.id,
-            position,
+            freshEpisode.id,
+            freshPosition,
           );
-          lastSavedPositionRef.current = position;
+          lastSavedPositionRef.current = freshPosition;
 
           // Track partially completed episodes (>90% listened) in history
-          if (duration > 0 && currentPodcast) {
-            const completionPercentage = (position / duration) * 100;
+          if (freshDuration > 0 && freshPodcast) {
+            const completionPercentage = (freshPosition / freshDuration) * 100;
             if (completionPercentage >= 90) {
               await addToHistory(
-                currentEpisode,
-                currentPodcast,
+                freshEpisode,
+                freshPodcast,
                 completionPercentage,
               );
               // Clear saved position since it's essentially complete
-              await StorageService.removePlaybackPosition(currentEpisode.id);
+              await StorageService.removePlaybackPosition(freshEpisode.id);
             }
           }
         }
@@ -360,15 +378,7 @@ export const usePlaybackController = () => {
         setIsPlaying(true);
       }
     }
-  }, [
-    currentEpisode,
-    currentPodcast,
-    isPlaying,
-    position,
-    duration,
-    setIsPlaying,
-    addToHistory,
-  ]);
+  }, [setIsPlaying, addToHistory]);
 
   /**
    * Seek to a specific position

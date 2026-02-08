@@ -56,6 +56,14 @@ describe('RSSService', () => {
       it('should return 0 for invalid format', () => {
         expect(parseDuration('invalid')).toBe(0);
       });
+
+      it('should parse single number format', () => {
+        expect(parseDuration('45')).toBe(45);
+      });
+
+      it('should return 0 for invalid time parts with 4+ segments', () => {
+        expect(parseDuration('12:34:56:78')).toBe(0);
+      });
     });
 
     describe('generateId', () => {
@@ -272,6 +280,20 @@ describe('RSSService', () => {
         expect(result.data).toHaveLength(2);
         expect(result.data[0].podcastId).toBe('custom-podcast-id');
         expect(result.data[1].podcastId).toBe('custom-podcast-id');
+      }
+    });
+
+    it('should return error when feed fetch fails', async () => {
+      global.fetch = mockFetchResponse('Not Found', false, 404);
+
+      const result = await RSSService.refreshEpisodes(
+        'podcast-id',
+        'https://example.com/missing.xml',
+      );
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toContain('404');
       }
     });
   });

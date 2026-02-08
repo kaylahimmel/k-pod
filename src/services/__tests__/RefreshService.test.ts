@@ -248,6 +248,88 @@ describe('RefreshService', () => {
         RefreshService.stopForegroundRefresh();
       }).not.toThrow();
     });
+
+    it('should trigger refresh with callback when app becomes active', async () => {
+      const onRefreshComplete = jest.fn();
+      const mockRemove = jest.fn();
+      let stateChangeHandler: (state: string) => void;
+
+      (AppState.addEventListener as jest.Mock).mockImplementation(
+        (_event, handler) => {
+          stateChangeHandler = handler;
+          return { remove: mockRemove };
+        },
+      );
+
+      const podcast = createMockPodcast({ id: 'p1', episodes: [] });
+      podcastStore.setState({
+        podcasts: [podcast],
+        loading: false,
+        error: null,
+      });
+
+      (RSSService.refreshEpisodes as jest.Mock).mockResolvedValue({
+        success: true,
+        data: [],
+      });
+
+      // Reset timer to allow refresh
+      RefreshService.resetRefreshTimer();
+
+      // Start foreground refresh with callback
+      RefreshService.startForegroundRefresh(onRefreshComplete);
+
+      // Simulate app becoming active
+      stateChangeHandler!('active');
+
+      // Wait for async refresh to complete
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(onRefreshComplete).toHaveBeenCalled();
+      expect(onRefreshComplete).toHaveBeenCalledWith(
+        expect.objectContaining({
+          totalPodcasts: 1,
+          successCount: 1,
+        }),
+      );
+    });
+
+    it('should not trigger refresh when app state is not active', async () => {
+      const onRefreshComplete = jest.fn();
+      let stateChangeHandler: (state: string) => void;
+
+      (AppState.addEventListener as jest.Mock).mockImplementation(
+        (_event, handler) => {
+          stateChangeHandler = handler;
+          return { remove: jest.fn() };
+        },
+      );
+
+      RefreshService.resetRefreshTimer();
+      RefreshService.startForegroundRefresh(onRefreshComplete);
+
+      // Simulate app going to background
+      stateChangeHandler!('background');
+
+      // Wait a bit to ensure no refresh happens
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(onRefreshComplete).not.toHaveBeenCalled();
+    });
+
+    it('should remove existing subscription when restarting foreground refresh', () => {
+      const mockRemove1 = jest.fn();
+      const mockRemove2 = jest.fn();
+
+      (AppState.addEventListener as jest.Mock)
+        .mockReturnValueOnce({ remove: mockRemove1 })
+        .mockReturnValueOnce({ remove: mockRemove2 });
+
+      RefreshService.startForegroundRefresh();
+      RefreshService.startForegroundRefresh(); // Start again
+
+      expect(mockRemove1).toHaveBeenCalled();
+    });
   });
 
   describe('resetRefreshTimer', () => {
