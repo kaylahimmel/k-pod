@@ -118,4 +118,21 @@ describe('stripHtml', () => {
     expect(stripHtml('<a href="https://example.com">Link</a>')).toBe('Link');
     expect(stripHtml('<img src="image.jpg" alt="Image"/>')).toBe('');
   });
+
+  it('should handle nested tag injection attempts', () => {
+    // Crafted input: <scr<script>ipt> — the inner <script> is removed first (greedy match
+    // stops at first >), leaving ipt> as a harmless text fragment with no surviving <script> tag
+    expect(stripHtml('<scr<script>ipt>alert(1)</script>')).toBe('ipt>alert(1)');
+    expect(stripHtml('<<b>script>')).toBe('script>');
+  });
+
+  it('should not double-decode &amp;lt; to <', () => {
+    // &amp;lt; represents a literal &lt;, not <
+    expect(stripHtml('&amp;lt;')).toBe('&lt;');
+  });
+
+  it('should not double-decode &amp;amp; to &', () => {
+    // &amp;amp; represents a literal &amp;
+    expect(stripHtml('&amp;amp;')).toBe('&amp;');
+  });
 });
