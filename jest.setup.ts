@@ -11,14 +11,19 @@ jest.mock('./src/utils', () => ({
   },
   stripHtml: (html: string): string => {
     if (!html) return '';
-    return html
-      .replace(/<[^>]*>/g, '')
+    let result = html;
+    let prev: string;
+    do {
+      prev = result;
+      result = result.replace(/<[^>]*>/g, '');
+    } while (result !== prev);
+    return result
       .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&')
       .replace(/\s+/g, ' ')
       .trim();
   },

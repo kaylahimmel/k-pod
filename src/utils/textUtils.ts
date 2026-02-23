@@ -18,10 +18,15 @@ export function truncateText(text: string, maxLength: number): string {
  */
 export function stripHtml(html: string): string {
   if (!html || typeof html !== 'string') return '';
-  return html
-    .replace(/<[^>]*>/g, '') // Remove HTML tags
+  // Loop tag removal until stable to prevent injection via nested tags (e.g. <scr<script>ipt>)
+  let result = html;
+  let prev: string;
+  do {
+    prev = result;
+    result = result.replace(/<[^>]*>/g, '');
+  } while (result !== prev);
+  return result
     .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
@@ -34,6 +39,7 @@ export function stripHtml(html: string): string {
     .replace(/&ndash;/g, '–') // En dash
     .replace(/&hellip;/g, '…') // Ellipsis
     .replace(/&#\d+;/g, '') // Remove remaining numeric entities
+    .replace(/&amp;/g, '&') // Decode & last to prevent double-unescaping (e.g. &amp;lt; → &lt;, not <)
     .replace(/\s+/g, ' ') // Collapse whitespace
     .trim();
 }
