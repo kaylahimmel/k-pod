@@ -10,7 +10,7 @@ K-Pod is a podcast player app built with React Native and Expo. It allows users 
 
 - **Framework**: React Native 0.81 with Expo 54 (managed workflow)
 - **Language**: TypeScript (strict mode)
-- **State Management**: Zustand (4 stores: player, queue, podcast, settings)
+- **State Management**: Zustand (5 stores: player, queue, podcast, settings, history)
 - **Navigation**: React Navigation 7 (bottom tabs + nested stacks)
 - **Audio**: expo-av for playback
 - **Storage**: AsyncStorage for persistence
@@ -133,10 +133,11 @@ RootNavigator
 - **Types**: `src/models/` (Episode, Podcast, Queue, etc.)
 - **Navigation Types**: `src/navigation/types.ts`
 - **Test Mocks**: `jest.setup.ts`
+- **Playback + History Controller**: `src/hooks/usePlaybackController.ts` — integrates AudioPlayerService, all stores, and history tracking; mount this hook at the app root level to activate playback
 
 ## Testing
 
-- Test files: `src/screens/*/__tests__/*.test.ts(x)` and `src/utils/__tests__/*.test.ts(x)`
+- Test files: screens use `src/screens/*/tests/*.test.ts(x)`; hooks, stores, services, and utils use `src/<dir>/__tests__/*.test.ts(x)`
 - Use or update existing mocks from `src/__mocks__` files whenever possible, adding new mocks as needed
 - Mocks configured in `jest.setup.ts`--continue to update this as needed
 - Achieve at least 75% line coverage in test files, or if not possible, leave // TO-DO comments to circle back on to add once the needed UI, logic, or service has been implemented
@@ -150,6 +151,13 @@ RootNavigator
 - Mock factory functions live in `src/__mocks__/` (e.g., `mockLibrary.ts`, `mockProfile.ts`)
 - Export all mocks from `src/__mocks__/index.ts`
 - Pattern: `createMockXxx(overrides?: Partial<Xxx>): Xxx`
+
+### ViewModel Testing Strategy
+
+- When a ViewModel depends on **multiple hooks**, mock the entire `hooks` module: `jest.mock('../../../hooks', () => ({ useFoo: jest.fn(), useBar: jest.fn() }))`
+- When a ViewModel depends on a **single store directly**, set state via `store.setState({})` instead (see QueueViewModel.test.ts)
+- Async `useEffect` state updates (e.g., loading user data) will produce non-blocking `act()` warnings; use `waitFor()` in tests that assert on post-effect state
+- `usePlaybackController` is the central hub for all audio playback and history tracking — detailed playback tests live in `src/hooks/__tests__/usePlaybackController.test.ts`
 
 ## Common Commands
 
