@@ -1,3 +1,4 @@
+export * from './authStore';
 export * from './playerStore';
 export * from './queueStore';
 export * from './settingsStore';

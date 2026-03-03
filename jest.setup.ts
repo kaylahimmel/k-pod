@@ -106,6 +106,28 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   },
 }));
 
+// Mock Firebase config and auth to prevent real Firebase initialization in tests
+jest.mock('./src/config/firebase', () => ({
+  auth: { currentUser: null },
+}));
+
+jest.mock('firebase/auth', () => ({
+  createUserWithEmailAndPassword: jest.fn(),
+  signInWithEmailAndPassword: jest.fn(),
+  signOut: jest.fn(),
+  updatePassword: jest.fn(),
+  reauthenticateWithCredential: jest.fn(),
+  EmailAuthProvider: { credential: jest.fn() },
+  sendPasswordResetEmail: jest.fn(),
+  onAuthStateChanged: jest.fn(() => jest.fn()),
+  initializeAuth: jest.fn(),
+  getReactNativePersistence: jest.fn(),
+}));
+
+jest.mock('firebase/app', () => ({
+  initializeApp: jest.fn(),
+}));
+
 // Mock AudioPlayerService to avoid expo-av native module requirements
 jest.mock('./src/services/AudioPlayerService', () => ({
   AudioPlayerService: {
