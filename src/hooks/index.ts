@@ -1,4 +1,5 @@
 export * from './useAuthStore';
+export * from './useColors';
 export * from './usePlayerStore';
 export * from './usePodcastStore';
 export * from './useQueueStore';
