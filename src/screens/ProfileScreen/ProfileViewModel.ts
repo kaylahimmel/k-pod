@@ -1,26 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { usePodcastStore, useHistoryStore } from '../../hooks';
-import { User } from '../../models';
-import {
-  formatUser,
-  getRecentHistory,
-  getProfileStats,
-} from './ProfilePresenter';
+import { usePodcastStore, useHistoryStore, useAuthStore } from '../../hooks';
+import { AuthService } from '../../services';
+import { formatUser, getProfileStats } from './ProfilePresenter';
 import { ProfileViewModelReturn } from './Profile.types';
 
 /**
- * ViewModel hook for the Profile screen
- * Manages user data, listening history, and profile actions
+ * ViewModel hook for the Profile screen.
+ * Manages user data (from authStore), listening history, and profile actions.
  */
 export const useProfileViewModel = (
   onViewHistoryPress: () => void,
   onChangePasswordPress: () => void,
-  onSignOutPress: () => void,
 ): ProfileViewModelReturn => {
-  // Local state
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const { user: authUser } = useAuthStore();
 
   // Store access
   const { podcasts } = usePodcastStore();
@@ -30,40 +23,13 @@ export const useProfileViewModel = (
     loadHistory,
   } = useHistoryStore();
 
-  // Load data on mount
+  // Load history on mount
   useEffect(() => {
-    const loadProfileData = async () => {
-      // Load history from store
-      await loadHistory();
-
-      // Load user data
-      setIsLoadingUser(true);
-      try {
-        // TODO: Load actual user from auth service when implemented (Phase 8)
-        // For now, use mock user data for UI development
-        const mockUser: User = {
-          id: 'mock-user-1',
-          email: 'user@example.com',
-          preferences: {
-            theme: 'light',
-            notifications: true,
-          },
-        };
-        setUser(mockUser);
-      } catch (error) {
-        console.error('Error loading user data:', error);
-      } finally {
-        setIsLoadingUser(false);
-      }
-    };
-
-    loadProfileData();
+    loadHistory();
   }, [loadHistory]);
 
   // Formatted data from presenter
-  const formattedUser = useMemo(() => formatUser(user), [user]);
-
-  const recentHistory = useMemo(() => getRecentHistory(history, 3), [history]);
+  const formattedUser = useMemo(() => formatUser(authUser), [authUser]);
 
   const stats = useMemo(
     () => getProfileStats(history, podcasts),
@@ -71,43 +37,38 @@ export const useProfileViewModel = (
   );
 
   // State flags
-  const hasHistory = history.length > 0;
-  const isLoading = isLoadingUser || isLoadingHistory;
+  const isLoading = isLoadingHistory;
 
   // Action handlers
-  const handleViewHistoryPress = useCallback(() => {
-    onViewHistoryPress();
-  }, [onViewHistoryPress]);
+  const handleViewHistoryPress = () => {
+    return onViewHistoryPress();
+  };
 
-  const handleChangePasswordPress = useCallback(() => {
-    // TODO: Navigate to change password when auth is implemented (Phase 8)
-    onChangePasswordPress();
-  }, [onChangePasswordPress]);
+  const handleChangePasswordPress = () => {
+    return onChangePasswordPress();
+  };
 
   const handleSignOutPress = useCallback(() => {
-    // TODO: Implement actual sign out when auth is implemented (Phase 8)
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Sign Out',
         style: 'destructive',
-        onPress: () => {
-          onSignOutPress();
+        onPress: async () => {
+          await AuthService.signOut();
+          // authStore is updated by the onAuthStateChanged listener in RootNavigator,
+          // which automatically switches the navigation to AuthStackNavigator
         },
       },
     ]);
-  }, [onSignOutPress]);
+  }, []);
 
   return {
     user: formattedUser,
-    recentHistory,
     stats,
     isLoading,
-    hasHistory,
     handleViewHistoryPress,
     handleChangePasswordPress,
     handleSignOutPress,
   };
 };
-
-export type ProfileViewModel = ReturnType<typeof useProfileViewModel>;

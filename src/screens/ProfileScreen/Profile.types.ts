@@ -1,7 +1,6 @@
 export interface ProfileViewProps {
   onViewHistoryPress: () => void;
   onChangePasswordPress: () => void;
-  onSignOutPress: () => void;
 }
 
 export interface FormattedHistoryItem {
@@ -35,11 +34,9 @@ export interface FormattedUser {
 
 export type ProfileViewModelReturn = {
   user: FormattedUser | null;
-  recentHistory: FormattedHistoryItem[];
   stats: ProfileStats;
   isLoading: boolean;
-  hasHistory: boolean;
   handleViewHistoryPress: () => void;
   handleChangePasswordPress: () => void;
-  handleSignOutPress: () => void;
+  handleSignOutPress: () => void; // Owned entirely by the ViewModel: shows confirmation alert and calls AuthService.signOut()
 };

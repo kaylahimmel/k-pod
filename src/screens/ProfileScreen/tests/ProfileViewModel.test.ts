@@ -1,26 +1,34 @@
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { useProfileViewModel } from '../ProfileViewModel';
+import { AuthService } from '../../../services';
 import {
   createMockListeningHistory,
   createMockPodcasts,
 } from '../../../__mocks__';
 
-// Mock the hooks to control store state without real async store operations
+// Mock the hooks module to control store state
 jest.mock('../../../hooks', () => ({
   usePodcastStore: jest.fn(),
   useHistoryStore: jest.fn(),
+  useAuthStore: jest.fn(),
+}));
+
+// Mock AuthService.signOut used in handleSignOutPress
+jest.mock('../../../services', () => ({
+  AuthService: {
+    signOut: jest.fn().mockResolvedValue({ success: true, data: undefined }),
+  },
 }));
 
 // eslint-disable-next-line import/first
-import { usePodcastStore, useHistoryStore } from '../../../hooks';
+import { usePodcastStore, useHistoryStore, useAuthStore } from '../../../hooks';
 
 jest.spyOn(Alert, 'alert');
 
 describe('useProfileViewModel', () => {
   const mockOnViewHistoryPress = jest.fn();
   const mockOnChangePasswordPress = jest.fn();
-  const mockOnSignOutPress = jest.fn();
   const mockLoadHistory = jest.fn().mockResolvedValue(undefined);
 
   const defaultHistory = [
@@ -30,12 +38,17 @@ describe('useProfileViewModel', () => {
   ];
   const defaultPodcasts = createMockPodcasts(2);
 
+  const defaultAuthUser = {
+    id: 'user-1',
+    email: 'user@example.com',
+    preferences: { theme: 'light' as const, notifications: true },
+  };
+
   const renderViewModel = () =>
     renderHook(() =>
       useProfileViewModel(
         mockOnViewHistoryPress,
         mockOnChangePasswordPress,
-        mockOnSignOutPress,
       ),
     );
 
@@ -49,6 +62,9 @@ describe('useProfileViewModel', () => {
       isLoading: false,
       loadHistory: mockLoadHistory,
     });
+    (useAuthStore as jest.Mock).mockReturnValue({
+      user: defaultAuthUser,
+    });
   });
 
   describe('on mount', () => {
@@ -59,61 +75,23 @@ describe('useProfileViewModel', () => {
         expect(mockLoadHistory).toHaveBeenCalledTimes(1);
       });
     });
-
-    it('should resolve user and set isLoading to false', async () => {
-      const { result } = renderViewModel();
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(result.current.user).not.toBeNull();
-    });
   });
 
   describe('user', () => {
-    it('should return formatted mock user with correct email and initials', async () => {
+    it('should return formatted user from authStore', () => {
       const { result } = renderViewModel();
 
-      await waitFor(() => {
-        expect(result.current.user).not.toBeNull();
-      });
-
-      // Mock user in ProfileViewModel has email 'user@example.com'
+      expect(result.current.user).not.toBeNull();
       expect(result.current.user?.email).toBe('user@example.com');
       expect(result.current.user?.initials).toBe('US');
     });
-  });
 
-  describe('recentHistory', () => {
-    it('should return at most 3 recent history items', () => {
-      const { result } = renderViewModel();
-
-      expect(result.current.recentHistory).toHaveLength(3);
-    });
-
-    it('should return empty array when history is empty', () => {
-      (useHistoryStore as jest.Mock).mockReturnValue({
-        history: [],
-        isLoading: false,
-        loadHistory: mockLoadHistory,
-      });
+    it('should return null when no user is authenticated', () => {
+      (useAuthStore as jest.Mock).mockReturnValue({ user: null });
 
       const { result } = renderViewModel();
 
-      expect(result.current.recentHistory).toHaveLength(0);
-    });
-
-    it('should return fewer than 3 items when history has fewer than 3 items', () => {
-      (useHistoryStore as jest.Mock).mockReturnValue({
-        history: [createMockListeningHistory()],
-        isLoading: false,
-        loadHistory: mockLoadHistory,
-      });
-
-      const { result } = renderViewModel();
-
-      expect(result.current.recentHistory).toHaveLength(1);
+      expect(result.current.user).toBeNull();
     });
   });
 
@@ -149,28 +127,8 @@ describe('useProfileViewModel', () => {
     });
   });
 
-  describe('hasHistory', () => {
-    it('should be true when history has items', () => {
-      const { result } = renderViewModel();
-
-      expect(result.current.hasHistory).toBe(true);
-    });
-
-    it('should be false when history is empty', () => {
-      (useHistoryStore as jest.Mock).mockReturnValue({
-        history: [],
-        isLoading: false,
-        loadHistory: mockLoadHistory,
-      });
-
-      const { result } = renderViewModel();
-
-      expect(result.current.hasHistory).toBe(false);
-    });
-  });
-
   describe('isLoading', () => {
-    it('should be true while history store is loading', () => {
+    it('should reflect history store loading state', () => {
       (useHistoryStore as jest.Mock).mockReturnValue({
         history: [],
         isLoading: true,
@@ -225,7 +183,7 @@ describe('useProfileViewModel', () => {
       );
     });
 
-    it('should call onSignOutPress when the alert is confirmed', () => {
+    it('should call AuthService.signOut when the alert is confirmed', async () => {
       const { result } = renderViewModel();
 
       act(() => {
@@ -237,22 +195,21 @@ describe('useProfileViewModel', () => {
         (btn: { text: string }) => btn.text === 'Sign Out',
       );
 
-      act(() => {
-        signOutButton.onPress();
+      await act(async () => {
+        await signOutButton.onPress();
       });
 
-      expect(mockOnSignOutPress).toHaveBeenCalledTimes(1);
+      expect(AuthService.signOut).toHaveBeenCalledTimes(1);
     });
 
-    it('should not call onSignOutPress when the alert is cancelled', () => {
+    it('should not call AuthService.signOut when the alert is cancelled', () => {
       const { result } = renderViewModel();
 
       act(() => {
         result.current.handleSignOutPress();
       });
 
-      // Don't press any button - verify callback was not called
-      expect(mockOnSignOutPress).not.toHaveBeenCalled();
+      expect(AuthService.signOut).not.toHaveBeenCalled();
     });
   });
 });

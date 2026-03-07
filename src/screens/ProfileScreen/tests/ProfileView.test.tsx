@@ -1,18 +1,18 @@
-import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import React, { act } from 'react';
+import { render, fireEvent } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { ProfileView } from '../ProfileView';
-import { podcastStore } from '../../../stores';
-import { StorageService } from '../../../services';
-import {
-  createMockPodcasts,
-  createMockListeningHistoryItems,
-} from '../../../__mocks__';
+import { podcastStore, authStore } from '../../../stores';
+import { StorageService, AuthService } from '../../../services';
+import { createMockPodcasts } from '../../../__mocks__';
 
-// Mock StorageService
+// Mock StorageService and AuthService
 jest.mock('../../../services', () => ({
   StorageService: {
     loadHistory: jest.fn().mockResolvedValue([]),
+  },
+  AuthService: {
+    signOut: jest.fn().mockResolvedValue({ success: true, data: undefined }),
   },
 }));
 
@@ -22,13 +22,22 @@ jest.spyOn(Alert, 'alert');
 describe('ProfileView', () => {
   const mockOnViewHistoryPress = jest.fn();
   const mockOnChangePasswordPress = jest.fn();
-  const mockOnSignOutPress = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
     podcastStore.setState({
       podcasts: [],
       loading: false,
+      error: null,
+    });
+    authStore.setState({
+      user: {
+        id: 'user-1',
+        email: 'user@example.com',
+        preferences: { theme: 'light', notifications: true },
+      },
+      isAuthenticated: true,
+      isLoading: false,
       error: null,
     });
     (StorageService.loadHistory as jest.Mock).mockResolvedValue([]);
@@ -39,7 +48,6 @@ describe('ProfileView', () => {
       <ProfileView
         onViewHistoryPress={mockOnViewHistoryPress}
         onChangePasswordPress={mockOnChangePasswordPress}
-        onSignOutPress={mockOnSignOutPress}
       />,
     );
 
@@ -86,48 +94,22 @@ describe('ProfileView', () => {
     });
   });
 
-  describe('Recent Activity Section', () => {
-    it('should show empty state when no history', async () => {
+  describe('Account Actions', () => {
+    it('should display Listening History option', async () => {
       const { findByText } = renderProfileView();
 
-      expect(await findByText('Recent Activity')).toBeTruthy();
-      expect(await findByText(/No listening history yet/)).toBeTruthy();
+      expect(await findByText('Listening History')).toBeTruthy();
     });
 
-    it('should display recent history items', async () => {
-      const historyItems = createMockListeningHistoryItems(3);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(historyItems);
-
+    it('should call onViewHistoryPress when Listening History is pressed', async () => {
       const { findByText } = renderProfileView();
 
-      await waitFor(async () => {
-        expect(await findByText('Episode 1')).toBeTruthy();
-      });
-    });
-
-    it('should show View All History button when history exists', async () => {
-      const historyItems = createMockListeningHistoryItems(3);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(historyItems);
-
-      const { findByText } = renderProfileView();
-
-      expect(await findByText('View All History')).toBeTruthy();
-    });
-
-    it('should call onViewHistoryPress when View All History is pressed', async () => {
-      const historyItems = createMockListeningHistoryItems(3);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(historyItems);
-
-      const { findByText } = renderProfileView();
-
-      const button = await findByText('View All History');
+      const button = await findByText('Listening History');
       fireEvent.press(button);
 
       expect(mockOnViewHistoryPress).toHaveBeenCalled();
     });
-  });
 
-  describe('Account Actions', () => {
     it('should display Change Password option', async () => {
       const { findByText } = renderProfileView();
 
@@ -173,9 +155,12 @@ describe('ProfileView', () => {
       const signOutButton = alertCall[2].find(
         (btn: { text: string }) => btn.text === 'Sign Out',
       );
-      signOutButton.onPress();
 
-      expect(mockOnSignOutPress).toHaveBeenCalled();
+      await act(async () => {
+        await signOutButton.onPress();
+      });
+
+      expect(AuthService.signOut).toHaveBeenCalled();
     });
   });
 
