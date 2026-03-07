@@ -8,6 +8,7 @@ describe('settingsStore', () => {
     downloadOnWiFi: true,
     skipForwardSeconds: 30,
     skipBackwardSeconds: 15,
+    themePreference: 'system',
   };
 
   beforeEach(() => {
@@ -121,6 +122,7 @@ describe('settingsStore', () => {
         downloadOnWiFi: false,
         skipForwardSeconds: 45,
         skipBackwardSeconds: 10,
+        themePreference: 'system',
       };
 
       settingsStore.getState().loadSettings(newSettings);
@@ -137,6 +139,7 @@ describe('settingsStore', () => {
         downloadOnWiFi: true,
         skipForwardSeconds: 30,
         skipBackwardSeconds: 15,
+        themePreference: 'system',
       };
 
       settingsStore.getState().loadSettings(newSettings);
@@ -204,6 +207,7 @@ describe('settingsStore', () => {
         downloadOnWiFi: false,
         skipForwardSeconds: 45,
         skipBackwardSeconds: 20,
+        themePreference: 'system',
       };
 
       state.loadSettings(newSettings);

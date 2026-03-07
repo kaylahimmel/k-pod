@@ -7,6 +7,7 @@ const defaultSettings: AppSettings = {
   downloadOnWiFi: true,
   skipForwardSeconds: 30,
   skipBackwardSeconds: 15,
+  themePreference: 'system',
 };
 
 export const settingsStore = create<SettingsStore>((set) => ({

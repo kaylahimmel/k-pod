@@ -4,6 +4,7 @@ export interface AppSettings {
   downloadOnWiFi: boolean; // Whether to download episodes only on WiFi
   skipForwardSeconds: number; // Number of seconds to skip forward
   skipBackwardSeconds: number; // Number of seconds to skip backward
+  themePreference: 'system' | 'light' | 'dark';
 }
 
 export interface SettingsStore {

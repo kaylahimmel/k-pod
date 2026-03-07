@@ -14,6 +14,7 @@ describe('SettingsView', () => {
     downloadOnWiFi: true,
     skipForwardSeconds: 30,
     skipBackwardSeconds: 15,
+    themePreference: 'system' as const,
   };
 
   beforeEach(() => {

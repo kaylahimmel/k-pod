@@ -77,6 +77,7 @@ describe('SettingsPresenter', () => {
         downloadOnWiFi: false,
         skipForwardSeconds: 30,
         skipBackwardSeconds: 15,
+        themePreference: 'system',
       };
 
       const formatted = formatSettings(settings);
@@ -98,6 +99,7 @@ describe('SettingsPresenter', () => {
         downloadOnWiFi: true,
         skipForwardSeconds: 30,
         skipBackwardSeconds: 15,
+        themePreference: 'system',
       };
 
       const formatted = formatSettings(defaultSettings);

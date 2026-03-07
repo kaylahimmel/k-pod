@@ -31,6 +31,7 @@ describe('FullPlayerView', () => {
         downloadOnWiFi: true,
         skipForwardSeconds: 30,
         skipBackwardSeconds: 15,
+        themePreference: 'system',
       },
       loading: false,
       error: null,

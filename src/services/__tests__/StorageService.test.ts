@@ -109,6 +109,7 @@ describe('StorageService', () => {
         downloadOnWiFi: true,
         skipForwardSeconds: 30,
         skipBackwardSeconds: 15,
+        themePreference: 'system' as const,
       };
 
       await StorageService.saveSettings(settings);

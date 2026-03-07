@@ -63,6 +63,7 @@ describe('useSettingsStore', () => {
       downloadOnWiFi: false,
       skipForwardSeconds: 60,
       skipBackwardSeconds: 30,
+      themePreference: 'system' as const,
     };
 
     act(() => {
