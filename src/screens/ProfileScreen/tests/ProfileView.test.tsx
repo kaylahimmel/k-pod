@@ -43,41 +43,45 @@ describe('ProfileView', () => {
     (StorageService.loadHistory as jest.Mock).mockResolvedValue([]);
   });
 
-  const renderProfileView = () =>
-    render(
+  const renderProfileView = async () => {
+    const result = render(
       <ProfileView
         onViewHistoryPress={mockOnViewHistoryPress}
         onChangePasswordPress={mockOnChangePasswordPress}
       />,
     );
+    // Flush async effects (e.g. loadHistory called in useEffect)
+    await act(async () => {});
+    return result;
+  };
 
   describe('User Header', () => {
     it('should display user initials in avatar', async () => {
-      const { findByText } = renderProfileView();
+      const { getByText } = await renderProfileView();
 
       // Mock user has email "user@example.com" -> initials "US"
-      expect(await findByText('US')).toBeTruthy();
+      expect(getByText('US')).toBeTruthy();
     });
 
     it('should display user email', async () => {
-      const { findByText } = renderProfileView();
+      const { getByText } = await renderProfileView();
 
-      expect(await findByText('user@example.com')).toBeTruthy();
+      expect(getByText('user@example.com')).toBeTruthy();
     });
   });
 
   describe('Stats Section', () => {
     it('should display listening time stat', async () => {
-      const { findByText } = renderProfileView();
+      const { getByText } = await renderProfileView();
 
-      expect(await findByText('Listening Time')).toBeTruthy();
-      expect(await findByText('0 min')).toBeTruthy();
+      expect(getByText('Listening Time')).toBeTruthy();
+      expect(getByText('0 min')).toBeTruthy();
     });
 
     it('should display episodes completed stat', async () => {
-      const { findByText } = renderProfileView();
+      const { getByText } = await renderProfileView();
 
-      expect(await findByText('Episodes')).toBeTruthy();
+      expect(getByText('Episodes')).toBeTruthy();
     });
 
     it('should display podcasts subscribed stat', async () => {
@@ -87,55 +91,52 @@ describe('ProfileView', () => {
         error: null,
       });
 
-      const { findByText } = renderProfileView();
+      const { getByText } = await renderProfileView();
 
-      expect(await findByText('Subscribed')).toBeTruthy();
-      expect(await findByText('5')).toBeTruthy();
+      expect(getByText('Subscribed')).toBeTruthy();
+      expect(getByText('5')).toBeTruthy();
     });
   });
 
   describe('Account Actions', () => {
     it('should display Listening History option', async () => {
-      const { findByText } = renderProfileView();
+      const { getByText } = await renderProfileView();
 
-      expect(await findByText('Listening History')).toBeTruthy();
+      expect(getByText('Listening History')).toBeTruthy();
     });
 
     it('should call onViewHistoryPress when Listening History is pressed', async () => {
-      const { findByText } = renderProfileView();
+      const { getByText } = await renderProfileView();
 
-      const button = await findByText('Listening History');
-      fireEvent.press(button);
+      fireEvent.press(getByText('Listening History'));
 
       expect(mockOnViewHistoryPress).toHaveBeenCalled();
     });
 
     it('should display Change Password option', async () => {
-      const { findByText } = renderProfileView();
+      const { getByText } = await renderProfileView();
 
-      expect(await findByText('Change Password')).toBeTruthy();
+      expect(getByText('Change Password')).toBeTruthy();
     });
 
     it('should call onChangePasswordPress when Change Password is pressed', async () => {
-      const { findByText } = renderProfileView();
+      const { getByText } = await renderProfileView();
 
-      const button = await findByText('Change Password');
-      fireEvent.press(button);
+      fireEvent.press(getByText('Change Password'));
 
       expect(mockOnChangePasswordPress).toHaveBeenCalled();
     });
 
     it('should display Sign Out option', async () => {
-      const { findByText } = renderProfileView();
+      const { getByText } = await renderProfileView();
 
-      expect(await findByText('Sign Out')).toBeTruthy();
+      expect(getByText('Sign Out')).toBeTruthy();
     });
 
     it('should show confirmation alert when Sign Out is pressed', async () => {
-      const { findByText } = renderProfileView();
+      const { getByText } = await renderProfileView();
 
-      const button = await findByText('Sign Out');
-      fireEvent.press(button);
+      fireEvent.press(getByText('Sign Out'));
 
       expect(Alert.alert).toHaveBeenCalledWith(
         'Sign Out',
@@ -144,11 +145,10 @@ describe('ProfileView', () => {
       );
     });
 
-    it('should call onSignOutPress when confirmed', async () => {
-      const { findByText } = renderProfileView();
+    it('should call AuthService.signOut when confirmed', async () => {
+      const { getByText } = await renderProfileView();
 
-      const button = await findByText('Sign Out');
-      fireEvent.press(button);
+      fireEvent.press(getByText('Sign Out'));
 
       // Get the Alert.alert call and simulate pressing "Sign Out"
       const alertCall = (Alert.alert as jest.Mock).mock.calls[0];
@@ -165,9 +165,9 @@ describe('ProfileView', () => {
   });
 
   describe('Loading State', () => {
-    it('should show loading indicator while loading', () => {
+    it('should show loading indicator while loading', async () => {
       // The loading state is brief, but we can test that the component renders
-      const { toJSON } = renderProfileView();
+      const { toJSON } = await renderProfileView();
       expect(toJSON()).toBeTruthy();
     });
   });

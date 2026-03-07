@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { act } from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { AddPodcastView } from '../AddPodcastView';
 import { RSSService } from '../../../services';
@@ -48,44 +48,48 @@ describe('AddPodcastView', () => {
     });
   });
 
-  const renderAddPodcastView = () =>
-    render(
+  const renderAddPodcastView = async () => {
+    const result = render(
       <AddPodcastView
         onDismiss={mockOnDismiss}
         onGoToDiscover={mockOnGoToDiscover}
       />,
     );
+    // Flush any pending async state updates after initial render
+    await act(async () => {});
+    return result;
+  };
 
   describe('Idle State', () => {
-    it('should display header with title and Cancel button', () => {
-      const { getAllByText, getByText } = renderAddPodcastView();
+    it('should display header with title and Cancel button', async () => {
+      const { getAllByText, getByText } = await renderAddPodcastView();
 
       // "Add Podcast" appears in both header and button
       expect(getAllByText('Add Podcast').length).toBeGreaterThanOrEqual(1);
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it('should display RSS Feed URL label', () => {
-      const { getByText } = renderAddPodcastView();
+    it('should display RSS Feed URL label', async () => {
+      const { getByText } = await renderAddPodcastView();
 
       expect(getByText('RSS Feed URL')).toBeTruthy();
     });
 
-    it('should display URL input with placeholder', () => {
-      const { getByLabelText } = renderAddPodcastView();
+    it('should display URL input with placeholder', async () => {
+      const { getByLabelText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       expect(input.props.placeholder).toBe('https://example.com/feed.xml');
     });
 
-    it('should display Add Podcast button', () => {
-      const { getByLabelText } = renderAddPodcastView();
+    it('should display Add Podcast button', async () => {
+      const { getByLabelText } = await renderAddPodcastView();
 
       expect(getByLabelText('Add podcast')).toBeTruthy();
     });
 
-    it('should display hint text', () => {
-      const { getByText } = renderAddPodcastView();
+    it('should display hint text', async () => {
+      const { getByText } = await renderAddPodcastView();
 
       expect(
         getByText(/Enter the RSS feed URL of a podcast to subscribe/),
@@ -93,7 +97,7 @@ describe('AddPodcastView', () => {
     });
 
     it('should not fetch when URL is empty and button is pressed', async () => {
-      const { getByLabelText } = renderAddPodcastView();
+      const { getByLabelText } = await renderAddPodcastView();
 
       // Button is disabled when URL is empty, but we can still fire the event
       // The ViewModel should prevent fetching
@@ -109,7 +113,7 @@ describe('AddPodcastView', () => {
         error: 'Test error',
       });
 
-      const { getByLabelText } = renderAddPodcastView();
+      const { getByLabelText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
@@ -124,8 +128,8 @@ describe('AddPodcastView', () => {
   });
 
   describe('Input Interaction', () => {
-    it('should update URL when typing', () => {
-      const { getByLabelText } = renderAddPodcastView();
+    it('should update URL when typing', async () => {
+      const { getByLabelText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://test.com/rss');
@@ -133,8 +137,8 @@ describe('AddPodcastView', () => {
       expect(input.props.value).toBe('https://test.com/rss');
     });
 
-    it('should show clear button when URL has content', () => {
-      const { getByLabelText } = renderAddPodcastView();
+    it('should show clear button when URL has content', async () => {
+      const { getByLabelText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://test.com/rss');
@@ -142,8 +146,8 @@ describe('AddPodcastView', () => {
       expect(getByLabelText('Clear URL')).toBeTruthy();
     });
 
-    it('should clear URL when clear button is pressed', () => {
-      const { getByLabelText } = renderAddPodcastView();
+    it('should clear URL when clear button is pressed', async () => {
+      const { getByLabelText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://test.com/rss');
@@ -152,16 +156,16 @@ describe('AddPodcastView', () => {
       expect(input.props.value).toBe('');
     });
 
-    it('should call onDismiss when Cancel is pressed', () => {
-      const { getByText } = renderAddPodcastView();
+    it('should call onDismiss when Cancel is pressed', async () => {
+      const { getByText } = await renderAddPodcastView();
 
       fireEvent.press(getByText('Cancel'));
 
       expect(mockOnDismiss).toHaveBeenCalled();
     });
 
-    it('should call onGoToDiscover when Discover New Podcasts is pressed', () => {
-      const { getByText } = renderAddPodcastView();
+    it('should call onGoToDiscover when Discover New Podcasts is pressed', async () => {
+      const { getByText } = await renderAddPodcastView();
 
       fireEvent.press(getByText('Discover New Podcasts'));
 
@@ -171,7 +175,7 @@ describe('AddPodcastView', () => {
 
   describe('Error State', () => {
     it('should show error for invalid URL', async () => {
-      const { getByLabelText, getByText } = renderAddPodcastView();
+      const { getByLabelText, getByText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'not-a-url');
@@ -188,7 +192,7 @@ describe('AddPodcastView', () => {
         error: 'Invalid RSS feed: missing channel element',
       });
 
-      const { getByLabelText, getByText } = renderAddPodcastView();
+      const { getByLabelText, getByText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/bad-feed.xml');
@@ -202,7 +206,8 @@ describe('AddPodcastView', () => {
     });
 
     it('should clear error when user starts typing again', async () => {
-      const { getByLabelText, getByText, queryByText } = renderAddPodcastView();
+      const { getByLabelText, getByText, queryByText } =
+        await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'not-a-url');
@@ -229,7 +234,7 @@ describe('AddPodcastView', () => {
         }),
       );
 
-      const { getByLabelText, getByText } = renderAddPodcastView();
+      const { getByLabelText, getByText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
@@ -239,8 +244,10 @@ describe('AddPodcastView', () => {
         expect(getByText('Fetching podcast...')).toBeTruthy();
       });
 
-      // Cleanup - resolve the promise
-      resolvePromise!({ success: true, data: mockPodcast });
+      // Cleanup - resolve the promise and flush resulting state updates
+      await act(async () => {
+        resolvePromise!({ success: true, data: mockPodcast });
+      });
     });
   });
 
@@ -253,7 +260,7 @@ describe('AddPodcastView', () => {
     });
 
     it('should show podcast preview after successful fetch', async () => {
-      const { getByLabelText, getByText } = renderAddPodcastView();
+      const { getByLabelText, getByText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
@@ -266,7 +273,7 @@ describe('AddPodcastView', () => {
     });
 
     it('should display episode count in preview', async () => {
-      const { getByLabelText, getByText } = renderAddPodcastView();
+      const { getByLabelText, getByText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
@@ -278,7 +285,7 @@ describe('AddPodcastView', () => {
     });
 
     it('should display description in preview', async () => {
-      const { getByLabelText, getByText } = renderAddPodcastView();
+      const { getByLabelText, getByText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
@@ -292,7 +299,7 @@ describe('AddPodcastView', () => {
     });
 
     it('should display Subscribe button in preview', async () => {
-      const { getByLabelText } = renderAddPodcastView();
+      const { getByLabelText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
@@ -304,7 +311,7 @@ describe('AddPodcastView', () => {
     });
 
     it('should display Try a different URL button in preview', async () => {
-      const { getByLabelText, getByText } = renderAddPodcastView();
+      const { getByLabelText, getByText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
@@ -316,7 +323,8 @@ describe('AddPodcastView', () => {
     });
 
     it('should go back to input state when Try a different URL is pressed', async () => {
-      const { getByLabelText, getByText, queryByText } = renderAddPodcastView();
+      const { getByLabelText, getByText, queryByText } =
+        await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
@@ -352,7 +360,7 @@ describe('AddPodcastView', () => {
         addPodcast: addPodcastSpy,
       });
 
-      const { getByLabelText } = renderAddPodcastView();
+      const { getByLabelText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
@@ -377,7 +385,7 @@ describe('AddPodcastView', () => {
         error: null,
       });
 
-      const { getByLabelText, getByText } = renderAddPodcastView();
+      const { getByLabelText, getByText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
@@ -397,7 +405,7 @@ describe('AddPodcastView', () => {
         addPodcast: addPodcastSpy,
       });
 
-      const { getByLabelText } = renderAddPodcastView();
+      const { getByLabelText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
@@ -427,7 +435,7 @@ describe('AddPodcastView', () => {
         data: emptyPodcast,
       });
 
-      const { getByLabelText, getAllByText } = renderAddPodcastView();
+      const { getByLabelText, getAllByText } = await renderAddPodcastView();
 
       const input = getByLabelText('RSS feed URL input');
       fireEvent.changeText(input, 'https://example.com/feed.xml');
