@@ -62,6 +62,7 @@ export const useColors = (): ColorPalette => {
 All 36 style files (`*.styles.ts`) are refactored:
 
 **Before:**
+
 ```ts
 export const styles = StyleSheet.create({
   container: { backgroundColor: COLORS.background },
@@ -69,6 +70,7 @@ export const styles = StyleSheet.create({
 ```
 
 **After:**
+
 ```ts
 export const createStyles = (colors: ColorPalette) =>
   StyleSheet.create({
@@ -77,6 +79,7 @@ export const createStyles = (colors: ColorPalette) =>
 ```
 
 Each consuming component adds:
+
 ```ts
 const colors = useColors();
 const styles = useMemo(() => createStyles(colors), [colors]);
