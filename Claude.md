@@ -22,6 +22,7 @@ K-Pod is a podcast player app built with React Native and Expo. It allows users 
 - This is a TypeScript project. Always use TypeScript for new files and ensure type safety in edits.
 - This is a React Native podcast app. Key screens include QueueScreen, DiscoverScreen, and a now-playing card. Use react-native-reanimated for animations. For example, when fixing UI bug in the QueueScreen, verify the fix doesn't break drag-and-drop or animation behaviors.
 - Before writing any code, create a list of steps of exactly what you'll change and which files you'll touch. Be sure to reference the TO-DO.md file for instructions. Wait for my approval before starting. This is especially important if I give you multiple tasks so we have less friction and more shared understanding before we start.
+- When implementing responsive layouts, use a useIsTablet() hook or similar to detect device type. Tablet breakpoint is [x]dp. Font sizes should scale up by [x]% on tablet. Never hide features on tablet that are available on phone.
 
 ## Testing
 
