@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { Alert, Linking } from 'react-native';
+import { ActivityIndicator, Alert, Linking } from 'react-native';
 import { SettingsView } from '../SettingsView';
 import { settingsStore } from '../../../stores';
 
@@ -32,7 +32,6 @@ describe('SettingsView', () => {
       settingsStore.setState({ loading: true });
 
       const { UNSAFE_queryByType } = renderSettingsView();
-      const ActivityIndicator = require('react-native').ActivityIndicator;
 
       expect(UNSAFE_queryByType(ActivityIndicator)).toBeTruthy();
     });

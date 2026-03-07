@@ -46,10 +46,7 @@ describe('useProfileViewModel', () => {
 
   const renderViewModel = () =>
     renderHook(() =>
-      useProfileViewModel(
-        mockOnViewHistoryPress,
-        mockOnChangePasswordPress,
-      ),
+      useProfileViewModel(mockOnViewHistoryPress, mockOnChangePasswordPress),
     );
 
   beforeEach(() => {

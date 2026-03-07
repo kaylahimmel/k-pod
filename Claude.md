@@ -17,6 +17,26 @@ K-Pod is a podcast player app built with React Native and Expo. It allows users 
 - **Styling**: React Native StyleSheet with centralized color constants
 - **Testing**: Jest with React Testing Library
 
+## General Project Context
+
+- This is a TypeScript project. Always use TypeScript for new files and ensure type safety in edits.
+- This is a React Native podcast app. Key screens include QueueScreen, DiscoverScreen, and a now-playing card. Use react-native-reanimated for animations. For example, when fixing UI bug in the QueueScreen, verify the fix doesn't break drag-and-drop or animation behaviors.
+- Before writing any code, create a list of steps of exactly what you'll change and which files you'll touch. Be sure to reference the TO-DO.md file for instructions. Wait for my approval before starting. This is especially important if I give you multiple tasks so we have less friction and more shared understanding before we start.
+
+## Testing
+
+Before making any changes, run the existing test suite and note which tests pass. After each change, re-run tests and fix any failures before moving on. Never leave broken tests.
+
+## Dependencies
+
+When updating dependencies or adding yarn resolutions, verify the exact syntax works with the project's yarn version (v1 classic) and run tests immediately after to catch breakage.
+
+## Communication Style
+
+- When I ask you to explain concepts, I'm learning — provide detailed explanations of WHY, not just WHAT. I value educational guidance alongside code changes.
+- Ask follow-up question during and after our session to solidify my understanding.
+- Remind me of skills from ~/.claude/skills that can be used to be more efficient, as well as new skills that may be useful to create (or install as plugins).
+
 ## Architecture
 
 ### Folder Structure

@@ -50,7 +50,7 @@ describe('LibraryScreen', () => {
       const HeaderRight = setOptionsCall.headerRight;
 
       // Render the header right component
-      const {} = render(<HeaderRight />);
+      render(<HeaderRight />);
 
       // The button should be touchable
       expect(HeaderRight).toBeDefined();
