@@ -36,25 +36,28 @@ describe('useFullPlayerViewModel', () => {
     });
   });
 
-  it('should return episode and podcast from props', () => {
+  it('should return episode and podcast from props', async () => {
     const { result } = renderHook(() =>
       useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),
     );
+    // Flush async effects (e.g. playEpisode called in useEffect)
+    await act(async () => {});
 
     expect(result.current.episode).toBe(mockEpisode);
     expect(result.current.podcast).toBe(mockPodcast);
   });
 
-  it('should return empty upNextItem when queue is empty', () => {
+  it('should return empty upNextItem when queue is empty', async () => {
     const { result } = renderHook(() =>
       useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),
     );
+    await act(async () => {});
 
     expect(result.current.upNextItem).toBeNull();
     expect(result.current.hasUpNext).toBe(false);
   });
 
-  it('should return upNextItem when there is a next item in queue', () => {
+  it('should return upNextItem when there is a next item in queue', async () => {
     const mockQueue = createMockQueueItems(2);
     act(() => {
       queueStore.getState().setQueue(mockQueue);
@@ -64,15 +67,17 @@ describe('useFullPlayerViewModel', () => {
     const { result } = renderHook(() =>
       useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),
     );
+    await act(async () => {});
 
     expect(result.current.hasUpNext).toBe(true);
     expect(result.current.upNextItem).toBeDefined();
   });
 
-  it('should automatically add episode to queue when viewModel is created', () => {
+  it('should automatically add episode to queue when viewModel is created', async () => {
     const { result } = renderHook(() =>
       useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),
     );
+    await act(async () => {});
 
     // Episode should be automatically added to queue
     expect(result.current.isEpisodeInQueue).toBe(true);
@@ -83,7 +88,7 @@ describe('useFullPlayerViewModel', () => {
   });
 
   describe('handleAddToQueue', () => {
-    it('should add episode to queue when manually called', () => {
+    it('should add episode to queue when manually called', async () => {
       // Pre-set the episode in playerStore to avoid auto-add
       act(() => {
         playerStore.getState().setCurrentEpisode(mockEpisode);
@@ -93,6 +98,7 @@ describe('useFullPlayerViewModel', () => {
       const { result } = renderHook(() =>
         useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),
       );
+      await act(async () => {});
 
       // Clear the queue to test manual add
       act(() => {
@@ -110,10 +116,11 @@ describe('useFullPlayerViewModel', () => {
   });
 
   describe('handleDismiss and handleBack', () => {
-    it('should call onDismiss when handleDismiss is called', () => {
+    it('should call onDismiss when handleDismiss is called', async () => {
       const { result } = renderHook(() =>
         useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),
       );
+      await act(async () => {});
 
       act(() => {
         result.current.handleDismiss();
@@ -122,10 +129,11 @@ describe('useFullPlayerViewModel', () => {
       expect(mockOnDismiss).toHaveBeenCalled();
     });
 
-    it('should call onDismiss when handleBack is called', () => {
+    it('should call onDismiss when handleBack is called', async () => {
       const { result } = renderHook(() =>
         useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),
       );
+      await act(async () => {});
 
       act(() => {
         result.current.handleBack();

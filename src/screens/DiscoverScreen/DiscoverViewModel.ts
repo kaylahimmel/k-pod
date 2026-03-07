@@ -126,19 +126,12 @@ export const useDiscoverViewModel = (
   // Fetches episodes from RSS feed
   const handleSubscribe = useCallback(
     async (podcast: DiscoveryPodcast) => {
-      console.log(
-        '[DiscoverViewModel] handleSubscribe called for:',
-        podcast.title,
-      );
       setSubscribing(true);
 
       try {
-        // Fetch full podcast data with episodes from RSS
-        console.log('[DiscoverViewModel] Fetching RSS from:', podcast.feedUrl);
         const result = await RSSService.transformPodcastFromRSS(
           podcast.feedUrl,
         );
-        console.log('[DiscoverViewModel] RSS fetch result:', result.success);
         if (result.success) {
           // Use the RSS data but preserve discovery metadata for better quality
           const podcastToAdd: Podcast = {
@@ -149,29 +142,19 @@ export const useDiscoverViewModel = (
             artworkUrl: podcast.artworkUrl || result.data.artworkUrl,
             description: podcast.description || result.data.description,
           };
-          console.log(
-            '[DiscoverViewModel] Adding podcast to store:',
-            podcastToAdd.title,
-            'with',
-            podcastToAdd.episodes.length,
-            'episodes',
-          );
           addPodcast(podcastToAdd);
-          console.log('[DiscoverViewModel] Podcast added successfully');
           toast.showToast(`Subscribed to "${podcast.title}"`);
         } else {
-          console.error('[DiscoverViewModel] RSS fetch failed:', result.error);
           Alert.alert(
             'Subscription Failed',
             result.error || 'Failed to subscribe to podcast',
           );
         }
       } catch (error) {
-        console.error(
-          '[DiscoverViewModel] Exception in handleSubscribe:',
-          error,
+        Alert.alert(
+          'Subscription Failed',
+          `An unexpected error occurred: ${error}`,
         );
-        Alert.alert('Subscription Failed', 'An unexpected error occurred');
       } finally {
         setSubscribing(false);
       }

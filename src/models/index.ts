@@ -1,4 +1,5 @@
 export * from './AppSettings.types';
+export * from './Auth.types';
 export * from './Discovery.types';
 export * from './Episode.types';
 export * from './ListeningHistory.types';

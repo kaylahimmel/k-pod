@@ -175,7 +175,7 @@ describe('MiniPlayer', () => {
       expect(getByText('pause')).toBeTruthy();
     });
 
-    it('should call togglePlayPause when play button is pressed', () => {
+    it('should call togglePlayPause when play button is pressed', async () => {
       act(() => {
         playerStore.getState().setCurrentEpisode(mockEpisode);
         playerStore.getState().setCurrentPodcast(mockPodcast);
@@ -185,12 +185,11 @@ describe('MiniPlayer', () => {
 
       const { getByTestId } = render(<MiniPlayer />);
 
-      act(() => {
+      // togglePlayPause is async, so wrap in async act to flush state updates
+      await act(async () => {
         fireEvent.press(getByTestId('mini-player-play-button'));
       });
 
-      // Button press triggers togglePlayPause which is async
-      // We just verify the button can be pressed without errors
       expect(getByTestId('mini-player-play-button')).toBeTruthy();
     });
   });

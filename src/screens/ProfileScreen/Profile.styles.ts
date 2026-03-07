@@ -74,57 +74,6 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.textPrimary,
   },
-  historySection: {
-    backgroundColor: COLORS.cardBackground,
-    marginBottom: 16,
-  },
-  historyItem: {
-    flexDirection: 'row',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  historyItemLast: {
-    borderBottomWidth: 0,
-  },
-  historyArtwork: {
-    width: 50,
-    height: 50,
-    borderRadius: 6,
-    backgroundColor: COLORS.border,
-  },
-  historyInfo: {
-    flex: 1,
-    marginLeft: 12,
-    justifyContent: 'center',
-  },
-  historyEpisodeTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 2,
-  },
-  historyPodcastTitle: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-  },
-  historyMeta: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-  },
-  viewAllButton: {
-    paddingVertical: 14,
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-  },
-  viewAllText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: COLORS.primary,
-  },
   actionsSection: {
     backgroundColor: COLORS.cardBackground,
     marginBottom: 16,
@@ -148,16 +97,6 @@ export const styles = StyleSheet.create({
   actionTextDanger: {
     fontSize: 16,
     color: COLORS.danger,
-  },
-  emptyContainer: {
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 15,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
   },
   loadingContainer: {
     flex: 1,

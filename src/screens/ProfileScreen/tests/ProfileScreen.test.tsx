@@ -2,22 +2,24 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { ProfileScreen } from '../ProfileScreen';
-import { podcastStore } from '../../../stores';
+import { podcastStore, authStore } from '../../../stores';
 import { StorageService } from '../../../services';
 import {
   createMockPodcasts,
   createMockNavigation,
   createMockRoute,
-  createMockListeningHistoryItems,
 } from '../../../__mocks__';
 
 // Spy on Alert
 jest.spyOn(Alert, 'alert');
 
-// Mock StorageService
+// Mock StorageService and AuthService
 jest.mock('../../../services', () => ({
   StorageService: {
     loadHistory: jest.fn().mockResolvedValue([]),
+  },
+  AuthService: {
+    signOut: jest.fn().mockResolvedValue({ success: true, data: undefined }),
   },
 }));
 
@@ -35,6 +37,16 @@ describe('ProfileScreen', () => {
     podcastStore.setState({
       podcasts: [],
       loading: false,
+      error: null,
+    });
+    authStore.setState({
+      user: {
+        id: 'user-1',
+        email: 'user@example.com',
+        preferences: { theme: 'light', notifications: true },
+      },
+      isAuthenticated: true,
+      isLoading: false,
       error: null,
     });
     (StorageService.loadHistory as jest.Mock).mockResolvedValue([]);
@@ -74,15 +86,11 @@ describe('ProfileScreen', () => {
   });
 
   describe('Navigation', () => {
-    it('should navigate to ListeningHistory when View All History is pressed', async () => {
-      // Mock history data so the button appears
-      const mockHistory = createMockListeningHistoryItems(3);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(mockHistory);
-
+    it('should navigate to ListeningHistory when Listening History is pressed', async () => {
       const { findByText } = renderProfileScreen();
 
-      const viewAllButton = await findByText('View All History');
-      fireEvent.press(viewAllButton);
+      const button = await findByText('Listening History');
+      fireEvent.press(button);
 
       await waitFor(() => {
         expect(mockNavigation.navigate).toHaveBeenCalledWith(
@@ -117,10 +125,12 @@ describe('ProfileScreen', () => {
       );
     });
 
-    it('should show signed out message when sign out is confirmed', async () => {
+    it('should call AuthService.signOut when sign out is confirmed', async () => {
+      const { AuthService } = jest.requireMock('../../../services');
+
       // Mock Alert.alert to automatically confirm the sign out
       (Alert.alert as jest.Mock).mockImplementation(
-        (title, message, buttons) => {
+        (title, _message, buttons) => {
           if (title === 'Sign Out' && buttons) {
             const confirmButton = buttons.find(
               (b: { text: string }) => b.text === 'Sign Out',
@@ -137,19 +147,17 @@ describe('ProfileScreen', () => {
       const signOutButton = await findByText('Sign Out');
       fireEvent.press(signOutButton);
 
-      // After confirming, the success message should be shown
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Signed Out',
-        'You have been signed out successfully.',
-      );
+      await waitFor(() => {
+        expect(AuthService.signOut).toHaveBeenCalled();
+      });
     });
   });
 
-  describe('Empty States', () => {
-    it('should show empty history message when no history', async () => {
+  describe('Account Actions', () => {
+    it('should display Listening History option', async () => {
       const { findByText } = renderProfileScreen();
 
-      expect(await findByText(/No listening history yet/)).toBeTruthy();
+      expect(await findByText('Listening History')).toBeTruthy();
     });
   });
 });

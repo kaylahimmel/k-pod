@@ -1,5 +1,5 @@
-import React from 'react';
-import { render, waitFor, fireEvent } from '@testing-library/react-native';
+import React, { act } from 'react';
+import { render, fireEvent } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { DiscoverScreen } from '../DiscoverScreen';
 import { podcastStore } from '../../../stores';
@@ -47,16 +47,20 @@ describe('DiscoverScreen', () => {
     });
   });
 
-  const renderDiscoverScreen = () =>
-    render(<DiscoverScreen navigation={mockNavigation} route={mockRoute} />);
+  const renderDiscoverScreen = async () => {
+    const result = render(
+      <DiscoverScreen navigation={mockNavigation} route={mockRoute} />,
+    );
+    // Flush async effects (e.g. getTrendingPodcasts called in useEffect)
+    await act(async () => {});
+    return result;
+  };
 
   describe('Rendering', () => {
     it('should render DiscoverView', async () => {
-      const { getByPlaceholderText } = renderDiscoverScreen();
+      const { getByPlaceholderText } = await renderDiscoverScreen();
 
-      await waitFor(() => {
-        expect(getByPlaceholderText('Search podcasts...')).toBeTruthy();
-      });
+      expect(getByPlaceholderText('Search podcasts...')).toBeTruthy();
     });
   });
 
@@ -71,10 +75,9 @@ describe('DiscoverScreen', () => {
         data: [mockPodcast],
       });
 
-      const { findByText } = renderDiscoverScreen();
+      const { getByText } = await renderDiscoverScreen();
 
-      const podcastTitle = await findByText('Navigation Test Podcast');
-      fireEvent.press(podcastTitle);
+      fireEvent.press(getByText('Navigation Test Podcast'));
 
       expect(mockNavigation.navigate).toHaveBeenCalledWith(
         'PodcastPreview',
@@ -108,18 +111,16 @@ describe('DiscoverScreen', () => {
         error: null,
       });
 
-      renderDiscoverScreen();
+      await renderDiscoverScreen();
 
       // The subscription logic checks for duplicates and shows appropriate alert
       // This is tested through integration with the DiscoverView
     });
 
     it('should add podcast to store when subscribing to new podcast', async () => {
-      const { getByText } = renderDiscoverScreen();
+      const { getByText } = await renderDiscoverScreen();
 
-      await waitFor(() => {
-        expect(getByText('Trending Podcast')).toBeTruthy();
-      });
+      expect(getByText('Trending Podcast')).toBeTruthy();
 
       // Initial state should have no podcasts
       expect(podcastStore.getState().podcasts).toHaveLength(0);

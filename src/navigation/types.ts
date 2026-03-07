@@ -6,6 +6,12 @@ import {
 } from '@react-navigation/native';
 import { Episode, Podcast, DiscoveryPodcast } from '../models';
 
+export type AuthStackParamList = {
+  Login: undefined;
+  SignUp: undefined;
+  ForgotPassword: undefined;
+};
+
 export type LibraryStackParamList = {
   Library: undefined;
   PodcastDetail: { podcastId: string };
@@ -168,8 +174,24 @@ export type AddPodcastModalScreenProps = NativeStackScreenProps<
   'AddPodcastModal'
 >;
 
+export type LoginScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'Login'
+>;
+
+export type SignUpScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'SignUp'
+>;
+
+export type ForgotPasswordScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'ForgotPassword'
+>;
+
 declare global {
   namespace ReactNavigation {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface RootParamList extends RootStackParamList {}
   }
 }

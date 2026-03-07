@@ -10,18 +10,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useProfileViewModel } from './ProfileViewModel';
 import { styles } from './Profile.styles';
 import { COLORS } from '../../constants';
-import { CardHistoryItem } from '../../components';
 import { ProfileViewProps } from './Profile.types';
 
 export const ProfileView = ({
   onViewHistoryPress,
   onChangePasswordPress,
-  onSignOutPress,
 }: ProfileViewProps) => {
   const viewModel = useProfileViewModel(
     onViewHistoryPress,
     onChangePasswordPress,
-    onSignOutPress,
   );
 
   if (viewModel.isLoading) {
@@ -75,42 +72,22 @@ export const ProfileView = ({
         </View>
       </View>
 
-      {/* Recent Listening History */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Recent Activity</Text>
-      </View>
-      <View style={styles.historySection}>
-        {viewModel.hasHistory ? (
-          <>
-            {viewModel.recentHistory.map((item, index) => (
-              <CardHistoryItem
-                key={item.id}
-                item={item}
-                isLast={index === viewModel.recentHistory.length - 1}
-              />
-            ))}
-            <TouchableOpacity
-              style={styles.viewAllButton}
-              onPress={viewModel.handleViewHistoryPress}
-            >
-              <Text style={styles.viewAllText}>View All History</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
-              No listening history yet. Start listening to podcasts to see your
-              activity here.
-            </Text>
-          </View>
-        )}
-      </View>
-
       {/* Account Actions */}
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Account</Text>
       </View>
       <View style={styles.actionsSection}>
+        <TouchableOpacity
+          style={styles.actionItem}
+          onPress={viewModel.handleViewHistoryPress}
+        >
+          <Text style={styles.actionText}>Listening History</Text>
+          <Ionicons
+            name='chevron-forward'
+            size={20}
+            color={COLORS.textSecondary}
+          />
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionItem}
           onPress={viewModel.handleChangePasswordPress}
