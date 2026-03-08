@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, DimensionValue, StyleProp, ViewStyle } from 'react-native';
 import { SkeletonCard } from './SkeletonCard';
-import { styles } from './Skeleton.styles';
+import { createStyles } from './Skeleton.styles';
+import { useColors } from '../../hooks';
 
 interface SkeletonListProps {
   count?: number;
@@ -27,15 +28,20 @@ export const SkeletonList = ({
   cardWidth = '100%' as DimensionValue,
   spacing = 12,
   style,
-}: SkeletonListProps) => (
-  <View style={[styles.listContainer, style]}>
-    {Array.from({ length: count }).map((_, index) => (
-      <SkeletonCard
-        key={index}
-        width={cardWidth}
-        height={cardHeight}
-        style={index < count - 1 ? { marginBottom: spacing } : undefined}
-      />
-    ))}
-  </View>
-);
+}: SkeletonListProps) => {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  return (
+    <View style={[styles.listContainer, style]}>
+      {Array.from({ length: count }).map((_, index) => (
+        <SkeletonCard
+          key={index}
+          width={cardWidth}
+          height={cardHeight}
+          style={index < count - 1 ? { marginBottom: spacing } : undefined}
+        />
+      ))}
+    </View>
+  );
+};

@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { COLORS } from '../../constants';
 import { FormattedQueueItem } from '../../screens/QueueScreen/Queue.types';
-import { styles } from './CardQueueItem.styles';
+import { createStyles } from './CardQueueItem.styles';
 import { OpacityDecorator } from 'react-native-draggable-flatlist';
+import { useColors } from '../../hooks';
 
 interface CardQueueItemProps {
   item: FormattedQueueItem;
@@ -26,6 +26,9 @@ export const CardQueueItem = ({
   onPress,
   isDraggable = true,
 }: CardQueueItemProps) => {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   const renderRightActions = (
     _progress: Animated.AnimatedInterpolation<number>,
     dragX: Animated.AnimatedInterpolation<number>,
@@ -43,7 +46,7 @@ export const CardQueueItem = ({
         activeOpacity={0.8}
       >
         <Animated.View style={{ transform: [{ scale }] }}>
-          <Ionicons name='trash' size={24} color={COLORS.background} />
+          <Ionicons name='trash' size={24} color={colors.background} />
         </Animated.View>
       </TouchableOpacity>
     );
@@ -76,7 +79,7 @@ export const CardQueueItem = ({
               name='menu'
               size={20}
               color={
-                item.isCurrentlyPlaying ? COLORS.played : COLORS.textSecondary
+                item.isCurrentlyPlaying ? colors.played : colors.textSecondary
               }
             />
           </TouchableOpacity>
@@ -91,7 +94,7 @@ export const CardQueueItem = ({
               <Ionicons
                 name='musical-notes'
                 size={24}
-                color={COLORS.textSecondary}
+                color={colors.textSecondary}
               />
             </View>
           )}
@@ -122,7 +125,7 @@ export const CardQueueItem = ({
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               testID='queue-item-play-button'
             >
-              <Ionicons name='play-circle' size={32} color={COLORS.primary} />
+              <Ionicons name='play-circle' size={32} color={colors.primary} />
             </TouchableOpacity>
           </View>
         </View>

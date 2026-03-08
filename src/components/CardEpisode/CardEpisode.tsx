@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from './CardEpisode.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './CardEpisode.styles';
 import { FormattedEpisode } from '../../screens/PodcastDetailScreen/PodcastDetail.types';
 import { Podcast } from '../../models';
+import { useColors } from '../../hooks';
 
 interface CardEpisodeProps {
   episode: FormattedEpisode;
@@ -21,56 +21,67 @@ export const CardEpisode = ({
   onPlay,
   onAddToQueue,
   isInQueue = false,
-}: CardEpisodeProps) => (
-  <TouchableOpacity
-    style={[styles.episodeCard, episode.played && styles.episodeCardPlayed]}
-    onPress={onPress}
-  >
-    <View style={styles.episodeContent}>
-      <Text
-        style={[
-          styles.episodeTitle,
-          episode.played && styles.episodeTitlePlayed,
-        ]}
-        numberOfLines={2}
-      >
-        {episode.displayTitle}
-      </Text>
-      <Text style={styles.episodeDescription} numberOfLines={2}>
-        {episode.truncatedDescription}
-      </Text>
-      <View style={styles.episodeMeta}>
-        <Text style={styles.episodeDate}>{episode.formattedPublishDate}</Text>
-        <Text style={styles.episodeDuration}>{episode.formattedDuration}</Text>
-        {episode.played && (
-          <View style={styles.playedBadge}>
-            <Ionicons name='checkmark' size={12} color={COLORS.textSecondary} />
-            <Text style={styles.playedText}>Played</Text>
-          </View>
-        )}
-      </View>
-    </View>
+}: CardEpisodeProps) => {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
-    <View style={styles.episodeActions}>
-      <TouchableOpacity
-        style={styles.actionButton}
-        onPress={onPlay}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-      >
-        <Ionicons name='play-circle' size={36} color={COLORS.primary} />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.actionButton}
-        onPress={onAddToQueue}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        disabled={isInQueue}
-      >
-        <Ionicons
-          name={isInQueue ? 'checkmark-circle' : 'add-circle'}
-          size={32}
-          color={isInQueue ? COLORS.success : COLORS.primary}
-        />
-      </TouchableOpacity>
-    </View>
-  </TouchableOpacity>
-);
+  return (
+    <TouchableOpacity
+      style={[styles.episodeCard, episode.played && styles.episodeCardPlayed]}
+      onPress={onPress}
+    >
+      <View style={styles.episodeContent}>
+        <Text
+          style={[
+            styles.episodeTitle,
+            episode.played && styles.episodeTitlePlayed,
+          ]}
+          numberOfLines={2}
+        >
+          {episode.displayTitle}
+        </Text>
+        <Text style={styles.episodeDescription} numberOfLines={2}>
+          {episode.truncatedDescription}
+        </Text>
+        <View style={styles.episodeMeta}>
+          <Text style={styles.episodeDate}>{episode.formattedPublishDate}</Text>
+          <Text style={styles.episodeDuration}>
+            {episode.formattedDuration}
+          </Text>
+          {episode.played && (
+            <View style={styles.playedBadge}>
+              <Ionicons
+                name='checkmark'
+                size={12}
+                color={colors.textSecondary}
+              />
+              <Text style={styles.playedText}>Played</Text>
+            </View>
+          )}
+        </View>
+      </View>
+
+      <View style={styles.episodeActions}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={onPlay}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name='play-circle' size={36} color={colors.primary} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={onAddToQueue}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          disabled={isInQueue}
+        >
+          <Ionicons
+            name={isInQueue ? 'checkmark-circle' : 'add-circle'}
+            size={32}
+            color={isInQueue ? colors.success : colors.primary}
+          />
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  );
+};

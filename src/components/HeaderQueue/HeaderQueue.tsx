@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from './HeaderQueue.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './HeaderQueue.styles';
+import { useColors } from '../../hooks';
 
 interface HeaderQueueProps {
   count: string;
@@ -16,19 +16,24 @@ export const HeaderQueue = ({
   remainingTime,
   onClear,
   hasItems,
-}: HeaderQueueProps) => (
-  <View style={styles.headerContainer}>
-    <View style={styles.headerRow}>
-      <View style={styles.headerStats}>
-        <Text style={styles.headerTitle}>{count}</Text>
-        <Text style={styles.headerSubtitle}>{remainingTime}</Text>
+}: HeaderQueueProps) => {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  return (
+    <View style={styles.headerContainer}>
+      <View style={styles.headerRow}>
+        <View style={styles.headerStats}>
+          <Text style={styles.headerTitle}>{count}</Text>
+          <Text style={styles.headerSubtitle}>{remainingTime}</Text>
+        </View>
+        {hasItems && (
+          <TouchableOpacity style={styles.clearButton} onPress={onClear}>
+            <Ionicons name='trash-outline' size={16} color={colors.danger} />
+            <Text style={styles.clearButtonText}>Clear</Text>
+          </TouchableOpacity>
+        )}
       </View>
-      {hasItems && (
-        <TouchableOpacity style={styles.clearButton} onPress={onClear}>
-          <Ionicons name='trash-outline' size={16} color={COLORS.danger} />
-          <Text style={styles.clearButtonText}>Clear</Text>
-        </TouchableOpacity>
-      )}
     </View>
-  </View>
-);
+  );
+};

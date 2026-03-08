@@ -3,15 +3,16 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { usePlaybackController } from '../../hooks';
-import { COLORS } from '../../constants';
+import { usePlaybackController, useColors } from '../../hooks';
 import { RootStackParamList } from '../../navigation/types';
-import { styles } from './MiniPlayer.styles';
+import { createStyles } from './MiniPlayer.styles';
 
 export const MiniPlayer = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const playbackController = usePlaybackController();
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   // Get the current podcast directly from playback controller
   const currentPodcast = playbackController.currentPodcast;
@@ -46,7 +47,7 @@ export const MiniPlayer = () => {
             <Ionicons
               name='musical-notes'
               size={24}
-              color={COLORS.textSecondary}
+              color={colors.textSecondary}
             />
           </View>
           <View style={styles.info}>
@@ -85,7 +86,7 @@ export const MiniPlayer = () => {
             <Ionicons
               name='musical-notes'
               size={24}
-              color={COLORS.textSecondary}
+              color={colors.textSecondary}
             />
           </View>
         )}
@@ -115,7 +116,7 @@ export const MiniPlayer = () => {
           <Ionicons
             name={playbackController.isPlaying ? 'pause' : 'play'}
             size={24}
-            color={COLORS.cardBackground}
+            color={colors.cardBackground}
           />
         </TouchableOpacity>
       </View>

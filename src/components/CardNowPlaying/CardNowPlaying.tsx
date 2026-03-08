@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../../constants';
 import { FormattedQueueItem } from '../../screens/QueueScreen/Queue.types';
-import { styles } from './CardNowPlaying.styles';
+import { createStyles } from './CardNowPlaying.styles';
+import { useColors } from '../../hooks';
 
 interface CardNowPlayingProps {
   item: FormattedQueueItem;
@@ -15,42 +15,49 @@ export const CardNowPlaying = ({
   item,
   isPlaying,
   onPress,
-}: CardNowPlayingProps) => (
-  <TouchableOpacity style={styles.nowPlayingContainer} onPress={onPress}>
-    <View style={styles.nowPlayingHeader}>
-      <Ionicons
-        name={isPlaying ? 'volume-high' : 'pause'}
-        size={14}
-        color='COLORS.cardBackground'
-      />
-      <Text style={styles.nowPlayingLabel}>
-        {isPlaying ? 'NOW PLAYING' : 'PAUSED'}
-      </Text>
-    </View>
-    <View style={styles.nowPlayingContent}>
-      {item.podcastArtworkUrl ? (
-        <Image
-          source={{ uri: item.podcastArtworkUrl }}
-          style={styles.nowPlayingArtwork}
+}: CardNowPlayingProps) => {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  return (
+    <TouchableOpacity style={styles.nowPlayingContainer} onPress={onPress}>
+      <View style={styles.nowPlayingHeader}>
+        <Ionicons
+          name={isPlaying ? 'volume-high' : 'pause'}
+          size={14}
+          color='COLORS.cardBackground'
         />
-      ) : (
-        <View style={styles.nowPlayingArtwork}>
-          <Ionicons
-            name='musical-notes'
-            size={30}
-            color={COLORS.textSecondary}
-          />
-        </View>
-      )}
-      <View style={styles.nowPlayingInfo}>
-        <Text style={styles.nowPlayingTitle} numberOfLines={2}>
-          {item.displayTitle}
+        <Text style={styles.nowPlayingLabel}>
+          {isPlaying ? 'NOW PLAYING' : 'PAUSED'}
         </Text>
-        <Text style={styles.nowPlayingPodcast} numberOfLines={1}>
-          {item.podcastTitle}
-        </Text>
-        <Text style={styles.nowPlayingDuration}>{item.formattedDuration}</Text>
       </View>
-    </View>
-  </TouchableOpacity>
-);
+      <View style={styles.nowPlayingContent}>
+        {item.podcastArtworkUrl ? (
+          <Image
+            source={{ uri: item.podcastArtworkUrl }}
+            style={styles.nowPlayingArtwork}
+          />
+        ) : (
+          <View style={styles.nowPlayingArtwork}>
+            <Ionicons
+              name='musical-notes'
+              size={30}
+              color={colors.textSecondary}
+            />
+          </View>
+        )}
+        <View style={styles.nowPlayingInfo}>
+          <Text style={styles.nowPlayingTitle} numberOfLines={2}>
+            {item.displayTitle}
+          </Text>
+          <Text style={styles.nowPlayingPodcast} numberOfLines={1}>
+            {item.podcastTitle}
+          </Text>
+          <Text style={styles.nowPlayingDuration}>
+            {item.formattedDuration}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};

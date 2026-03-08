@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from './Toast.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './Toast.styles';
+import { useColors } from '../../hooks';
 
 interface ToastProps {
   message: string;
@@ -19,6 +19,9 @@ export const Toast = ({
   opacity,
   onDismiss,
 }: ToastProps) => {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   if (!visible) return null;
 
   return (
@@ -35,7 +38,7 @@ export const Toast = ({
         <Ionicons
           name='checkmark-circle'
           size={24}
-          color={COLORS.success}
+          color={colors.success}
           style={styles.toastIcon}
         />
         <Text style={styles.toastMessage}>{message}</Text>
@@ -45,7 +48,7 @@ export const Toast = ({
           style={styles.closeButton}
           testID='toast-close-button'
         >
-          <Ionicons name='close' size={20} color={COLORS.textSecondary} />
+          <Ionicons name='close' size={20} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
     </Animated.View>

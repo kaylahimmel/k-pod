@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { Animated, DimensionValue, StyleProp, ViewStyle } from 'react-native';
-import { styles } from './Skeleton.styles';
+import { createStyles } from './Skeleton.styles';
+import { useColors } from '../../hooks';
 
 interface SkeletonCardProps {
   width?: DimensionValue;
@@ -24,6 +25,9 @@ export const SkeletonCard = ({
   borderRadius = 8,
   style,
 }: SkeletonCardProps) => {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   const shimmerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {

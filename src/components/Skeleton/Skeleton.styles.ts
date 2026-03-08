@@ -1,11 +1,12 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../constants';
+import { ColorPalette } from '../../constants';
 
-export const styles = StyleSheet.create({
-  card: {
-    backgroundColor: COLORS.border,
-  },
-  listContainer: {
-    width: '100%',
-  },
-});
+export const createStyles = (colors: ColorPalette) =>
+  StyleSheet.create({
+    card: {
+      backgroundColor: colors.border,
+    },
+    listContainer: {
+      width: '100%',
+    },
+  });
