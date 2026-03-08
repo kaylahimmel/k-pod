@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -20,8 +20,8 @@ import {
   StateEmpty,
   CardEpisode,
 } from '../../components';
-import { styles } from './PodcastPreview.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './PodcastPreview.styles';
+import { useColors } from '../../hooks';
 
 export const PodcastPreviewView = ({
   podcast,
@@ -35,6 +35,8 @@ export const PodcastPreviewView = ({
     onEpisodePress,
     onPlayEpisode,
   );
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const renderEpisodeCard = (episode: FormattedPreviewEpisode) => {
     const rawEpisode = viewModel.getEpisodeRawData(episode.id);
@@ -139,12 +141,12 @@ export const PodcastPreviewView = ({
               disabled={viewModel.subscribeButtonState.isDisabled}
             >
               {viewModel.subscribeButtonState.showSpinner ? (
-                <ActivityIndicator size='small' color={COLORS.cardBackground} />
+                <ActivityIndicator size='small' color={colors.cardBackground} />
               ) : (
                 <Ionicons
                   name={viewModel.subscribeButtonState.iconName}
                   size={18}
-                  color={COLORS.cardBackground}
+                  color={colors.cardBackground}
                 />
               )}
               <Text style={styles.subscribeButtonText}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,10 +12,9 @@ import Slider from '@react-native-community/slider';
 import { Ionicons } from '@expo/vector-icons';
 import { useFullPlayerViewModel } from './FullPlayerViewModel';
 import { FullPlayerViewProps, PLAYBACK_SPEEDS } from './FullPlayer.types';
-import { styles } from './FullPlayer.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './FullPlayer.styles';
 import { PlaybackSpeed } from '../../models';
-import { useSettingsStore, useToast } from '../../hooks';
+import { useSettingsStore, useToast, useColors } from '../../hooks';
 import { Toast, HeaderBackButton, HeaderCloseButton } from '../../components';
 import { stripHtml } from '../../utils';
 
@@ -25,6 +24,8 @@ export const FullPlayerView = ({
   onDismiss,
 }: FullPlayerViewProps) => {
   const viewModel = useFullPlayerViewModel(episode, podcast, onDismiss);
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { settings } = useSettingsStore();
   const toast = useToast();
   const [speedPickerVisible, setSpeedPickerVisible] = useState(false);
@@ -89,9 +90,9 @@ export const FullPlayerView = ({
           maximumValue={viewModel.duration || 1}
           value={viewModel.position}
           onSlidingComplete={viewModel.handleSeek}
-          minimumTrackTintColor={COLORS.primary}
-          maximumTrackTintColor={COLORS.border}
-          thumbTintColor={COLORS.primary}
+          minimumTrackTintColor={colors.primary}
+          maximumTrackTintColor={colors.border}
+          thumbTintColor={colors.primary}
         />
         <View style={styles.timeContainer}>
           <Text style={styles.timeText}>{viewModel.playbackTime.current}</Text>
@@ -106,7 +107,7 @@ export const FullPlayerView = ({
           onPress={viewModel.handleSkipBackward}
           accessibilityLabel={`Skip backward ${settings.skipBackwardSeconds} seconds`}
         >
-          <Ionicons name='play-back' size={32} color={COLORS.textPrimary} />
+          <Ionicons name='play-back' size={32} color={colors.textPrimary} />
           <Text style={styles.skipLabel}>{settings.skipBackwardSeconds}s</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -117,7 +118,7 @@ export const FullPlayerView = ({
           <Ionicons
             name={viewModel.isPlaying ? 'pause' : 'play'}
             size={36}
-            color={COLORS.cardBackground}
+            color={colors.cardBackground}
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -125,7 +126,7 @@ export const FullPlayerView = ({
           onPress={viewModel.handleSkipForward}
           accessibilityLabel={`Skip forward ${settings.skipForwardSeconds} seconds`}
         >
-          <Ionicons name='play-forward' size={32} color={COLORS.textPrimary} />
+          <Ionicons name='play-forward' size={32} color={colors.textPrimary} />
           <Text style={styles.skipLabel}>{settings.skipForwardSeconds}s</Text>
         </TouchableOpacity>
       </View>
@@ -151,7 +152,7 @@ export const FullPlayerView = ({
             <Ionicons
               name='list-outline'
               size={20}
-              color={COLORS.textPrimary}
+              color={colors.textPrimary}
             />
             <Text style={styles.actionButtonText}>Add to Queue</Text>
           </TouchableOpacity>

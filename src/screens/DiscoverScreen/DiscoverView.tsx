@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, FlatList, SectionList } from 'react-native';
 import { DiscoveryPodcast } from '../../models';
 import { FormattedDiscoveryPodcast } from './Discover.types';
@@ -12,7 +12,8 @@ import {
   StateNoResults,
   Toast,
 } from '../../components';
-import { styles } from './Discover.styles';
+import { createStyles } from './Discover.styles';
+import { useColors } from '../../hooks';
 
 interface DiscoverViewProps {
   onPodcastPress: (podcast: DiscoveryPodcast) => void;
@@ -22,14 +23,23 @@ interface SectionHeaderProps {
   title: string;
 }
 
-const SectionHeader = ({ title }: SectionHeaderProps) => (
-  <View style={styles.sectionHeader}>
-    <Text style={styles.sectionTitle}>{title}</Text>
-  </View>
-);
+const SectionHeader = ({ title }: SectionHeaderProps) => {
+  const sectionColors = useColors();
+  const sectionStyles = useMemo(
+    () => createStyles(sectionColors),
+    [sectionColors],
+  );
+  return (
+    <View style={sectionStyles.sectionHeader}>
+      <Text style={sectionStyles.sectionTitle}>{title}</Text>
+    </View>
+  );
+};
 
 export const DiscoverView = ({ onPodcastPress }: DiscoverViewProps) => {
   const viewModel = useDiscoverViewModel(onPodcastPress);
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const renderPodcastCard = ({ item }: { item: FormattedDiscoveryPodcast }) => {
     const originalPodcast = viewModel.getOriginalPodcast(item.id);

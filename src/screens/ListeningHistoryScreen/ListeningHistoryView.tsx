@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useListeningHistoryViewModel } from './ListeningHistoryViewModel';
-import { styles } from './ListeningHistory.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './ListeningHistory.styles';
+import { useColors } from '../../hooks';
 import { CardHistoryItem } from '../../components';
 import { ListeningHistoryViewProps } from './ListeningHistory.types';
 import { FormattedHistoryItem } from '../ProfileScreen/Profile.types';
@@ -17,11 +17,13 @@ export const ListeningHistoryView = ({
   onClearHistory,
 }: ListeningHistoryViewProps) => {
   const viewModel = useListeningHistoryViewModel(onClearHistory);
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   if (viewModel.isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size='large' color={COLORS.primary} />
+        <ActivityIndicator size='large' color={colors.primary} />
       </View>
     );
   }

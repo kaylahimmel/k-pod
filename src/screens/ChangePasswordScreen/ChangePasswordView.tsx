@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,12 +12,15 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useChangePasswordViewModel } from './ChangePasswordViewModel';
 import { ChangePasswordViewProps } from './ChangePassword.types';
-import { styles } from './ChangePassword.styles';
-import { styles as authStyles } from '../../styles/auth.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './ChangePassword.styles';
+import { useColors } from '../../hooks';
+import { createAuthStyles } from '../../styles/auth.styles';
 
 export const ChangePasswordView = ({ onSuccess }: ChangePasswordViewProps) => {
   const viewModel = useChangePasswordViewModel(onSuccess);
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const authStyles = useMemo(() => createAuthStyles(colors), [colors]);
 
   if (viewModel.isSuccess) {
     return (
@@ -27,7 +30,7 @@ export const ChangePasswordView = ({ onSuccess }: ChangePasswordViewProps) => {
             <Ionicons
               name='checkmark-circle'
               size={36}
-              color={COLORS.success}
+              color={colors.success}
             />
           </View>
           <Text style={styles.successTitle}>Password updated</Text>
@@ -63,7 +66,7 @@ export const ChangePasswordView = ({ onSuccess }: ChangePasswordViewProps) => {
                 value={viewModel.currentPassword}
                 onChangeText={viewModel.handleCurrentPasswordChange}
                 placeholder='Enter current password'
-                placeholderTextColor={COLORS.textSecondary}
+                placeholderTextColor={colors.textSecondary}
                 secureTextEntry
                 returnKeyType='next'
                 accessibilityLabel='Current password'
@@ -85,7 +88,7 @@ export const ChangePasswordView = ({ onSuccess }: ChangePasswordViewProps) => {
                 value={viewModel.newPassword}
                 onChangeText={viewModel.handleNewPasswordChange}
                 placeholder='Min. 6 characters'
-                placeholderTextColor={COLORS.textSecondary}
+                placeholderTextColor={colors.textSecondary}
                 secureTextEntry
                 returnKeyType='next'
                 accessibilityLabel='New password'
@@ -107,7 +110,7 @@ export const ChangePasswordView = ({ onSuccess }: ChangePasswordViewProps) => {
                 value={viewModel.confirmNewPassword}
                 onChangeText={viewModel.handleConfirmNewPasswordChange}
                 placeholder='Re-enter new password'
-                placeholderTextColor={COLORS.textSecondary}
+                placeholderTextColor={colors.textSecondary}
                 secureTextEntry
                 returnKeyType='go'
                 onSubmitEditing={viewModel.handleSubmit}
@@ -119,7 +122,7 @@ export const ChangePasswordView = ({ onSuccess }: ChangePasswordViewProps) => {
           {/* Inline error */}
           {viewModel.errorMessage ? (
             <View style={authStyles.errorContainer}>
-              <Ionicons name='alert-circle' size={16} color={COLORS.danger} />
+              <Ionicons name='alert-circle' size={16} color={colors.danger} />
               <Text style={authStyles.errorText}>{viewModel.errorMessage}</Text>
             </View>
           ) : null}
@@ -135,7 +138,7 @@ export const ChangePasswordView = ({ onSuccess }: ChangePasswordViewProps) => {
             accessibilityLabel='Change password'
           >
             {viewModel.isLoading ? (
-              <ActivityIndicator color={COLORS.cardBackground} />
+              <ActivityIndicator color={colors.cardBackground} />
             ) : (
               <Text style={authStyles.buttonText}>Change Password</Text>
             )}

@@ -6,11 +6,14 @@ import DraggableFlatList, {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useQueueViewModel } from './QueueViewModel';
 import { FormattedQueueItem, QueueViewProps } from './Queue.types';
-import { styles } from './Queue.styles';
+import { createStyles } from './Queue.styles';
+import { useColors } from '../../hooks';
 import { CardQueueItem, HeaderQueue, StateEmpty } from '../../components';
 
 export const QueueView = ({ onEpisodePress, onPlayItem }: QueueViewProps) => {
   const viewModel = useQueueViewModel(onEpisodePress, onPlayItem);
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   // Get currently playing item and all other items (must be before early return)
   const currentlyPlayingItem = viewModel.currentlyPlaying;

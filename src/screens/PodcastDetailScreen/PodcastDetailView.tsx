@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -11,8 +11,8 @@ import {
   PodcastDetailViewProps,
 } from './PodcastDetail.types';
 import { usePodcastDetailViewModel } from './PodcastDetailViewModel';
-import { styles } from './PodcastDetail.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './PodcastDetail.styles';
+import { useColors } from '../../hooks';
 import {
   CardEpisode,
   HeaderPodcast,
@@ -29,6 +29,8 @@ export const PodcastDetailView = (props: PodcastDetailViewProps) => {
     props.onPlayEpisode,
     props.onUnsubscribe,
   );
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   // Loading state
   if (viewModel.loading && !viewModel.podcast) {
@@ -110,7 +112,7 @@ export const PodcastDetailView = (props: PodcastDetailViewProps) => {
           <RefreshControl
             refreshing={viewModel.refreshing}
             onRefresh={viewModel.handleEpisodeRefresh}
-            tintColor={COLORS.primary}
+            tintColor={colors.primary}
           />
         }
         showsVerticalScrollIndicator={false}

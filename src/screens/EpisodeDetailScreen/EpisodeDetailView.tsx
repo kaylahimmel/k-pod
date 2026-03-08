@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { EpisodeDetailViewProps } from './EpisodeDetail.types';
 import { useEpisodeDetailViewModel } from './EpisodeDetailViewModel';
-import { styles } from './EpisodeDetail.styles';
+import { createStyles } from './EpisodeDetail.styles';
+import { useColors } from '../../hooks';
 import { StateLoading, EpisodeNotFoundState, Toast } from '../../components';
-import { COLORS } from '../../constants';
 
 export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
   const viewModel = useEpisodeDetailViewModel(
@@ -16,6 +16,8 @@ export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
     props.episode,
     props.discoveryPodcast,
   );
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   // Loading state
   if (viewModel.loading && !viewModel.podcast) {
@@ -77,7 +79,7 @@ export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
             <Ionicons
               name='musical-notes'
               size={24}
-              color={COLORS.primary}
+              color={colors.primary}
               style={styles.nowPlayingIcon}
             />
             <Text style={styles.nowPlayingText}>Now playing</Text>
@@ -89,7 +91,7 @@ export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
               onPress={handlePlay}
               activeOpacity={0.7}
             >
-              <Ionicons name='play' size={20} color={COLORS.cardBackground} />
+              <Ionicons name='play' size={20} color={colors.cardBackground} />
               <Text style={styles.actionButtonText}>Play</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -100,7 +102,7 @@ export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
               <Ionicons
                 name={isInQueue ? 'checkmark' : 'add'}
                 size={20}
-                color={COLORS.textPrimary}
+                color={colors.textPrimary}
               />
               <Text
                 style={[

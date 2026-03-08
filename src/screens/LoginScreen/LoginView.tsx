@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,15 +12,18 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useLoginViewModel } from './LoginViewModel';
 import { LoginViewProps } from './Login.types';
-import { styles } from './Login.styles';
-import { styles as authStyles } from '../../styles/auth.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './Login.styles';
+import { useColors } from '../../hooks';
+import { createAuthStyles } from '../../styles/auth.styles';
 
 export const LoginView = ({
   onSignUpPress,
   onForgotPasswordPress,
 }: LoginViewProps) => {
   const viewModel = useLoginViewModel();
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const authStyles = useMemo(() => createAuthStyles(colors), [colors]);
 
   return (
     <KeyboardAvoidingView
@@ -51,7 +54,7 @@ export const LoginView = ({
                 value={viewModel.email}
                 onChangeText={viewModel.handleEmailChange}
                 placeholder='you@example.com'
-                placeholderTextColor={COLORS.textSecondary}
+                placeholderTextColor={colors.textSecondary}
                 autoCapitalize='none'
                 autoCorrect={false}
                 keyboardType='email-address'
@@ -75,7 +78,7 @@ export const LoginView = ({
                 value={viewModel.password}
                 onChangeText={viewModel.handlePasswordChange}
                 placeholder='••••••••'
-                placeholderTextColor={COLORS.textSecondary}
+                placeholderTextColor={colors.textSecondary}
                 secureTextEntry
                 returnKeyType='go'
                 onSubmitEditing={viewModel.handleSignIn}
@@ -87,7 +90,7 @@ export const LoginView = ({
           {/* Inline error */}
           {viewModel.errorMessage ? (
             <View style={authStyles.errorContainer}>
-              <Ionicons name='alert-circle' size={16} color={COLORS.danger} />
+              <Ionicons name='alert-circle' size={16} color={colors.danger} />
               <Text style={authStyles.errorText}>{viewModel.errorMessage}</Text>
             </View>
           ) : null}
@@ -103,7 +106,7 @@ export const LoginView = ({
             accessibilityLabel='Sign in'
           >
             {viewModel.isLoading ? (
-              <ActivityIndicator color={COLORS.cardBackground} />
+              <ActivityIndicator color={colors.cardBackground} />
             ) : (
               <Text style={authStyles.buttonText}>Sign In</Text>
             )}

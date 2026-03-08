@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,8 +8,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useProfileViewModel } from './ProfileViewModel';
-import { styles } from './Profile.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './Profile.styles';
+import { useColors } from '../../hooks';
 import { ProfileViewProps } from './Profile.types';
 
 export const ProfileView = ({
@@ -20,11 +20,13 @@ export const ProfileView = ({
     onViewHistoryPress,
     onChangePasswordPress,
   );
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   if (viewModel.isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size='large' color={COLORS.primary} />
+        <ActivityIndicator size='large' color={colors.primary} />
       </View>
     );
   }
@@ -85,7 +87,7 @@ export const ProfileView = ({
           <Ionicons
             name='chevron-forward'
             size={20}
-            color={COLORS.textSecondary}
+            color={colors.textSecondary}
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -96,7 +98,7 @@ export const ProfileView = ({
           <Ionicons
             name='chevron-forward'
             size={20}
-            color={COLORS.textSecondary}
+            color={colors.textSecondary}
           />
         </TouchableOpacity>
         <TouchableOpacity

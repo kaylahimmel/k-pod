@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,14 +12,17 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useForgotPasswordViewModel } from './ForgotPasswordViewModel';
 import { ForgotPasswordViewProps } from './ForgotPassword.types';
-import { styles } from './ForgotPassword.styles';
-import { styles as authStyles } from '../../styles/auth.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './ForgotPassword.styles';
+import { useColors } from '../../hooks';
+import { createAuthStyles } from '../../styles/auth.styles';
 
 export const ForgotPasswordView = ({
   onBackToSignInPress,
 }: ForgotPasswordViewProps) => {
   const viewModel = useForgotPasswordViewModel();
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const authStyles = useMemo(() => createAuthStyles(colors), [colors]);
 
   if (viewModel.isSuccess) {
     return (
@@ -31,7 +34,7 @@ export const ForgotPasswordView = ({
       >
         <View style={authStyles.successContainer}>
           <View style={authStyles.successIconContainer}>
-            <Ionicons name='mail-outline' size={36} color={COLORS.success} />
+            <Ionicons name='mail-outline' size={36} color={colors.success} />
           </View>
           <Text style={styles.successTitle}>Check your email</Text>
           <Text style={styles.successMessage}>
@@ -82,7 +85,7 @@ export const ForgotPasswordView = ({
                 value={viewModel.email}
                 onChangeText={viewModel.handleEmailChange}
                 placeholder='you@example.com'
-                placeholderTextColor={COLORS.textSecondary}
+                placeholderTextColor={colors.textSecondary}
                 autoCapitalize='none'
                 autoCorrect={false}
                 keyboardType='email-address'
@@ -96,7 +99,7 @@ export const ForgotPasswordView = ({
           {/* Inline error */}
           {viewModel.errorMessage ? (
             <View style={authStyles.errorContainer}>
-              <Ionicons name='alert-circle' size={16} color={COLORS.danger} />
+              <Ionicons name='alert-circle' size={16} color={colors.danger} />
               <Text style={authStyles.errorText}>{viewModel.errorMessage}</Text>
             </View>
           ) : null}
@@ -112,7 +115,7 @@ export const ForgotPasswordView = ({
             accessibilityLabel='Send reset email'
           >
             {viewModel.isLoading ? (
-              <ActivityIndicator color={COLORS.cardBackground} />
+              <ActivityIndicator color={colors.cardBackground} />
             ) : (
               <Text style={authStyles.buttonText}>Send Reset Email</Text>
             )}

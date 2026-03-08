@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import {
   SearchResultsViewProps,
@@ -12,13 +12,16 @@ import {
   StateNoResults,
   Toast,
 } from '../../components';
-import { styles } from './SearchResults.styles';
+import { createStyles } from './SearchResults.styles';
+import { useColors } from '../../hooks';
 
 export const SearchResultsView = ({
   query,
   onPodcastPress,
 }: SearchResultsViewProps) => {
   const viewModel = useSearchResultsViewModel(query, onPodcastPress);
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const renderHeader = () => (
     <View style={styles.header}>
