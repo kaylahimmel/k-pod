@@ -22,6 +22,7 @@ describe('useSettingsViewModel', () => {
     downloadOnWiFi: true,
     skipForwardSeconds: 30,
     skipBackwardSeconds: 15,
+    themePreference: 'system' as const,
   };
 
   beforeEach(() => {
@@ -202,6 +203,18 @@ describe('useSettingsViewModel', () => {
       });
 
       expect(Linking.openURL).toHaveBeenCalledWith('https://example.com/terms');
+    });
+  });
+
+  describe('handleThemeChange', () => {
+    it('should update themePreference setting', () => {
+      const { result } = renderHook(() => useSettingsViewModel());
+
+      act(() => {
+        result.current.handleThemeChange('dark');
+      });
+
+      expect(mockUpdateSetting).toHaveBeenCalledWith('themePreference', 'dark');
     });
   });
 });

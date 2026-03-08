@@ -33,6 +33,24 @@ export const SettingsView = () => {
       style={styles.container}
       contentContainerStyle={styles.scrollContent}
     >
+      {/* Appearance */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Appearance</Text>
+      </View>
+      <View style={styles.settingsSection}>
+        <SettingOptionSelector
+          label='Theme'
+          currentValueLabel={
+            viewModel.themeOptions.find(
+              (o) => o.value === viewModel.themePreference,
+            )?.label ?? 'System'
+          }
+          options={viewModel.themeOptions}
+          selectedValue={viewModel.themePreference}
+          onSelect={viewModel.handleThemeChange}
+        />
+      </View>
+
       {/* Playback Settings */}
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Playback</Text>

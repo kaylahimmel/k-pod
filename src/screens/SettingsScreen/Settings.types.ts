@@ -1,3 +1,10 @@
+export type ThemePreference = 'system' | 'light' | 'dark';
+
+export interface ThemeOption {
+  value: ThemePreference;
+  label: string;
+}
+
 export interface SpeedOption {
   value: number;
   label: string;
@@ -31,6 +38,9 @@ export interface SettingsViewModelReturn {
   handleToggleDownloadOnWiFi: () => void;
   handleSkipForwardChange: (seconds: number) => void;
   handleSkipBackwardChange: (seconds: number) => void;
+  themePreference: ThemePreference;
+  themeOptions: ThemeOption[];
+  handleThemeChange: (theme: ThemePreference) => void;
   handleResetSettings: () => void;
   handlePrivacyPolicyPress: () => void;
   handleTermsOfServicePress: () => void;

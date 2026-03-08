@@ -8,7 +8,13 @@ import {
   SKIP_FORWARD_OPTIONS,
   SKIP_BACKWARD_OPTIONS,
 } from './SettingsPresenter';
-import { SettingsViewModelReturn } from './Settings.types';
+import { SettingsViewModelReturn, ThemePreference } from './Settings.types';
+
+const THEME_OPTIONS = [
+  { value: 'system' as ThemePreference, label: 'System' },
+  { value: 'light' as ThemePreference, label: 'Light' },
+  { value: 'dark' as ThemePreference, label: 'Dark' },
+];
 
 // Placeholder URLs for legal pages
 const PRIVACY_POLICY_URL = 'https://example.com/privacy';
@@ -74,6 +80,16 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
   );
 
   /**
+   * Updates the theme preference
+   */
+  const handleThemeChange = useCallback(
+    (theme: ThemePreference) => {
+      updateSetting('themePreference', theme);
+    },
+    [updateSetting],
+  );
+
+  /**
    * Resets all settings to defaults with confirmation
    */
   const handleResetSettings = useCallback(() => {
@@ -129,6 +145,9 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
     handleToggleDownloadOnWiFi,
     handleSkipForwardChange,
     handleSkipBackwardChange,
+    themePreference: settings.themePreference,
+    themeOptions: THEME_OPTIONS,
+    handleThemeChange,
     handleResetSettings,
     handlePrivacyPolicyPress,
     handleTermsOfServicePress,
