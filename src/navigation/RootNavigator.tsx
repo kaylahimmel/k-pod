@@ -8,7 +8,7 @@ import { modalScreenOptions } from './screenOptions';
 import { FullPlayerScreen, AddPodcastModal } from '../screens';
 import { AuthService } from '../services';
 import { authStore } from '../stores/authStore';
-import { COLORS } from '../constants';
+import { LIGHT_COLORS as COLORS } from '../constants';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

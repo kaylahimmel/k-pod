@@ -1,6 +1,6 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../constants';
+import { LIGHT_COLORS as COLORS } from '../constants';
 
 /**
  * Common header button styles for consistent UI across screens

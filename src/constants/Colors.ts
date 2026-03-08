@@ -33,6 +33,3 @@ export const DARK_COLORS: ColorPalette = {
   success: '#30D158',
   played: '#48484A',
 };
-
-// Alias for backward compatibility — remove after all style files are migrated
-export const COLORS = LIGHT_COLORS;

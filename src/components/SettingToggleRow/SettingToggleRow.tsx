@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, Switch, StyleSheet } from 'react-native';
-import { COLORS } from '../../constants';
+import React, { useMemo } from 'react';
+import { View, Text, Switch } from 'react-native';
+import { useColors } from '../../hooks';
+import { createStyles } from './SettingToggleRow.styles';
 
 interface SettingToggleRowProps {
   label: string;
@@ -14,35 +15,19 @@ export const SettingToggleRow = ({
   value,
   onValueChange,
   isLast = false,
-}: SettingToggleRowProps) => (
-  <View style={[styles.container, isLast && styles.containerLast]}>
-    <Text style={styles.label}>{label}</Text>
-    <Switch
-      value={value}
-      onValueChange={onValueChange}
-      trackColor={{ false: COLORS.border, true: COLORS.primary }}
-      testID='setting-toggle-switch'
-    />
-  </View>
-);
+}: SettingToggleRowProps) => {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    minHeight: 48,
-  },
-  containerLast: {
-    borderBottomWidth: 0,
-  },
-  label: {
-    fontSize: 16,
-    color: COLORS.textPrimary,
-    flex: 1,
-  },
-});
+  return (
+    <View style={[styles.container, isLast && styles.containerLast]}>
+      <Text style={styles.label}>{label}</Text>
+      <Switch
+        value={value}
+        onValueChange={onValueChange}
+        trackColor={{ false: colors.border, true: colors.primary }}
+        testID='setting-toggle-switch'
+      />
+    </View>
+  );
+};

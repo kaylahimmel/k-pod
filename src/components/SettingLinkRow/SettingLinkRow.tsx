@@ -1,7 +1,8 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
+import { TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../../constants';
+import { useColors } from '../../hooks';
+import { createStyles } from './SettingLinkRow.styles';
 
 interface SettingLinkRowProps {
   label: string;
@@ -13,33 +14,17 @@ export const SettingLinkRow = ({
   label,
   onPress,
   isLast = false,
-}: SettingLinkRowProps) => (
-  <TouchableOpacity
-    style={[styles.container, isLast && styles.containerLast]}
-    onPress={onPress}
-  >
-    <Text style={styles.label}>{label}</Text>
-    <Ionicons name='chevron-forward' size={20} color={COLORS.textSecondary} />
-  </TouchableOpacity>
-);
+}: SettingLinkRowProps) => {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    minHeight: 48,
-  },
-  containerLast: {
-    borderBottomWidth: 0,
-  },
-  label: {
-    fontSize: 16,
-    color: COLORS.textPrimary,
-    flex: 1,
-  },
-});
+  return (
+    <TouchableOpacity
+      style={[styles.container, isLast && styles.containerLast]}
+      onPress={onPress}
+    >
+      <Text style={styles.label}>{label}</Text>
+      <Ionicons name='chevron-forward' size={20} color={colors.textSecondary} />
+    </TouchableOpacity>
+  );
+};
