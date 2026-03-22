@@ -1,0 +1,36 @@
+name: Dependency Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'yarn.lock'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'yarn.lock'
+  schedule:
+    - cron: '0 16 * * 0'  # Every Saturday at 8am UTC
+
+jobs:
+  audit:
+    name: Run security audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run audit
+        run: yarn audit --level high
