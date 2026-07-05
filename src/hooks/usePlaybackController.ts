@@ -395,33 +395,21 @@ export const usePlaybackController = () => {
 
   /**
    * Skip forward by configured seconds
+   * Position is not written here: the store position updates via the
+   * service's status event stream once the seek lands (single writer)
    */
   const skipForward = useCallback(async () => {
-    const result = await AudioPlayerService.skipForward(
-      settings.skipForwardSeconds,
-    );
-    if (result.success) {
-      const status = await AudioPlayerService.getStatus();
-      if (status.success) {
-        setPosition(status.data.positionMillis / 1000);
-      }
-    }
-  }, [settings.skipForwardSeconds, setPosition]);
+    await AudioPlayerService.skipForward(settings.skipForwardSeconds);
+  }, [settings.skipForwardSeconds]);
 
   /**
    * Skip backward by configured seconds
+   * Position is not written here: the store position updates via the
+   * service's status event stream once the seek lands (single writer)
    */
   const skipBackward = useCallback(async () => {
-    const result = await AudioPlayerService.skipBackward(
-      settings.skipBackwardSeconds,
-    );
-    if (result.success) {
-      const status = await AudioPlayerService.getStatus();
-      if (status.success) {
-        setPosition(status.data.positionMillis / 1000);
-      }
-    }
-  }, [settings.skipBackwardSeconds, setPosition]);
+    await AudioPlayerService.skipBackward(settings.skipBackwardSeconds);
+  }, [settings.skipBackwardSeconds]);
 
   /**
    * Change playback speed

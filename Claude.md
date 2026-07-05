@@ -12,7 +12,12 @@ K-Pod is a podcast player app built with React Native and Expo. It allows users 
 - **Language**: TypeScript (strict mode)
 - **State Management**: Zustand (5 stores: player, queue, podcast, settings, history)
 - **Navigation**: React Navigation 7 (bottom tabs + nested stacks)
-- **Audio**: expo-av for playback
+- **Audio**: expo-audio for playback (migrated from expo-av, which was removed from the Expo SDK after 54). Gotchas vs expo-av:
+  - `AudioPlayer.remove()` only deregisters the player natively — always call `pause()` first or the old audio keeps playing until GC (unlike expo-av's `unloadAsync()`, which stopped audio)
+  - `playbackStatusUpdate` events keep reporting the pre-seek `currentTime` while a `seekTo()` is in flight (and can arrive after its promise resolves). AudioPlayerService drops progress updates until the reported time settles near the seek target (`pendingSeekTarget` guard) — expo-av suppressed these stale updates itself
+  - `seekTo()` defaults to infinite tolerance on iOS, landing up to ~1s before the requested time (UI position bounces backward after skips). Always pass `seekTo(seconds, 0, 0)` for a precise seek; the tolerance args are ignored on Android
+  - When audio finishes, expo-audio parks the player paused at the end and `play()` does nothing there (expo-av restarted from 0). The service's `play()` seeks to 0 first when within `REPLAY_THRESHOLD_SECONDS` of the end
+  - Playback position flows through AudioPlayerService's progress callback only. Consumers (e.g. usePlaybackController) must never read back and write position after a seek/skip — events and promise resolutions cross the bridge on separate unordered channels, so extra writers cause sub-second backward jumps that show as 1s display flickers (worse at 2x speed). Inside the service, `seek()` emits the landed position when the seek resolves (the event stream can lag 2-3s behind on streamed audio) and records it as `seekSettleFloor`; status events behind the floor are late arrivals and get dropped. The only consumer-side exception is the controller `seek()`'s optimistic write of the target for slider UX (guaranteed to match, since seeks are precise)
 - **Storage**: AsyncStorage for persistence
 - **Styling**: React Native StyleSheet with centralized color constants
 - **Testing**: Jest with React Testing Library

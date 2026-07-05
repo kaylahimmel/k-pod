@@ -145,7 +145,7 @@ describe('FullPlayerView', () => {
       fireEvent.press(getByLabelText('Skip forward 30 seconds'));
 
       await waitFor(() => {
-        // AudioPlayerService mock returns positionMillis: 0, so position becomes 0
+        // AudioPlayerService mock returns positionSeconds: 0, so position becomes 0
         // This test now verifies that the skip forward action was attempted
         expect(playerStore.getState().position).toBeGreaterThanOrEqual(0);
       });
@@ -159,7 +159,7 @@ describe('FullPlayerView', () => {
       fireEvent.press(getByLabelText('Skip backward 15 seconds'));
 
       await waitFor(() => {
-        // AudioPlayerService mock returns positionMillis: 0, so position becomes 0
+        // AudioPlayerService mock returns positionSeconds: 0, so position becomes 0
         expect(playerStore.getState().position).toBeGreaterThanOrEqual(0);
       });
     });

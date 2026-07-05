@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSignUpViewModel } from './SignUpViewModel';
 import { SignUpViewProps } from './SignUp.types';
 import { styles } from './SignUp.styles';
+import { styles as authStyles } from '../../styles/auth.styles';
 import { COLORS } from '../../constants';
 
 export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
@@ -20,11 +21,11 @@ export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={authStyles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={authStyles.scrollContent}
         keyboardShouldPersistTaps='handled'
       >
         <View style={styles.header}>
@@ -32,18 +33,18 @@ export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
           <Text style={styles.subtitle}>Start listening to your podcasts</Text>
         </View>
 
-        <View style={styles.form}>
+        <View style={authStyles.form}>
           {/* Email field */}
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Email</Text>
+          <View style={authStyles.fieldContainer}>
+            <Text style={authStyles.label}>Email</Text>
             <View
               style={[
-                styles.inputWrapper,
-                viewModel.errorMessage ? styles.inputWrapperError : null,
+                authStyles.inputWrapper,
+                viewModel.errorMessage ? authStyles.inputWrapperError : null,
               ]}
             >
               <TextInput
-                style={styles.input}
+                style={authStyles.input}
                 value={viewModel.email}
                 onChangeText={viewModel.handleEmailChange}
                 placeholder='you@example.com'
@@ -58,16 +59,16 @@ export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
           </View>
 
           {/* Password field */}
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Password</Text>
+          <View style={authStyles.fieldContainer}>
+            <Text style={authStyles.label}>Password</Text>
             <View
               style={[
-                styles.inputWrapper,
-                viewModel.errorMessage ? styles.inputWrapperError : null,
+                authStyles.inputWrapper,
+                viewModel.errorMessage ? authStyles.inputWrapperError : null,
               ]}
             >
               <TextInput
-                style={styles.input}
+                style={authStyles.input}
                 value={viewModel.password}
                 onChangeText={viewModel.handlePasswordChange}
                 placeholder='Min. 6 characters'
@@ -80,16 +81,16 @@ export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
           </View>
 
           {/* Confirm password field */}
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Confirm Password</Text>
+          <View style={authStyles.fieldContainer}>
+            <Text style={authStyles.label}>Confirm Password</Text>
             <View
               style={[
-                styles.inputWrapper,
-                viewModel.errorMessage ? styles.inputWrapperError : null,
+                authStyles.inputWrapper,
+                viewModel.errorMessage ? authStyles.inputWrapperError : null,
               ]}
             >
               <TextInput
-                style={styles.input}
+                style={authStyles.input}
                 value={viewModel.confirmPassword}
                 onChangeText={viewModel.handleConfirmPasswordChange}
                 placeholder='Re-enter your password'
@@ -104,17 +105,17 @@ export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
 
           {/* Inline error */}
           {viewModel.errorMessage ? (
-            <View style={styles.errorContainer}>
+            <View style={authStyles.errorContainer}>
               <Ionicons name='alert-circle' size={16} color={COLORS.danger} />
-              <Text style={styles.errorText}>{viewModel.errorMessage}</Text>
+              <Text style={authStyles.errorText}>{viewModel.errorMessage}</Text>
             </View>
           ) : null}
 
           {/* Sign Up button */}
           <TouchableOpacity
             style={[
-              styles.button,
-              viewModel.isLoading ? styles.buttonDisabled : null,
+              authStyles.button,
+              viewModel.isLoading ? authStyles.buttonDisabled : null,
             ]}
             onPress={viewModel.handleSignUp}
             disabled={viewModel.isLoading}
@@ -123,7 +124,7 @@ export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
             {viewModel.isLoading ? (
               <ActivityIndicator color={COLORS.cardBackground} />
             ) : (
-              <Text style={styles.buttonText}>Create Account</Text>
+              <Text style={authStyles.buttonText}>Create Account</Text>
             )}
           </TouchableOpacity>
         </View>

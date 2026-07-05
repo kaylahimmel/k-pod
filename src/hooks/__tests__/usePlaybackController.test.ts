@@ -55,7 +55,7 @@ describe('usePlaybackController', () => {
     });
     (AudioPlayerService.getStatus as jest.Mock).mockResolvedValue({
       success: true,
-      data: { positionMillis: 30000 },
+      data: { positionSeconds: 30, durationSeconds: 3600, isPlaying: true },
     });
     (AudioPlayerService.setOnProgress as jest.Mock).mockImplementation(
       () => {},
@@ -228,8 +228,10 @@ describe('usePlaybackController', () => {
 
       await waitFor(() => {
         expect(AudioPlayerService.skipForward).toHaveBeenCalledWith(30); // Default setting is 30
-        expect(AudioPlayerService.getStatus).toHaveBeenCalled();
       });
+      // Position updates flow through the status event stream (single writer),
+      // so the controller must not read back and write position after a skip
+      expect(AudioPlayerService.getStatus).not.toHaveBeenCalled();
     });
   });
 
@@ -243,8 +245,9 @@ describe('usePlaybackController', () => {
 
       await waitFor(() => {
         expect(AudioPlayerService.skipBackward).toHaveBeenCalledWith(15); // Default setting
-        expect(AudioPlayerService.getStatus).toHaveBeenCalled();
       });
+      // Same single-writer contract as skipForward
+      expect(AudioPlayerService.getStatus).not.toHaveBeenCalled();
     });
   });
 

@@ -31,6 +31,16 @@ export interface PlaybackState {
 }
 
 /**
+ * Snapshot of the current playback state returned by AudioPlayerService.getStatus().
+ * Uses seconds throughout so consumers never deal with vendor-specific units.
+ */
+export interface PlaybackStatus {
+  positionSeconds: number;
+  durationSeconds: number;
+  isPlaying: boolean;
+}
+
+/**
  * Callback types for playback events
  */
 export type OnProgressCallback = (position: number, duration: number) => void;
