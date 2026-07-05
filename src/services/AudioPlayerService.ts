@@ -197,6 +197,10 @@ async function play(): Promise<ServiceResult<void>> {
       await seek(0);
     }
 
+    // Reset any volume left lowered by expo-audio's Android duck handling,
+    // which can permanently ratchet volume down after back-to-back duck
+    // events (it saves an already-halved volume as the restore value)
+    playerInstance.volume = 1;
     playerInstance.play();
     return { success: true, data: undefined };
   } catch (error) {
