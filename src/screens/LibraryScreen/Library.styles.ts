@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
-    shadowColor: 'COLORS.textPrimary',
+    shadowColor: COLORS.textPrimary,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -98,7 +98,7 @@ export const styles = StyleSheet.create({
   emptyButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: 'COLORS.cardBackground',
+    color: COLORS.cardBackground,
     marginLeft: 8,
   },
   loadingContainer: {

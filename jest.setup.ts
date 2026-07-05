@@ -128,6 +128,12 @@ jest.mock('firebase/app', () => ({
   initializeApp: jest.fn(),
 }));
 
+// Mock safe area insets with the library's official jest mock (insets of 0;
+// tests can override via useSafeAreaInsets.mockReturnValue)
+jest.mock('react-native-safe-area-context', () =>
+  require('react-native-safe-area-context/jest/mock').default,
+);
+
 // Mock AudioPlayerService to avoid expo-audio native module requirements
 jest.mock('./src/services/AudioPlayerService', () => ({
   AudioPlayerService: {

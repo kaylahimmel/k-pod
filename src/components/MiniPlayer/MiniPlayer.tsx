@@ -59,9 +59,9 @@ export const MiniPlayer = () => {
             </Text>
           </View>
         </View>
-        <View style={styles.progressContainer}>
-          <View style={styles.progressBar} testID='mini-player-progress' />
-        </View>
+        {/* Track only - rendering the fill here with no width stretched it
+            into a full-width bar on Android */}
+        <View style={styles.progressContainer} />
       </View>
     );
   }

@@ -1,4 +1,5 @@
 import React, { act } from 'react';
+import { Platform } from 'react-native';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { FullPlayerView } from '../FullPlayerView';
 import { playerStore, queueStore, settingsStore } from '../../../stores';
@@ -375,6 +376,58 @@ describe('FullPlayerView', () => {
       fireEvent.press(getByLabelText('Close player'));
 
       expect(mockOnDismiss).toHaveBeenCalled();
+    });
+
+    it('should use a small fixed top padding on iOS, ignoring window insets', async () => {
+      // The iOS sheet modal already sits below the status bar, but the root
+      // SafeAreaProvider still reports the full window inset - adding it
+      // doubled the gap above the header buttons
+      const { useSafeAreaInsets } = jest.requireMock(
+        'react-native-safe-area-context',
+      );
+      useSafeAreaInsets.mockReturnValue({
+        top: 59,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      });
+
+      const { getByTestId } = await renderView();
+
+      expect(
+        getByTestId('full-player-scroll').props.contentContainerStyle,
+      ).toEqual(
+        expect.arrayContaining([expect.objectContaining({ paddingTop: 8 })]),
+      );
+    });
+
+    it('should pad the content below the status bar on Android', async () => {
+      // Android modals are full-screen and edge-to-edge draws under the
+      // status bar; without the inset the header buttons collide with it
+      const replacedOS = jest.replaceProperty(Platform, 'OS', 'android');
+      const { useSafeAreaInsets } = jest.requireMock(
+        'react-native-safe-area-context',
+      );
+      useSafeAreaInsets.mockReturnValue({
+        top: 47,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      });
+
+      try {
+        const { getByTestId } = await renderView();
+
+        expect(
+          getByTestId('full-player-scroll').props.contentContainerStyle,
+        ).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ paddingTop: 47 + 8 }),
+          ]),
+        );
+      } finally {
+        replacedOS.restore();
+      }
     });
   });
 

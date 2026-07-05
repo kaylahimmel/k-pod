@@ -91,7 +91,7 @@ export const PodcastPreviewView = ({
     }
 
     return (
-      <View style={styles.episodesList}>
+      <View>
         {viewModel.formattedEpisodes.map((episode) =>
           renderEpisodeCard(episode),
         )}

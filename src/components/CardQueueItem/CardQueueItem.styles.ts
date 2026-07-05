@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
   },
   queueItemDragging: {
     opacity: 0.9,
-    shadowColor: 'COLORS.textPrimary',
+    shadowColor: COLORS.textPrimary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

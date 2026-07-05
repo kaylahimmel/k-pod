@@ -56,6 +56,14 @@ describe('MiniPlayer', () => {
       );
     });
 
+    it('should not render a progress fill in the empty state', () => {
+      // The fill view has no width set in the empty state, so it stretched
+      // to a full-width bar on Android despite nothing playing
+      const { queryByTestId } = render(<MiniPlayer />);
+
+      expect(queryByTestId('mini-player-progress')).toBeNull();
+    });
+
     it('should render active state when an episode is playing', () => {
       act(() => {
         playerStore.getState().setCurrentEpisode(mockEpisode);
