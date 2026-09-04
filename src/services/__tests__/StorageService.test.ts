@@ -1,8 +1,5 @@
 import { StorageService } from '../StorageService';
-import {
-  createMockQueueItem,
-  createMockListeningHistory,
-} from '../../__mocks__';
+import { createMockListeningHistory } from '../../__mocks__';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // ===========================================
@@ -91,9 +88,8 @@ describe('StorageService', () => {
       // Queue/podcast/settings persistence is owned by zustand persist;
       // generic saveData/loadData remain for ad-hoc keys
       await StorageService.saveData('test-podcasts', podcasts);
-      const loaded = await StorageService.loadData<typeof podcasts>(
-        'test-podcasts',
-      );
+      const loaded =
+        await StorageService.loadData<typeof podcasts>('test-podcasts');
 
       expect(loaded).toEqual(podcasts);
       expect(loaded![0].title).toBe('Test Podcast');

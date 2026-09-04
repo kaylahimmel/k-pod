@@ -37,6 +37,8 @@ Before making any changes, run the existing test suite and note which tests pass
 
 When updating dependencies or adding yarn resolutions, verify the exact syntax works with the project's yarn version (v1 classic) and run tests immediately after to catch breakage.
 
+- `tsconfig.json` lists `"types": ["jest", "node"]` explicitly. TypeScript 6+ (bundled with VS Code) no longer auto-includes every `node_modules/@types` package, so without it the IDE reports "Cannot use namespace 'jest' as a value" in test files even though the project's TS 5.x CLI passes. Add any new ambient `@types/*` package to that list.
+
 ## Communication Style
 
 - When I ask you to explain concepts, I'm learning — provide detailed explanations of WHY, not just WHAT. I value educational guidance alongside code changes.
