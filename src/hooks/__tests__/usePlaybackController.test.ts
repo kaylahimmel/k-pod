@@ -1,6 +1,10 @@
 import { renderHook, act, waitFor } from '@testing-library/react-native';
-import { usePlaybackController } from '../usePlaybackController';
+import {
+  usePlaybackController,
+  usePlaybackEvents,
+} from '../usePlaybackController';
 import { AudioPlayerService } from '../../services/AudioPlayerService';
+import { StorageService } from '../../services';
 import { playerStore } from '../../stores/playerStore';
 import { queueStore } from '../../stores/queueStore';
 import { settingsStore } from '../../stores/settingsStore';
@@ -65,22 +69,74 @@ describe('usePlaybackController', () => {
   });
 
   describe('Initialization', () => {
-    it('should set up AudioPlayerService callbacks on mount', () => {
-      renderHook(() => usePlaybackController());
+    // Callback registration lives in usePlaybackEvents (mounted once at the
+    // app root). usePlaybackController is mounted by many screens at once,
+    // so it must never touch the singleton's callback slots: a screen
+    // unmounting used to null the callbacks and silently kill progress
+    // updates, auto-advance, and history tracking for the whole app
+    it('should register AudioPlayerService callbacks via usePlaybackEvents', () => {
+      renderHook(() => usePlaybackEvents());
 
-      expect(AudioPlayerService.setOnProgress).toHaveBeenCalled();
-      expect(AudioPlayerService.setOnEnd).toHaveBeenCalled();
-      expect(AudioPlayerService.setOnError).toHaveBeenCalled();
+      expect(AudioPlayerService.setOnProgress).toHaveBeenCalledWith(
+        expect.any(Function),
+      );
+      expect(AudioPlayerService.setOnEnd).toHaveBeenCalledWith(
+        expect.any(Function),
+      );
+      expect(AudioPlayerService.setOnError).toHaveBeenCalledWith(
+        expect.any(Function),
+      );
     });
 
-    it('should clean up callbacks on unmount', () => {
-      const { unmount } = renderHook(() => usePlaybackController());
+    it('should clean up callbacks when usePlaybackEvents unmounts', () => {
+      const { unmount } = renderHook(() => usePlaybackEvents());
 
       unmount();
 
       expect(AudioPlayerService.setOnProgress).toHaveBeenCalledWith(null);
       expect(AudioPlayerService.setOnEnd).toHaveBeenCalledWith(null);
       expect(AudioPlayerService.setOnError).toHaveBeenCalledWith(null);
+    });
+
+    it('should not register or clear callbacks from usePlaybackController', () => {
+      const { unmount } = renderHook(() => usePlaybackController());
+
+      unmount();
+
+      expect(AudioPlayerService.setOnProgress).not.toHaveBeenCalled();
+      expect(AudioPlayerService.setOnEnd).not.toHaveBeenCalled();
+      expect(AudioPlayerService.setOnError).not.toHaveBeenCalled();
+    });
+
+    it('should seed the session playback speed from settings.defaultSpeed', async () => {
+      // defaultSpeed was configurable in Settings but nothing ever read it;
+      // playback always started at playerStore's hardcoded 1x
+      act(() => {
+        settingsStore.getState().updateSetting('defaultSpeed', 1.5);
+      });
+
+      renderHook(() => usePlaybackEvents());
+
+      await waitFor(() => {
+        expect(playerStore.getState().speed).toBe(1.5);
+      });
+    });
+
+    it('should keep callbacks registered when a screen controller unmounts', () => {
+      // Simulates: app root registers events; FullPlayer opens (controller
+      // instance) and closes again while playback continues
+      renderHook(() => usePlaybackEvents());
+      const screenController = renderHook(() => usePlaybackController());
+
+      (AudioPlayerService.setOnProgress as jest.Mock).mockClear();
+      (AudioPlayerService.setOnEnd as jest.Mock).mockClear();
+      (AudioPlayerService.setOnError as jest.Mock).mockClear();
+
+      screenController.unmount();
+
+      expect(AudioPlayerService.setOnProgress).not.toHaveBeenCalledWith(null);
+      expect(AudioPlayerService.setOnEnd).not.toHaveBeenCalledWith(null);
+      expect(AudioPlayerService.setOnError).not.toHaveBeenCalledWith(null);
     });
   });
 
@@ -376,7 +432,7 @@ describe('usePlaybackController', () => {
         },
       );
 
-      renderHook(() => usePlaybackController());
+      renderHook(() => usePlaybackEvents());
 
       // Trigger the onEnd callback
       await act(async () => {
@@ -395,6 +451,49 @@ describe('usePlaybackController', () => {
         expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
           mockEpisode2,
         );
+      });
+    });
+
+    it('should resume a partially-listened episode when auto-advancing into it', async () => {
+      // The auto-advance path used to skip the saved-position restore that
+      // every manual play path does, restarting half-listened episodes at 0
+      jest
+        .spyOn(StorageService, 'loadPlaybackPosition')
+        .mockResolvedValueOnce(120);
+
+      const queueItem1 = createMockQueueItem({
+        episode: mockEpisode,
+        podcast: mockPodcast,
+      });
+      const queueItem2 = createMockQueueItem({
+        episode: mockEpisode2,
+        podcast: mockPodcast,
+      });
+
+      act(() => {
+        queueStore.getState().setQueue([queueItem1, queueItem2]);
+        queueStore.getState().setCurrentIndex(0);
+        settingsStore.getState().updateSetting('autoPlayNext', true);
+      });
+
+      let onEndCallback: (() => void) | null = null;
+      (AudioPlayerService.setOnEnd as jest.Mock).mockImplementation(
+        (callback) => {
+          onEndCallback = callback;
+        },
+      );
+
+      renderHook(() => usePlaybackEvents());
+
+      await act(async () => {
+        if (onEndCallback) {
+          onEndCallback();
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      });
+
+      await waitFor(() => {
+        expect(AudioPlayerService.seek).toHaveBeenCalledWith(120);
       });
     });
 
@@ -422,7 +521,7 @@ describe('usePlaybackController', () => {
         },
       );
 
-      renderHook(() => usePlaybackController());
+      renderHook(() => usePlaybackEvents());
 
       // Clear previous calls
       jest.clearAllMocks();
@@ -459,7 +558,7 @@ describe('usePlaybackController', () => {
         },
       );
 
-      renderHook(() => usePlaybackController());
+      renderHook(() => usePlaybackEvents());
 
       // Clear previous calls
       jest.clearAllMocks();
@@ -489,7 +588,7 @@ describe('usePlaybackController', () => {
         },
       );
 
-      renderHook(() => usePlaybackController());
+      renderHook(() => usePlaybackEvents());
 
       act(() => {
         if (onProgressCallback) {
@@ -514,7 +613,7 @@ describe('usePlaybackController', () => {
 
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      renderHook(() => usePlaybackController());
+      renderHook(() => usePlaybackEvents());
 
       // First play an episode
       act(() => {

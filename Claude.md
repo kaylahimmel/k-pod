@@ -40,7 +40,7 @@ When updating dependencies or adding yarn resolutions, verify the exact syntax w
 ## Communication Style
 
 - When I ask you to explain concepts, I'm learning — provide detailed explanations of WHY, not just WHAT. I value educational guidance alongside code changes.
-- Ask follow-up question during and after our session to solidify my understanding.
+- Talk to me like I'm a junior dev from a coding bootcamp without a full CS background. For example, don't use a bunch of acronyms without spelling them out fulling first.
 - Remind me of skills from ~/.claude/skills that can be used to be more efficient, as well as new skills that may be useful to create (or install as plugins).
 
 ## Architecture
@@ -159,7 +159,7 @@ RootNavigator
 - **Types**: `src/models/` (Episode, Podcast, Queue, etc.)
 - **Navigation Types**: `src/navigation/types.ts`
 - **Test Mocks**: `jest.setup.ts`
-- **Playback + History Controller**: `src/hooks/usePlaybackController.ts` — integrates AudioPlayerService, all stores, and history tracking; mount this hook at the app root level to activate playback
+- **Playback + History Controller**: `src/hooks/usePlaybackController.ts` — two hooks: `usePlaybackEvents` (registers the AudioPlayerService progress/end/error callbacks; mounted exactly ONCE in RootNavigator — never mount it from a screen, its unmount clears the callbacks for the whole app) and `usePlaybackController` (playback state + actions; safe to mount from any number of screens). Cross-instance bookkeeping (load guard, save throttle) is module-level, matching the singleton service
 
 ## Testing
 

@@ -2,22 +2,26 @@ import { Episode } from './Episode.types';
 import { Podcast } from './Podcast.types';
 
 /**
- * Playback speed options (0.5x to 2x in 0.1 increments)
+ * Playback speed options (0.5x to 2x in 0.1 increments, plus the 0.25-step
+ * values the Settings default-speed picker offers)
  */
 export type PlaybackSpeed =
   | 0.5
   | 0.6
   | 0.7
+  | 0.75
   | 0.8
   | 0.9
   | 1
   | 1.1
   | 1.2
+  | 1.25
   | 1.3
   | 1.4
   | 1.5
   | 1.6
   | 1.7
+  | 1.75
   | 1.8
   | 1.9
   | 2;

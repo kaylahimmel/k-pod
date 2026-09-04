@@ -2130,6 +2130,11 @@
     "@emnapi/runtime" "^1.4.3"
     "@tybys/wasm-util" "^0.10.0"
 
+"@nodable/entities@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@nodable/entities/-/entities-2.2.0.tgz#a1d45a992b022591b1c2b03a77935c939375b642"
+  integrity sha512-9uGyhaQavEUMC8AIddIjau4NsnsXhou+j5sBAGojCM1oxmQpVKTWR/9JxABD6UAv12vpIms55fPZKFQEhG6uBg==
+
 "@nolyfill/is-core-module@1.0.39":
   version "1.0.39"
   resolved "https://registry.yarnpkg.com/@nolyfill/is-core-module/-/is-core-module-1.0.39.tgz#3dc35ba0f1e66b403c00b39344f870298ebb1c8e"
@@ -2944,6 +2949,11 @@ anymatch@^3.0.3:
   dependencies:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
+
+anynum@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/anynum/-/anynum-1.0.1.tgz#2aac00e08dfad3726c1d462e60dbc2f831659a44"
+  integrity sha512-N6//FLET/tXYNM/F6ABca1oH6fWB+KlTt909Le28WMDBk8oaT4vY17DCrwg2MvmuqUKt3Ni4N5dGJ/EoBgcO6A==
 
 arg@^5.0.2:
   version "5.0.2"
@@ -4442,12 +4452,25 @@ fast-levenshtein@^2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==
 
-fast-xml-parser@^5.3.3:
-  version "5.3.7"
-  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-5.3.7.tgz#81694e71ff0e568cbb6befade342f2a7e58aa1d9"
-  integrity sha512-JzVLro9NQv92pOM/jTCR6mHlJh2FGwtomH8ZQjhFj/R29P2Fnj38OgPJVtcvYw6SuKClhgYuwUZf5b3rd8u2mA==
+fast-xml-builder@^1.2.0:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/fast-xml-builder/-/fast-xml-builder-1.2.1.tgz#9a7e6eb76d794957a3e3b3d334ec4fcd92609803"
+  integrity sha512-tPb5TTWfgfVx5BNSi2xV0eLr89POeXXn0dXIsCJ9m1narrWxeIyx6je9d7Rce/3NyXLbvuQmLkxq+RuxMWejvw==
   dependencies:
-    strnum "^2.1.2"
+    path-expression-matcher "^1.5.0"
+    xml-naming "^0.1.0"
+
+fast-xml-parser@^5.5.6:
+  version "5.9.3"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-5.9.3.tgz#9db7a6dba7ac6f8dc1ee924d69547b2d4750d60c"
+  integrity sha512-brCNCeScma/kqa54J4PIDriSSSLssRkuYaUCpvHJulGc3HGI/xxKUCTDcYkAdqJsyb//ydpbxecjC3hB9+tb/g==
+  dependencies:
+    "@nodable/entities" "^2.2.0"
+    fast-xml-builder "^1.2.0"
+    is-unsafe "^1.0.1"
+    path-expression-matcher "^1.5.0"
+    strnum "^2.4.1"
+    xml-naming "^0.1.0"
 
 faye-websocket@0.11.4:
   version "0.11.4"
@@ -5225,6 +5248,11 @@ is-typed-array@^1.1.13, is-typed-array@^1.1.14, is-typed-array@^1.1.15:
   integrity sha512-p3EcsicXjit7SaskXHs1hA91QxgTw46Fv6EFKKGS5DRFLD8yKnohjF3hxoju94b/OcMZoQukzpPpBE9uLVKzgQ==
   dependencies:
     which-typed-array "^1.1.16"
+
+is-unsafe@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/is-unsafe/-/is-unsafe-1.0.1.tgz#ce89b55dec0034364f5beda41e10481efa8fa317"
+  integrity sha512-CLK2+VdgERgD96EYm5lUQssZYlRg2tkZnbsxZoacmSiRxiFJ4Nk4SzjCl+Ur+v3kXIY9dTIdb3IH22y1mZ56LA==
 
 is-weakmap@^2.0.2:
   version "2.0.2"
@@ -6725,6 +6753,11 @@ path-exists@^4.0.0:
   resolved "https://registry.yarnpkg.com/path-exists/-/path-exists-4.0.0.tgz#513bdbe2d3b95d7762e8c1137efa195c6c61b5b3"
   integrity sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==
 
+path-expression-matcher@^1.5.0:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/path-expression-matcher/-/path-expression-matcher-1.6.1.tgz#fb190513954875d7e1b05c8caabe7fdd0a4cd75b"
+  integrity sha512-h7bxdzhHk8Knyc4Tj+jMaa7fEEoUJy7p1qtbVgkYg1Uhpe5Np5VuGXCRZnkZvU+Q42M1vStt0ifa3ueykRJPmQ==
+
 path-is-absolute@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/path-is-absolute/-/path-is-absolute-1.0.1.tgz#174b9268735534ffbc7ace6bf53a5a9e1b5c5f5f"
@@ -7790,10 +7823,12 @@ strip-json-comments@~2.0.1:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
   integrity sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ==
 
-strnum@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/strnum/-/strnum-2.1.2.tgz#a5e00ba66ab25f9cafa3726b567ce7a49170937a"
-  integrity sha512-l63NF9y/cLROq/yqKXSLtcMeeyOfnSQlfMSlzFt/K73oIaD8DGaQWd7Z34X9GPiKqP5rbSh84Hl4bOlLcjiSrQ==
+strnum@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/strnum/-/strnum-2.4.1.tgz#85417f683113badea0fe7e17227676f889ff7e58"
+  integrity sha512-M9eUSMT2dCB2cTNPG7UYj6KuK7RJR2SN2+yCV/fTW3xzTCS6EaGZ5pSMgDIjB7r8zSfTGk+dvvn9rTjpVS9Mwg==
+  dependencies:
+    anynum "^1.0.1"
 
 structured-headers@^0.4.1:
   version "0.4.1"
@@ -8459,6 +8494,11 @@ xml-name-validator@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/xml-name-validator/-/xml-name-validator-4.0.0.tgz#79a006e2e63149a8600f15430f0a4725d1524835"
   integrity sha512-ICP2e+jsHvAj2E2lIHxa5tjXRlKDJo4IdvPvCXbXQGdzSfmSpNVyIKMvoZHjDY9DP0zV17iI85o90vRFXNccRw==
+
+xml-naming@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/xml-naming/-/xml-naming-0.1.0.tgz#8ab7106c5b8d23caa2fabac1cadf17136379fbd8"
+  integrity sha512-k8KO9hrMyNk6tUWqUfkTEZbezRRpONVOzUTnc97VnCvyj6Tf9lyUR9EDAIeiVLv56jsMcoXEwjW8Kv5yPY52lw==
 
 xml2js@0.6.0:
   version "0.6.0"

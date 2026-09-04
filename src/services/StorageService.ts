@@ -1,9 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Podcast, QueueItem, AppSettings, ListeningHistory } from '../models';
+import { ListeningHistory } from '../models';
 import { STORAGE_KEYS } from '../constants';
+
+// Note: queue, podcast, and settings persistence is owned by the zustand
+// `persist` middleware (see src/stores) - do NOT add StorageService
+// functions for those keys, they would corrupt the persisted envelopes
 
 /**
  * Save any JSON-serializable data to storage
+ * Storage failures are logged but never rethrown: callers fire-and-forget
+ * these (e.g. position saves on the progress tick), so a rethrow would
+ * become an unhandled promise rejection
  * @param key - Storage key
  * @param data - Data to save (will be JSON stringified)
  */
@@ -13,14 +20,13 @@ async function saveData<T>(key: string, data: T): Promise<void> {
     await AsyncStorage.setItem(key, jsonString);
   } catch (error) {
     console.error(`Error saving data for key "${key}":`, error);
-    throw error;
   }
 }
 
 /**
  * Load data from storage
  * @param key - Storage key
- * @returns Parsed data or null if not found
+ * @returns Parsed data, or null if not found or on storage failure
  */
 async function loadData<T>(key: string): Promise<T | null> {
   try {
@@ -31,12 +37,13 @@ async function loadData<T>(key: string): Promise<T | null> {
     return JSON.parse(jsonString) as T;
   } catch (error) {
     console.error(`Error loading data for key "${key}":`, error);
-    throw error;
+    return null;
   }
 }
 
 /**
  * Remove data from storage
+ * Failures are logged but never rethrown (see saveData)
  * @param key - Storage key
  */
 async function removeData(key: string): Promise<void> {
@@ -44,34 +51,7 @@ async function removeData(key: string): Promise<void> {
     await AsyncStorage.removeItem(key);
   } catch (error) {
     console.error(`Error removing data for key "${key}":`, error);
-    throw error;
   }
-}
-
-async function savePodcasts(podcasts: Podcast[]): Promise<void> {
-  return saveData(STORAGE_KEYS.PODCASTS, podcasts);
-}
-
-async function loadPodcasts(): Promise<Podcast[]> {
-  const data = await loadData<Podcast[]>(STORAGE_KEYS.PODCASTS);
-  return data ?? [];
-}
-
-async function saveQueue(queue: QueueItem[]): Promise<void> {
-  return saveData(STORAGE_KEYS.QUEUE, queue);
-}
-
-async function loadQueue(): Promise<QueueItem[]> {
-  const data = await loadData<QueueItem[]>(STORAGE_KEYS.QUEUE);
-  return data ?? [];
-}
-
-async function saveSettings(settings: AppSettings): Promise<void> {
-  return saveData(STORAGE_KEYS.SETTINGS, settings);
-}
-
-async function loadSettings(): Promise<AppSettings | null> {
-  return loadData<AppSettings>(STORAGE_KEYS.SETTINGS);
 }
 
 async function saveHistory(history: ListeningHistory[]): Promise<void> {
@@ -116,12 +96,6 @@ export const StorageService = {
   saveData,
   loadData,
   removeData,
-  savePodcasts,
-  loadPodcasts,
-  saveQueue,
-  loadQueue,
-  saveSettings,
-  loadSettings,
   saveHistory,
   loadHistory,
   savePlaybackPosition,

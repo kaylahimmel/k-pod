@@ -8,12 +8,18 @@ import { modalScreenOptions } from './screenOptions';
 import { FullPlayerScreen, AddPodcastModal } from '../screens';
 import { AuthService } from '../services';
 import { authStore } from '../stores/authStore';
+import { usePlaybackEvents } from '../hooks';
 import { COLORS } from '../constants';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
   const { isAuthenticated, isLoading, setUser, setLoading } = authStore();
+
+  // Single owner of the AudioPlayerService callbacks (progress, auto-advance,
+  // history). Must be mounted exactly once, here at the app root - screens
+  // use usePlaybackController, which never touches the callback slots
+  usePlaybackEvents();
 
   // Subscribe to Firebase auth state changes on mount.
   // The listener fires immediately with the current user, which transitions
