@@ -2,20 +2,12 @@ import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { ListeningHistoryScreen } from '../ListeningHistoryScreen';
-import { StorageService } from '../../../services';
 import {
   createMockListeningHistoryItems,
   createMockNavigation,
   createMockRoute,
 } from '../../../__mocks__';
-
-// Mock StorageService
-jest.mock('../../../services', () => ({
-  StorageService: {
-    loadHistory: jest.fn().mockResolvedValue([]),
-    saveHistory: jest.fn().mockResolvedValue(undefined),
-  },
-}));
+import { historyStore } from '../../../stores';
 
 // Spy on Alert
 jest.spyOn(Alert, 'alert');
@@ -31,7 +23,8 @@ const mockRoute = createMockRoute('ListeningHistory') as Parameters<
 describe('ListeningHistoryScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (StorageService.loadHistory as jest.Mock).mockResolvedValue([]);
+    // History is owned by the persisted store; seed it directly.
+    historyStore.setState({ history: [], hasHydrated: true });
   });
 
   const renderScreen = () =>
@@ -50,7 +43,7 @@ describe('ListeningHistoryScreen', () => {
 
     it('should display history items when history exists', async () => {
       const mockHistory = createMockListeningHistoryItems(3);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(mockHistory);
+      historyStore.setState({ history: mockHistory, hasHydrated: true });
 
       const { findByText } = renderScreen();
 
@@ -72,7 +65,7 @@ describe('ListeningHistoryScreen', () => {
   describe('Navigation', () => {
     it('should navigate back when history is cleared', async () => {
       const mockHistory = createMockListeningHistoryItems(3);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(mockHistory);
+      historyStore.setState({ history: mockHistory, hasHydrated: true });
 
       // Mock Alert to automatically confirm the destructive action
       (Alert.alert as jest.Mock).mockImplementation(

@@ -3,14 +3,11 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { ProfileView } from '../ProfileView';
 import { podcastStore, authStore } from '../../../stores';
-import { StorageService, AuthService } from '../../../services';
+import { AuthService } from '../../../services';
 import { createMockPodcasts } from '../../../__mocks__';
 
-// Mock StorageService and AuthService
+// Mock AuthService
 jest.mock('../../../services', () => ({
-  StorageService: {
-    loadHistory: jest.fn().mockResolvedValue([]),
-  },
   AuthService: {
     signOut: jest.fn().mockResolvedValue({ success: true, data: undefined }),
   },
@@ -40,7 +37,6 @@ describe('ProfileView', () => {
       isLoading: false,
       error: null,
     });
-    (StorageService.loadHistory as jest.Mock).mockResolvedValue([]);
   });
 
   const renderProfileView = async () => {

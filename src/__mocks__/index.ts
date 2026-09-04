@@ -35,6 +35,9 @@ export {
 // Queue mocks (QueueItem)
 export { createMockQueueItem, createMockQueueItems } from './mockQueue';
 
+// Settings mocks (AppSettings)
+export { createMockAppSettings } from './mockSettings';
+
 // Navigation mocks (for screen testing)
 export { createMockNavigation, createMockRoute } from './mockNavigation';
 

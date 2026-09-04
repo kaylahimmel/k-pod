@@ -3,7 +3,6 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { ProfileScreen } from '../ProfileScreen';
 import { podcastStore, authStore } from '../../../stores';
-import { StorageService } from '../../../services';
 import {
   createMockPodcasts,
   createMockNavigation,
@@ -13,11 +12,8 @@ import {
 // Spy on Alert
 jest.spyOn(Alert, 'alert');
 
-// Mock StorageService and AuthService
+// Mock AuthService
 jest.mock('../../../services', () => ({
-  StorageService: {
-    loadHistory: jest.fn().mockResolvedValue([]),
-  },
   AuthService: {
     signOut: jest.fn().mockResolvedValue({ success: true, data: undefined }),
   },
@@ -49,7 +45,6 @@ describe('ProfileScreen', () => {
       isLoading: false,
       error: null,
     });
-    (StorageService.loadHistory as jest.Mock).mockResolvedValue([]);
   });
 
   const renderProfileScreen = () =>

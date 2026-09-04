@@ -222,15 +222,15 @@ describe('getRecentHistory', () => {
     const items = [
       createMockListeningHistory({
         episode: createMockEpisode({ id: 'old', title: 'Old Episode' }),
-        completedAt: new Date('2024-01-10T12:00:00Z'),
+        completedAt: new Date('2024-01-10T12:00:00Z').toISOString(),
       }),
       createMockListeningHistory({
         episode: createMockEpisode({ id: 'new', title: 'New Episode' }),
-        completedAt: new Date('2024-01-19T12:00:00Z'),
+        completedAt: new Date('2024-01-19T12:00:00Z').toISOString(),
       }),
       createMockListeningHistory({
         episode: createMockEpisode({ id: 'mid', title: 'Mid Episode' }),
-        completedAt: new Date('2024-01-15T12:00:00Z'),
+        completedAt: new Date('2024-01-15T12:00:00Z').toISOString(),
       }),
     ];
 

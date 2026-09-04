@@ -2,26 +2,35 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { COLORS } from '../../constants';
 
-interface Option {
-  value: number;
+interface Option<T extends number> {
+  value: T;
   label: string;
 }
 
-interface SettingOptionSelectorProps {
+interface SettingOptionSelectorProps<T extends number> {
   label: string;
   currentValueLabel: string;
-  options: Option[];
-  selectedValue: number;
-  onSelect: (value: number) => void;
+  options: Option<T>[];
+  selectedValue: T;
+  onSelect: (value: T) => void;
 }
 
-export const SettingOptionSelector = ({
+/**
+ * Generic option picker shared by the playback-speed and skip-interval settings.
+ *
+ * The generic parameter keeps each call site's value type intact: the speed
+ * picker stays bound to the PlaybackSpeed literal union (so it can't be handed
+ * an arbitrary number), while the skip pickers keep using plain numbers. A
+ * non-generic `value: number` would silently widen the speed picker and let
+ * invalid speeds through.
+ */
+export const SettingOptionSelector = <T extends number>({
   label,
   currentValueLabel,
   options,
   selectedValue,
   onSelect,
-}: SettingOptionSelectorProps) => (
+}: SettingOptionSelectorProps<T>) => (
   <View>
     <View style={styles.labelRow}>
       <Text style={styles.label}>{label}</Text>

@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { settingsStore } from '../../stores';
 import { useSettingsStore } from '../useSettingsStore';
+import { createMockAppSettings } from '../../__mocks__';
 
 describe('useSettingsStore', () => {
   afterEach(() => {
@@ -57,13 +58,13 @@ describe('useSettingsStore', () => {
   it('loads settings from storage', () => {
     const { result } = renderHook(() => useSettingsStore());
 
-    const newSettings = {
+    const newSettings = createMockAppSettings({
       autoPlayNext: false,
       defaultSpeed: 2,
       downloadOnWiFi: false,
       skipForwardSeconds: 60,
       skipBackwardSeconds: 30,
-    };
+    });
 
     act(() => {
       result.current.loadSettings(newSettings);

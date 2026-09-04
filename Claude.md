@@ -10,7 +10,7 @@ K-Pod is a podcast player app built with React Native and Expo. It allows users 
 
 - **Framework**: React Native 0.81 with Expo 54 (managed workflow)
 - **Language**: TypeScript (strict mode)
-- **State Management**: Zustand (5 stores: player, queue, podcast, settings, history)
+- **State Management**: Zustand (6 stores: player, queue, podcast, settings, history, auth)
 - **Navigation**: React Navigation 7 (bottom tabs + nested stacks)
 - **Audio**: expo-audio for playback (migrated from expo-av, which was removed from the Expo SDK after 54). Gotchas vs expo-av:
   - `AudioPlayer.remove()` only deregisters the player natively — always call `pause()` first or the old audio keeps playing until GC (unlike expo-av's `unloadAsync()`, which stopped audio)
@@ -19,7 +19,11 @@ K-Pod is a podcast player app built with React Native and Expo. It allows users 
   - When audio finishes, expo-audio parks the player paused at the end and `play()` does nothing there (expo-av restarted from 0). The service's `play()` seeks to 0 first when within `REPLAY_THRESHOLD_SECONDS` of the end
   - On Android with `interruptionMode: 'duckOthers'`, consecutive duck events (notifications) permanently ratchet player volume down (upstream bug — the restore value gets overwritten with the ducked volume). The service's `play()` resets `volume = 1` on every start to bound the damage
   - Playback position flows through AudioPlayerService's progress callback only. Consumers (e.g. usePlaybackController) must never read back and write position after a seek/skip — events and promise resolutions cross the bridge on separate unordered channels, so extra writers cause sub-second backward jumps that show as 1s display flickers (worse at 2x speed). Inside the service, `seek()` emits the landed position when the seek resolves (the event stream can lag 2-3s behind on streamed audio) and records it as `seekSettleFloor`; status events behind the floor are late arrivals and get dropped. The only consumer-side exception is the controller `seek()`'s optimistic write of the target for slider UX (guaranteed to match, since seeks are precise)
-- **Storage**: AsyncStorage for persistence
+- **Storage**: AsyncStorage for persistence. Every persisted store (podcast, queue, settings, history) uses the zustand `persist` middleware — never hand-roll a save/load pair alongside it:
+  - `persist` hydrates at store creation. A store that loads itself from a screen's `useEffect` is only populated once that screen mounts, so any write before then does read-modify-write against empty in-memory state and overwrites what's on disk. `historyStore` had exactly this bug: finishing an episode before ever opening the Profile tab wiped all stored history
+  - `historyStore` exposes `hasHydrated` (set via `onRehydrateStorage`) for screens that need a loading state. It flips even when hydration fails, so the UI can't spin forever
+  - `ListeningHistory.completedAt` is an ISO 8601 **string**, not a `Date`. Anything persisted through AsyncStorage round-trips as JSON, so a `Date` written to a store always rehydrates as a string — typing it as `Date` made the type lie and forced `instanceof Date` guards in both presenters. Follow this rule for any new persisted timestamp field
+  - `historyStore` predates `persist` and its key still holds a bare `ListeningHistory[]` on existing installs. Its custom `storage` adapter normalizes that legacy array into a `{ state, version }` envelope on read. This can't be done in `migrate` alone — zustand reads `parsed.state` *before* calling `migrate`, and a bare array has no `.state`, so `migrate` would receive `undefined` and silently drop the user's history. A `migrate` function must still exist, or zustand discards any state whose version doesn't match
 - **Styling**: React Native StyleSheet with centralized color constants
 - **Testing**: Jest with React Testing Library
 
@@ -160,7 +164,8 @@ RootNavigator
 - **Storage Keys**: `src/constants/StorageKeys.ts`
 - **Types**: `src/models/` (Episode, Podcast, Queue, etc.)
 - **Navigation Types**: `src/navigation/types.ts`
-- **Test Mocks**: `jest.setup.ts`
+- **Test Mocks**: `jest.setup.ts` — mock native modules here, never reimplement app code. A hand-copied `stripHtml` lived here and drifted from `src/utils/textUtils.ts` (missing 7 HTML entities), so presenter tests validated behavior the app didn't have while still passing. Use `jest.requireActual` if a barrel needs partial mocking. `src/screens/EpisodeDetailScreen/__tests__/EpisodeDetailPresenter.test.ts` has a regression guard that fails if the mock returns
+  - Note `react-native-draggable-flatlist` IS mocked here as a plain `FlatList`, so `yarn test` cannot catch QueueScreen drag-and-drop breakage — verify that manually on a device after any Reanimated or SDK bump
 - **Playback + History Controller**: `src/hooks/usePlaybackController.ts` — two hooks: `usePlaybackEvents` (registers the AudioPlayerService progress/end/error callbacks; mounted exactly ONCE in RootNavigator — never mount it from a screen, its unmount clears the callbacks for the whole app) and `usePlaybackController` (playback state + actions; safe to mount from any number of screens). Cross-instance bookkeeping (load guard, save throttle) is module-level, matching the singleton service
 
 ## Testing

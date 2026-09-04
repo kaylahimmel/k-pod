@@ -18,6 +18,21 @@ describe('EpisodeDetailPresenter', () => {
       );
     });
 
+    it('should decode the full entity set, not just the common ones', () => {
+      // Regression: jest.setup.ts used to replace src/utils with a hand-copied
+      // stripHtml that omitted these entities, so presenter tests validated
+      // behavior the app did not have. Feeds use these constantly.
+      const mockEpisode = createMockEpisode({
+        description:
+          '<p>Rock &amp; roll &mdash; it&rsquo;s &ldquo;great&rdquo;&hellip;</p>',
+      });
+      const mockPodcast = createMockPodcast({ episodes: [mockEpisode] });
+
+      const formatted = formatEpisodeDetail(mockEpisode, mockPodcast);
+
+      expect(formatted.description).toBe('Rock & roll — it\'s "great"…');
+    });
+
     it('should strip HTML from description', () => {
       const mockEpisode = createMockEpisode({
         description: '<p>This is a <strong>test</strong> description.</p>',

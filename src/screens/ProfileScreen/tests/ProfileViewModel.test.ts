@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { renderHook, act } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { useProfileViewModel } from '../ProfileViewModel';
 import { AuthService } from '../../../services';
@@ -29,7 +29,6 @@ jest.spyOn(Alert, 'alert');
 describe('useProfileViewModel', () => {
   const mockOnViewHistoryPress = jest.fn();
   const mockOnChangePasswordPress = jest.fn();
-  const mockLoadHistory = jest.fn().mockResolvedValue(undefined);
 
   const defaultHistory = [
     createMockListeningHistory({ completionPercentage: 100 }),
@@ -56,21 +55,10 @@ describe('useProfileViewModel', () => {
     });
     (useHistoryStore as jest.Mock).mockReturnValue({
       history: defaultHistory,
-      isLoading: false,
-      loadHistory: mockLoadHistory,
+      hasHydrated: true,
     });
     (useAuthStore as jest.Mock).mockReturnValue({
       user: defaultAuthUser,
-    });
-  });
-
-  describe('on mount', () => {
-    it('should call loadHistory', async () => {
-      renderViewModel();
-
-      await waitFor(() => {
-        expect(mockLoadHistory).toHaveBeenCalledTimes(1);
-      });
     });
   });
 
@@ -112,8 +100,7 @@ describe('useProfileViewModel', () => {
       (usePodcastStore as jest.Mock).mockReturnValue({ podcasts: [] });
       (useHistoryStore as jest.Mock).mockReturnValue({
         history: [],
-        isLoading: false,
-        loadHistory: mockLoadHistory,
+        hasHydrated: true,
       });
 
       const { result } = renderViewModel();
@@ -125,11 +112,10 @@ describe('useProfileViewModel', () => {
   });
 
   describe('isLoading', () => {
-    it('should reflect history store loading state', () => {
+    it('should report loading until the history store has hydrated', () => {
       (useHistoryStore as jest.Mock).mockReturnValue({
         history: [],
-        isLoading: true,
-        loadHistory: mockLoadHistory,
+        hasHydrated: false,
       });
 
       const { result } = renderViewModel();

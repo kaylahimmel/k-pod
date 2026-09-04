@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ListeningHistory } from '../models';
 import { STORAGE_KEYS } from '../constants';
 
 // Note: queue, podcast, and settings persistence is owned by the zustand
@@ -54,15 +53,6 @@ async function removeData(key: string): Promise<void> {
   }
 }
 
-async function saveHistory(history: ListeningHistory[]): Promise<void> {
-  return saveData(STORAGE_KEYS.HISTORY, history);
-}
-
-async function loadHistory(): Promise<ListeningHistory[]> {
-  const data = await loadData<ListeningHistory[]>(STORAGE_KEYS.HISTORY);
-  return data ?? [];
-}
-
 async function savePlaybackPosition(
   episodeId: string,
   position: number,
@@ -96,8 +86,6 @@ export const StorageService = {
   saveData,
   loadData,
   removeData,
-  saveHistory,
-  loadHistory,
   savePlaybackPosition,
   loadPlaybackPosition,
   removePlaybackPosition,

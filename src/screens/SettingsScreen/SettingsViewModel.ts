@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { Alert, Linking } from 'react-native';
+import { PlaybackSpeed } from '../../models';
 import { useSettingsStore } from '../../hooks';
 import {
   formatSettings,
@@ -40,7 +41,7 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
    * Updates the default playback speed
    */
   const handleSpeedChange = useCallback(
-    (speed: number) => {
+    (speed: PlaybackSpeed) => {
       updateSetting('defaultSpeed', speed);
     },
     [updateSetting],

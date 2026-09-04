@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { usePodcastStore, useHistoryStore, useAuthStore } from '../../hooks';
 import { AuthService } from '../../services';
@@ -17,16 +17,7 @@ export const useProfileViewModel = (
 
   // Store access
   const { podcasts } = usePodcastStore();
-  const {
-    history,
-    isLoading: isLoadingHistory,
-    loadHistory,
-  } = useHistoryStore();
-
-  // Load history on mount
-  useEffect(() => {
-    loadHistory();
-  }, [loadHistory]);
+  const { history, hasHydrated } = useHistoryStore();
 
   // Formatted data from presenter
   const formattedUser = useMemo(() => formatUser(authUser), [authUser]);
@@ -36,8 +27,8 @@ export const useProfileViewModel = (
     [history, podcasts],
   );
 
-  // State flags
-  const isLoading = isLoadingHistory;
+  // History is hydrated by the store's persist middleware at app start.
+  const isLoading = !hasHydrated;
 
   // Action handlers
   const handleViewHistoryPress = () => {
