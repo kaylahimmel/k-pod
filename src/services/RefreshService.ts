@@ -115,11 +115,17 @@ function handleAppStateChange(
   onRefreshComplete?: (result: RefreshAllResult) => void,
 ) {
   if (nextAppState === 'active' && shouldRefresh()) {
-    refreshAllPodcasts().then((result) => {
-      if (onRefreshComplete) {
-        onRefreshComplete(result);
-      }
-    });
+    refreshAllPodcasts()
+      .then((result) => {
+        if (onRefreshComplete) {
+          onRefreshComplete(result);
+        }
+      })
+      // Fire-and-forget: a failed refresh must not become an unhandled
+      // promise rejection
+      .catch((error) => {
+        console.error('Foreground refresh failed:', error);
+      });
   }
 }
 

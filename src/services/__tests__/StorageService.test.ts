@@ -88,38 +88,15 @@ describe('StorageService', () => {
         },
       ];
 
-      await StorageService.savePodcasts(podcasts);
-      const loaded = await StorageService.loadPodcasts();
+      // Queue/podcast/settings persistence is owned by zustand persist;
+      // generic saveData/loadData remain for ad-hoc keys
+      await StorageService.saveData('test-podcasts', podcasts);
+      const loaded = await StorageService.loadData<typeof podcasts>(
+        'test-podcasts',
+      );
 
       expect(loaded).toEqual(podcasts);
-      expect(loaded[0].title).toBe('Test Podcast');
-    });
-
-    it('should return empty array when no podcasts saved', async () => {
-      const loaded = await StorageService.loadPodcasts();
-      expect(loaded).toEqual([]);
-    });
-  });
-
-  describe('settings storage', () => {
-    it('should save and load settings', async () => {
-      const settings = {
-        autoPlayNext: true,
-        defaultSpeed: 1.5,
-        downloadOnWiFi: true,
-        skipForwardSeconds: 30,
-        skipBackwardSeconds: 15,
-      };
-
-      await StorageService.saveSettings(settings);
-      const loaded = await StorageService.loadSettings();
-
-      expect(loaded).toEqual(settings);
-    });
-
-    it('should return null when no settings saved', async () => {
-      const loaded = await StorageService.loadSettings();
-      expect(loaded).toBeNull();
+      expect(loaded![0].title).toBe('Test Podcast');
     });
   });
 
@@ -142,22 +119,6 @@ describe('StorageService', () => {
 
       expect(await StorageService.loadPlaybackPosition('ep-1')).toBe(100);
       expect(await StorageService.loadPlaybackPosition('ep-2')).toBe(200);
-    });
-  });
-
-  describe('queue storage', () => {
-    it('should save and load queue', async () => {
-      const queue = [createMockQueueItem({ id: 'q1' })];
-
-      await StorageService.saveQueue(queue);
-      const loaded = await StorageService.loadQueue();
-
-      expect(loaded).toEqual(queue);
-    });
-
-    it('should return empty array when no queue saved', async () => {
-      const loaded = await StorageService.loadQueue();
-      expect(loaded).toEqual([]);
     });
   });
 
@@ -197,47 +158,48 @@ describe('StorageService', () => {
   describe('clearAllData', () => {
     it('should remove all app data', async () => {
       // Save some data first
-      await StorageService.savePodcasts([{ id: '1' } as any]);
+      await StorageService.saveData('@k-pod/test-data', { id: '1' });
       await StorageService.savePlaybackPosition('ep-1', 500);
 
       // Clear everything
       await StorageService.clearAllData();
 
       // Verify it's gone
-      expect(await StorageService.loadPodcasts()).toEqual([]);
+      expect(await StorageService.loadData('@k-pod/test-data')).toBeNull();
       expect(await StorageService.loadPlaybackPosition('ep-1')).toBe(0);
     });
   });
 
   describe('error handling', () => {
-    it('should throw error when saveData fails', async () => {
+    // Storage failures are logged but never rethrown: callers fire-and-forget
+    // these (e.g. position saves on the 1s progress tick), so a rethrow
+    // became an unhandled promise rejection
+    it('should resolve without throwing when saveData fails', async () => {
       (AsyncStorage.setItem as jest.Mock).mockRejectedValueOnce(
         new Error('Storage full'),
       );
 
       await expect(
         StorageService.saveData('test-key', { data: 'test' }),
-      ).rejects.toThrow('Storage full');
+      ).resolves.toBeUndefined();
     });
 
-    it('should throw error when loadData fails', async () => {
+    it('should return null when loadData fails', async () => {
       (AsyncStorage.getItem as jest.Mock).mockRejectedValueOnce(
         new Error('Read error'),
       );
 
-      await expect(StorageService.loadData('test-key')).rejects.toThrow(
-        'Read error',
-      );
+      await expect(StorageService.loadData('test-key')).resolves.toBeNull();
     });
 
-    it('should throw error when removeData fails', async () => {
+    it('should resolve without throwing when removeData fails', async () => {
       (AsyncStorage.removeItem as jest.Mock).mockRejectedValueOnce(
         new Error('Remove error'),
       );
 
-      await expect(StorageService.removeData('test-key')).rejects.toThrow(
-        'Remove error',
-      );
+      await expect(
+        StorageService.removeData('test-key'),
+      ).resolves.toBeUndefined();
     });
   });
 });

@@ -1,5 +1,6 @@
 import { settingsStore } from '../../stores';
 import { AppSettings } from '../../models';
+import { STORAGE_KEYS } from '../../constants';
 
 describe('settingsStore', () => {
   const defaultSettings: AppSettings = {
@@ -214,6 +215,25 @@ describe('settingsStore', () => {
 
       state.resetSettings();
       expect(settingsStore.getState().settings).toEqual(defaultSettings);
+    });
+  });
+
+  describe('persistence', () => {
+    it('should persist settings to AsyncStorage under the settings key', () => {
+      // Settings previously reset on every app restart because the store
+      // lacked the persist middleware the queue/podcast stores have
+      const options = settingsStore.persist.getOptions();
+
+      expect(options.name).toBe(STORAGE_KEYS.SETTINGS);
+    });
+
+    it('should persist only the settings object, not loading/error state', () => {
+      const options = settingsStore.persist.getOptions();
+      const partialized = options.partialize?.(settingsStore.getState());
+
+      expect(partialized).toEqual({
+        settings: settingsStore.getState().settings,
+      });
     });
   });
 });

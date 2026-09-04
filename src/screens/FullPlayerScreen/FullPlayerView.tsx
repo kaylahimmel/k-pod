@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
+  Platform,
   Pressable,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFullPlayerViewModel } from './FullPlayerViewModel';
 import { FullPlayerViewProps, PLAYBACK_SPEEDS } from './FullPlayer.types';
@@ -29,6 +31,13 @@ export const FullPlayerView = ({
   const toast = useToast();
   const [speedPickerVisible, setSpeedPickerVisible] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  // On Android the modal is full-screen and edge-to-edge draws under the
+  // status bar, so the header needs the top inset. The iOS sheet already
+  // sits below the status bar - and the root SafeAreaProvider still reports
+  // the full window inset there, so adding it would double the gap. Use a
+  // small fixed padding matching the header buttons' own padding instead
+  const insets = useSafeAreaInsets();
+  const topPadding = Platform.OS === 'android' ? insets.top + 8 : 8;
 
   const handleAddToQueue = () => {
     viewModel.handleAddToQueue();
@@ -41,7 +50,11 @@ export const FullPlayerView = ({
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[styles.content, { paddingTop: topPadding }]}
+      testID='full-player-scroll'
+    >
       <View style={styles.header}>
         <HeaderBackButton onPress={viewModel.handleBack} />
         <HeaderCloseButton
@@ -90,7 +103,7 @@ export const FullPlayerView = ({
           value={viewModel.position}
           onSlidingComplete={viewModel.handleSeek}
           minimumTrackTintColor={COLORS.primary}
-          maximumTrackTintColor={COLORS.border}
+          maximumTrackTintColor={COLORS.progressTrack}
           thumbTintColor={COLORS.primary}
         />
         <View style={styles.timeContainer}>

@@ -12,7 +12,13 @@ K-Pod is a podcast player app built with React Native and Expo. It allows users 
 - **Language**: TypeScript (strict mode)
 - **State Management**: Zustand (5 stores: player, queue, podcast, settings, history)
 - **Navigation**: React Navigation 7 (bottom tabs + nested stacks)
-- **Audio**: expo-av for playback
+- **Audio**: expo-audio for playback (migrated from expo-av, which was removed from the Expo SDK after 54). Gotchas vs expo-av:
+  - `AudioPlayer.remove()` only deregisters the player natively — always call `pause()` first or the old audio keeps playing until GC (unlike expo-av's `unloadAsync()`, which stopped audio)
+  - `playbackStatusUpdate` events keep reporting the pre-seek `currentTime` while a `seekTo()` is in flight (and can arrive after its promise resolves). AudioPlayerService drops progress updates until the reported time settles near the seek target (`pendingSeekTarget` guard) — expo-av suppressed these stale updates itself
+  - `seekTo()` defaults to infinite tolerance on iOS, landing up to ~1s before the requested time (UI position bounces backward after skips). Always pass `seekTo(seconds, 0, 0)` for a precise seek; the tolerance args are ignored on Android
+  - When audio finishes, expo-audio parks the player paused at the end and `play()` does nothing there (expo-av restarted from 0). The service's `play()` seeks to 0 first when within `REPLAY_THRESHOLD_SECONDS` of the end
+  - On Android with `interruptionMode: 'duckOthers'`, consecutive duck events (notifications) permanently ratchet player volume down (upstream bug — the restore value gets overwritten with the ducked volume). The service's `play()` resets `volume = 1` on every start to bound the damage
+  - Playback position flows through AudioPlayerService's progress callback only. Consumers (e.g. usePlaybackController) must never read back and write position after a seek/skip — events and promise resolutions cross the bridge on separate unordered channels, so extra writers cause sub-second backward jumps that show as 1s display flickers (worse at 2x speed). Inside the service, `seek()` emits the landed position when the seek resolves (the event stream can lag 2-3s behind on streamed audio) and records it as `seekSettleFloor`; status events behind the floor are late arrivals and get dropped. The only consumer-side exception is the controller `seek()`'s optimistic write of the target for slider UX (guaranteed to match, since seeks are precise)
 - **Storage**: AsyncStorage for persistence
 - **Styling**: React Native StyleSheet with centralized color constants
 - **Testing**: Jest with React Testing Library
@@ -34,7 +40,7 @@ When updating dependencies or adding yarn resolutions, verify the exact syntax w
 ## Communication Style
 
 - When I ask you to explain concepts, I'm learning — provide detailed explanations of WHY, not just WHAT. I value educational guidance alongside code changes.
-- Ask follow-up question during and after our session to solidify my understanding.
+- Talk to me like I'm a junior dev from a coding bootcamp without a full CS background. For example, don't use a bunch of acronyms without spelling them out fulling first.
 - Remind me of skills from ~/.claude/skills that can be used to be more efficient, as well as new skills that may be useful to create (or install as plugins).
 
 ## Architecture
@@ -153,7 +159,7 @@ RootNavigator
 - **Types**: `src/models/` (Episode, Podcast, Queue, etc.)
 - **Navigation Types**: `src/navigation/types.ts`
 - **Test Mocks**: `jest.setup.ts`
-- **Playback + History Controller**: `src/hooks/usePlaybackController.ts` — integrates AudioPlayerService, all stores, and history tracking; mount this hook at the app root level to activate playback
+- **Playback + History Controller**: `src/hooks/usePlaybackController.ts` — two hooks: `usePlaybackEvents` (registers the AudioPlayerService progress/end/error callbacks; mounted exactly ONCE in RootNavigator — never mount it from a screen, its unmount clears the callbacks for the whole app) and `usePlaybackController` (playback state + actions; safe to mount from any number of screens). Cross-instance bookkeeping (load guard, save throttle) is module-level, matching the singleton service
 
 ## Testing
 

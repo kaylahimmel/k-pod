@@ -128,7 +128,13 @@ jest.mock('firebase/app', () => ({
   initializeApp: jest.fn(),
 }));
 
-// Mock AudioPlayerService to avoid expo-av native module requirements
+// Mock safe area insets with the library's official jest mock (insets of 0;
+// tests can override via useSafeAreaInsets.mockReturnValue)
+jest.mock('react-native-safe-area-context', () =>
+  require('react-native-safe-area-context/jest/mock').default,
+);
+
+// Mock AudioPlayerService to avoid expo-audio native module requirements
 jest.mock('./src/services/AudioPlayerService', () => ({
   AudioPlayerService: {
     loadEpisode: jest.fn().mockResolvedValue({ success: true }),
@@ -139,9 +145,10 @@ jest.mock('./src/services/AudioPlayerService', () => ({
     setPlaybackSpeed: jest.fn().mockResolvedValue({ success: true }),
     skipForward: jest.fn().mockResolvedValue({ success: true }),
     skipBackward: jest.fn().mockResolvedValue({ success: true }),
-    getStatus: jest
-      .fn()
-      .mockResolvedValue({ success: true, data: { positionMillis: 0 } }),
+    getStatus: jest.fn().mockResolvedValue({
+      success: true,
+      data: { positionSeconds: 0, durationSeconds: 0, isPlaying: false },
+    }),
     getCurrentEpisodeId: jest.fn().mockReturnValue(null),
     setOnProgress: jest.fn(),
     setOnEnd: jest.fn(),

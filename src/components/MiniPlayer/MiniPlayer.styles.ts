@@ -56,7 +56,7 @@ export const styles = StyleSheet.create({
   },
   progressContainer: {
     height: 3,
-    backgroundColor: COLORS.border,
+    backgroundColor: COLORS.progressTrack,
     marginTop: 8,
     borderRadius: 1.5,
   },

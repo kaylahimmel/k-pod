@@ -9,11 +9,11 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
     borderRadius: 12,
     padding: 12,
-    shadowColor: 'COLORS.textPrimary',
+    shadowColor: COLORS.textPrimary,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
-    elevation: 1,
+    elevation: 3,
   },
   episodeCardPlayed: {
     opacity: 0.7,

@@ -1,10 +1,11 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from '../constants';
 
 export const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: 'COLORS.cardBackground',
+    backgroundColor: COLORS.cardBackground,
     borderTopWidth: 1,
-    borderTopColor: 'COLORS.border',
+    borderTopColor: COLORS.border,
     paddingTop: 8,
   },
   tabBarLabel: {

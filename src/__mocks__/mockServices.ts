@@ -10,15 +10,9 @@
 export const createMockStorageService = () => ({
   loadHistory: jest.fn().mockResolvedValue([]),
   saveHistory: jest.fn().mockResolvedValue(undefined),
-  loadSettings: jest.fn().mockResolvedValue(null),
-  saveSettings: jest.fn().mockResolvedValue(undefined),
   loadPlaybackPosition: jest.fn().mockResolvedValue(null),
   savePlaybackPosition: jest.fn().mockResolvedValue(undefined),
   removePlaybackPosition: jest.fn().mockResolvedValue(undefined),
-  loadPodcasts: jest.fn().mockResolvedValue([]),
-  savePodcasts: jest.fn().mockResolvedValue(undefined),
-  loadQueue: jest.fn().mockResolvedValue([]),
-  saveQueue: jest.fn().mockResolvedValue(undefined),
 });
 
 /**

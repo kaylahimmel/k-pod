@@ -114,9 +114,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 12,
   },
-  episodesList: {
-    paddingHorizontal: 16,
-  },
   episodeCard: {
     paddingVertical: 12,
     borderBottomWidth: 1,

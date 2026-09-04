@@ -2,22 +2,26 @@ import { Episode } from './Episode.types';
 import { Podcast } from './Podcast.types';
 
 /**
- * Playback speed options (0.5x to 2x in 0.1 increments)
+ * Playback speed options (0.5x to 2x in 0.1 increments, plus the 0.25-step
+ * values the Settings default-speed picker offers)
  */
 export type PlaybackSpeed =
   | 0.5
   | 0.6
   | 0.7
+  | 0.75
   | 0.8
   | 0.9
   | 1
   | 1.1
   | 1.2
+  | 1.25
   | 1.3
   | 1.4
   | 1.5
   | 1.6
   | 1.7
+  | 1.75
   | 1.8
   | 1.9
   | 2;
@@ -28,6 +32,16 @@ export interface PlaybackState {
   duration: number; // Total duration of the episode in seconds
   isPlaying: boolean; // Whether playback is currently active
   speed: PlaybackSpeed; // Playback speed (0.5x to 2x)
+}
+
+/**
+ * Snapshot of the current playback state returned by AudioPlayerService.getStatus().
+ * Uses seconds throughout so consumers never deal with vendor-specific units.
+ */
+export interface PlaybackStatus {
+  positionSeconds: number;
+  durationSeconds: number;
+  isPlaying: boolean;
 }
 
 /**

@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
   nowPlayingLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: 'COLORS.cardBackground',
+    color: COLORS.cardBackground,
     marginLeft: 6,
   },
   nowPlayingContent: {

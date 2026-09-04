@@ -1,5 +1,7 @@
+import { PlaybackSpeed } from '../../models';
+
 export interface SpeedOption {
-  value: number;
+  value: PlaybackSpeed;
   label: string;
 }
 
