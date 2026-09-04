@@ -6,6 +6,7 @@ import {
   useQueueStore,
   useToast,
   usePlayerStore,
+  useExternalLink,
 } from '../../hooks';
 
 /**
@@ -44,6 +45,7 @@ export const useEpisodeDetailViewModel = (
   const { podcasts, loading } = usePodcastStore();
   const { addToQueue, queue } = useQueueStore();
   const { currentEpisode } = usePlayerStore();
+  const { openUrl } = useExternalLink();
   const toast = useToast();
 
   // Find the podcast and episode from the store (for subscribed podcasts)
@@ -118,6 +120,7 @@ export const useEpisodeDetailViewModel = (
     podcast,
     episode,
     formattedEpisode,
+    handleLinkPress: openUrl,
     isInQueue,
     isCurrentlyPlaying,
     toast,

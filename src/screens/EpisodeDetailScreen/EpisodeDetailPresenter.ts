@@ -1,6 +1,6 @@
 import { Episode, Podcast } from '../../models';
 import { FormattedEpisodeDetail } from './EpisodeDetail.types';
-import { stripHtml } from '../../utils';
+import { stripHtml, parseRichText } from '../../utils';
 import {
   formatDuration,
   formatDurationLong,
@@ -15,12 +15,16 @@ export function formatEpisodeDetail(
   podcast: Podcast,
 ): FormattedEpisodeDetail {
   const cleanDescription = stripHtml(episode.description);
+  // Parsed from the raw HTML, not from cleanDescription: stripHtml discards
+  // every href and all block structure, so both have to be extracted first.
+  const descriptionBlocks = parseRichText(episode.description);
 
   return {
     id: episode.id,
     podcastId: episode.podcastId,
     title: episode.title,
     description: cleanDescription,
+    descriptionBlocks,
     audioUrl: episode.audioUrl,
     duration: episode.duration,
     formattedDuration: formatDuration(episode.duration),

@@ -5,7 +5,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    // TypeScript 6+ (bundled with VS Code) no longer auto-includes every
+    // package in node_modules/@types, so ambient globals like `jest` and
+    // `NodeJS.Timeout` must be listed explicitly. Harmless on TS 5.x.
+    "types": ["jest", "node"]
   },
   "exclude": [
     "node_modules",

@@ -25,4 +25,5 @@ export interface RSSItem {
   };
   'itunes:duration'?: string;
   'itunes:summary'?: string;
+  'content:encoded'?: string; // Rich HTML notes; richer than <description>
 }

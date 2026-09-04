@@ -112,10 +112,7 @@ export function formatHistoryItem(
     displayTitle: truncateText(item.episode.title, 50),
     podcastTitle: item.podcast.title,
     podcastArtworkUrl: item.podcast.artworkUrl,
-    completedAt:
-      item.completedAt instanceof Date
-        ? item.completedAt.toISOString()
-        : String(item.completedAt),
+    completedAt: item.completedAt,
     formattedCompletedAt: formatRelativeDate(item.completedAt),
     completionPercentage: item.completionPercentage,
     formattedCompletionPercentage: formatCompletionPercentage(
@@ -140,13 +137,11 @@ export function getRecentHistory(
   history: ListeningHistory[],
   limit: number = 3,
 ): FormattedHistoryItem[] {
-  const sorted = [...history].sort((a, b) => {
-    const dateA =
-      a.completedAt instanceof Date ? a.completedAt : new Date(a.completedAt);
-    const dateB =
-      b.completedAt instanceof Date ? b.completedAt : new Date(b.completedAt);
-    return dateB.getTime() - dateA.getTime();
-  });
+  // Newest first. completedAt is an ISO string, so it needs parsing to compare.
+  const sorted = [...history].sort(
+    (a, b) =>
+      new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime(),
+  );
 
   return formatHistoryItems(sorted.slice(0, limit));
 }

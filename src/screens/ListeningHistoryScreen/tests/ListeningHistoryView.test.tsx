@@ -1,17 +1,9 @@
 import React, { act } from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { Alert } from 'react-native';
+import { ActivityIndicator, Alert } from 'react-native';
 import { ListeningHistoryView } from '../ListeningHistoryView';
-import { StorageService } from '../../../services';
 import { createMockListeningHistoryItems } from '../../../__mocks__';
-
-// Mock StorageService
-jest.mock('../../../services', () => ({
-  StorageService: {
-    loadHistory: jest.fn().mockResolvedValue([]),
-    saveHistory: jest.fn().mockResolvedValue(undefined),
-  },
-}));
+import { historyStore } from '../../../stores';
 
 // Mock Alert
 jest.spyOn(Alert, 'alert');
@@ -21,30 +13,27 @@ describe('ListeningHistoryView', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (StorageService.loadHistory as jest.Mock).mockResolvedValue([]);
+    // History is owned by the persisted store; seed it directly rather than
+    // stubbing a storage call the store no longer makes.
+    historyStore.setState({ history: [], hasHydrated: true });
   });
 
   const renderView = async () => {
     const result = render(
       <ListeningHistoryView onClearHistory={mockOnClearHistory} />,
     );
-    // Flush async effects (e.g. loadHistory called in useEffect)
+    // Flush any pending state updates from render
     await act(async () => {});
     return result;
   };
 
   describe('Loading State', () => {
-    it('should show loading indicator initially', async () => {
-      // Make the promise pending to test loading state
-      (StorageService.loadHistory as jest.Mock).mockReturnValue(
-        new Promise(() => {}),
-      );
+    it('should show loading indicator until the history store hydrates', async () => {
+      historyStore.setState({ history: [], hasHydrated: false });
 
-      await renderView();
+      const { UNSAFE_queryByType } = await renderView();
 
-      // ActivityIndicator doesn't have a testID by default, so we check for structure
-      // The loading container should be present while loading
-      expect(StorageService.loadHistory).toHaveBeenCalled();
+      expect(UNSAFE_queryByType(ActivityIndicator)).toBeTruthy();
     });
   });
 
@@ -62,7 +51,7 @@ describe('ListeningHistoryView', () => {
   describe('History List', () => {
     it('should display history items', async () => {
       const mockHistory = createMockListeningHistoryItems(3);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(mockHistory);
+      historyStore.setState({ history: mockHistory, hasHydrated: true });
 
       const { getByText } = await renderView();
 
@@ -72,7 +61,7 @@ describe('ListeningHistoryView', () => {
 
     it('should display history summary', async () => {
       const mockHistory = createMockListeningHistoryItems(5);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(mockHistory);
+      historyStore.setState({ history: mockHistory, hasHydrated: true });
 
       const { getByText } = await renderView();
 
@@ -81,7 +70,7 @@ describe('ListeningHistoryView', () => {
 
     it('should display singular summary for 1 item', async () => {
       const mockHistory = createMockListeningHistoryItems(1);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(mockHistory);
+      historyStore.setState({ history: mockHistory, hasHydrated: true });
 
       const { getByText } = await renderView();
 
@@ -92,7 +81,7 @@ describe('ListeningHistoryView', () => {
   describe('Clear History', () => {
     it('should show confirmation alert when Clear All is pressed', async () => {
       const mockHistory = createMockListeningHistoryItems(3);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(mockHistory);
+      historyStore.setState({ history: mockHistory, hasHydrated: true });
 
       const { getByText } = await renderView();
 
@@ -110,7 +99,7 @@ describe('ListeningHistoryView', () => {
 
     it('should clear history and call callback when confirmed', async () => {
       const mockHistory = createMockListeningHistoryItems(3);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(mockHistory);
+      historyStore.setState({ history: mockHistory, hasHydrated: true });
 
       const { getByText } = await renderView();
 
@@ -125,21 +114,21 @@ describe('ListeningHistoryView', () => {
         await clearAction.onPress();
       });
 
-      expect(StorageService.saveHistory).toHaveBeenCalledWith([]);
+      expect(historyStore.getState().history).toEqual([]);
       expect(mockOnClearHistory).toHaveBeenCalled();
     });
 
     it('should not clear history when cancelled', async () => {
       const mockHistory = createMockListeningHistoryItems(3);
-      (StorageService.loadHistory as jest.Mock).mockResolvedValue(mockHistory);
+      historyStore.setState({ history: mockHistory, hasHydrated: true });
 
       const { getByText } = await renderView();
 
       fireEvent.press(getByText('Clear All'));
 
       // The Cancel button doesn't have an onPress handler, just style: 'cancel'
-      // So we just verify the alert was shown and storage was not modified
-      expect(StorageService.saveHistory).not.toHaveBeenCalled();
+      // So we just verify the alert was shown and history was not modified
+      expect(historyStore.getState().history).toHaveLength(3);
       expect(mockOnClearHistory).not.toHaveBeenCalled();
     });
   });

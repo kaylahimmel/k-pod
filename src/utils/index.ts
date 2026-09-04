@@ -1,4 +1,9 @@
-export { truncateText, stripHtml } from './textUtils';
+export {
+  truncateText,
+  stripHtml,
+  parseLinkedText,
+  parseRichText,
+} from './textUtils';
 export {
   validateEmail,
   validatePasswordMinLength,

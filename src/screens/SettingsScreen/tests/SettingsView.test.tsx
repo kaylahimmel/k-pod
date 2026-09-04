@@ -3,18 +3,13 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ActivityIndicator, Alert, Linking } from 'react-native';
 import { SettingsView } from '../SettingsView';
 import { settingsStore } from '../../../stores';
+import { createMockAppSettings } from '../../../__mocks__';
 
 jest.spyOn(Alert, 'alert');
 jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
 
 describe('SettingsView', () => {
-  const defaultSettings = {
-    autoPlayNext: true,
-    defaultSpeed: 1,
-    downloadOnWiFi: true,
-    skipForwardSeconds: 30,
-    skipBackwardSeconds: 15,
-  };
+  const defaultSettings = createMockAppSettings();
 
   beforeEach(() => {
     jest.clearAllMocks();

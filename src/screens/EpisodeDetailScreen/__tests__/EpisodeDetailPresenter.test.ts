@@ -18,6 +18,48 @@ describe('EpisodeDetailPresenter', () => {
       );
     });
 
+    it('should expose description links as tappable segments', () => {
+      const mockEpisode = createMockEpisode({
+        description:
+          'Check <a href="https://example.com/ep1">our site</a> today',
+      });
+      const mockPodcast = createMockPodcast({ episodes: [mockEpisode] });
+
+      const formatted = formatEpisodeDetail(mockEpisode, mockPodcast);
+
+      expect(formatted.descriptionBlocks).toEqual([
+        {
+          type: 'paragraph',
+          segments: [
+            { type: 'text', content: 'Check ' },
+            {
+              type: 'link',
+              content: 'our site',
+              url: 'https://example.com/ep1',
+            },
+            { type: 'text', content: ' today' },
+          ],
+        },
+      ]);
+      // Plain description is still produced for accessibility and previews
+      expect(formatted.description).toBe('Check our site today');
+    });
+
+    it('should decode the full entity set, not just the common ones', () => {
+      // Regression: jest.setup.ts used to replace src/utils with a hand-copied
+      // stripHtml that omitted these entities, so presenter tests validated
+      // behavior the app did not have. Feeds use these constantly.
+      const mockEpisode = createMockEpisode({
+        description:
+          '<p>Rock &amp; roll &mdash; it&rsquo;s &ldquo;great&rdquo;&hellip;</p>',
+      });
+      const mockPodcast = createMockPodcast({ episodes: [mockEpisode] });
+
+      const formatted = formatEpisodeDetail(mockEpisode, mockPodcast);
+
+      expect(formatted.description).toBe('Rock & roll — it\'s "great"…');
+    });
+
     it('should strip HTML from description', () => {
       const mockEpisode = createMockEpisode({
         description: '<p>This is a <strong>test</strong> description.</p>',

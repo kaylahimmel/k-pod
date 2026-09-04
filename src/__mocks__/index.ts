@@ -23,6 +23,7 @@ export {
   MOCK_SINGLE_EPISODE_RSS,
   MOCK_INVALID_RSS,
   MOCK_COMPLEX_GUID_RSS,
+  MOCK_CONTENT_ENCODED_RSS,
 } from './mockPodcasts';
 
 // Profile mocks (User, ListeningHistory)
@@ -34,6 +35,9 @@ export {
 
 // Queue mocks (QueueItem)
 export { createMockQueueItem, createMockQueueItems } from './mockQueue';
+
+// Settings mocks (AppSettings)
+export { createMockAppSettings } from './mockSettings';
 
 // Navigation mocks (for screen testing)
 export { createMockNavigation, createMockRoute } from './mockNavigation';

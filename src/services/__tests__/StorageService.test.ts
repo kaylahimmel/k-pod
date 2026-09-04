@@ -1,8 +1,4 @@
 import { StorageService } from '../StorageService';
-import {
-  createMockQueueItem,
-  createMockListeningHistory,
-} from '../../__mocks__';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // ===========================================
@@ -91,9 +87,8 @@ describe('StorageService', () => {
       // Queue/podcast/settings persistence is owned by zustand persist;
       // generic saveData/loadData remain for ad-hoc keys
       await StorageService.saveData('test-podcasts', podcasts);
-      const loaded = await StorageService.loadData<typeof podcasts>(
-        'test-podcasts',
-      );
+      const loaded =
+        await StorageService.loadData<typeof podcasts>('test-podcasts');
 
       expect(loaded).toEqual(podcasts);
       expect(loaded![0].title).toBe('Test Podcast');
@@ -119,29 +114,6 @@ describe('StorageService', () => {
 
       expect(await StorageService.loadPlaybackPosition('ep-1')).toBe(100);
       expect(await StorageService.loadPlaybackPosition('ep-2')).toBe(200);
-    });
-  });
-
-  describe('history storage', () => {
-    it('should save and load history', async () => {
-      const history = [createMockListeningHistory()];
-
-      await StorageService.saveHistory(history);
-      const loaded = await StorageService.loadHistory();
-
-      expect(loaded).toHaveLength(1);
-      expect(loaded[0].episode.id).toBe(history[0].episode.id);
-      expect(loaded[0].podcast.id).toBe(history[0].podcast.id);
-      expect(loaded[0].completionPercentage).toBe(
-        history[0].completionPercentage,
-      );
-      // completedAt becomes a string after JSON serialization
-      expect(loaded[0].completedAt).toBe(history[0].completedAt.toISOString());
-    });
-
-    it('should return empty array when no history saved', async () => {
-      const loaded = await StorageService.loadHistory();
-      expect(loaded).toEqual([]);
     });
   });
 

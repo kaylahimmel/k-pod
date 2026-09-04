@@ -12,7 +12,7 @@ export interface SkipOption {
 
 export interface FormattedSettings {
   autoPlayNext: boolean;
-  defaultSpeed: number;
+  defaultSpeed: PlaybackSpeed;
   defaultSpeedLabel: string;
   downloadOnWiFi: boolean;
   skipForwardSeconds: number;
@@ -29,7 +29,7 @@ export interface SettingsViewModelReturn {
   skipBackwardOptions: SkipOption[];
   appVersion: string;
   handleToggleAutoPlayNext: () => void;
-  handleSpeedChange: (speed: number) => void;
+  handleSpeedChange: (speed: PlaybackSpeed) => void;
   handleToggleDownloadOnWiFi: () => void;
   handleSkipForwardChange: (seconds: number) => void;
   handleSkipBackwardChange: (seconds: number) => void;

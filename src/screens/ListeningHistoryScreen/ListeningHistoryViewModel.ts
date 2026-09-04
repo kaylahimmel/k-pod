@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { useHistoryStore } from '../../hooks';
 import {
@@ -16,15 +16,13 @@ export const useListeningHistoryViewModel = (
 ): ListeningHistoryViewModelReturn => {
   const {
     history: rawHistory,
-    isLoading,
-    loadHistory,
+    hasHydrated,
     clearHistory: clearHistoryStore,
   } = useHistoryStore();
 
-  // Load history on mount
-  useEffect(() => {
-    loadHistory();
-  }, [loadHistory]);
+  // History is hydrated by the store's persist middleware at app start, so
+  // there is no load to trigger here - only the hydration status to surface.
+  const isLoading = !hasHydrated;
 
   // Formatted history from presenter
   const history = useMemo(() => formatAllHistory(rawHistory), [rawHistory]);
@@ -46,17 +44,9 @@ export const useListeningHistoryViewModel = (
         {
           text: 'Clear',
           style: 'destructive',
-          onPress: async () => {
-            try {
-              await clearHistoryStore();
-              onClearHistory();
-            } catch (error) {
-              console.error('Error clearing history:', error);
-              Alert.alert(
-                'Error',
-                'Failed to clear history. Please try again.',
-              );
-            }
+          onPress: () => {
+            clearHistoryStore();
+            onClearHistory();
           },
         },
       ],

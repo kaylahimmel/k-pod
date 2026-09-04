@@ -24,7 +24,7 @@ export const createMockListeningHistory = (
 ): ListeningHistory => ({
   podcast: createMockPodcast(),
   episode: createMockEpisode(),
-  completedAt: new Date('2024-01-15T12:00:00Z'),
+  completedAt: '2024-01-15T12:00:00.000Z',
   completionPercentage: 100,
   ...overrides,
 });
@@ -47,7 +47,7 @@ export const createMockListeningHistoryItems = (
         title: `Episode ${i + 1}`,
         duration: 1800 + i * 300,
       }),
-      completedAt: new Date(Date.now() - i * 86400000), // i days ago
+      completedAt: new Date(Date.now() - i * 86400000).toISOString(), // i days ago
       completionPercentage: 90 + Math.floor(Math.random() * 11),
     }),
   );
