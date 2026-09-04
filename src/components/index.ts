@@ -1,4 +1,6 @@
 export * from './CardDiscoverPodcast/CardDiscoverPodcast';
+export * from './LinkedText/LinkedText';
+export * from './RichText/RichText';
 export * from './CardHistoryItem/CardHistoryItem';
 export * from './CardNowPlaying/CardNowPlaying';
 export * from './CardQueueItem/CardQueueItem';

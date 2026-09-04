@@ -1,4 +1,9 @@
-import { Episode, Podcast, DiscoveryPodcast } from '../../models';
+import {
+  Episode,
+  Podcast,
+  DiscoveryPodcast,
+  RichTextBlock,
+} from '../../models';
 
 export interface EpisodeDetailViewProps {
   episodeId: string;
@@ -14,7 +19,8 @@ export interface FormattedEpisodeDetail {
   id: string;
   podcastId: string;
   title: string;
-  description: string;
+  description: string; // Plain text, for previews and accessibility
+  descriptionBlocks: RichTextBlock[]; // Same content as styled blocks with tappable links
   audioUrl: string;
   duration: number;
   formattedDuration: string;

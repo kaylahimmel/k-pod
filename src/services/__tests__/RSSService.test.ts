@@ -4,6 +4,7 @@ import {
   MOCK_SINGLE_EPISODE_RSS,
   MOCK_INVALID_RSS,
   MOCK_COMPLEX_GUID_RSS,
+  MOCK_CONTENT_ENCODED_RSS,
 } from '../../__mocks__/mockPodcasts';
 
 // ===========================================
@@ -294,6 +295,41 @@ describe('RSSService', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toContain('404');
+      }
+    });
+  });
+  describe('content:encoded', () => {
+    it('should prefer content:encoded over the plain-text description', async () => {
+      // Megaphone/Acast/Omny put the plain text in <description> and the real
+      // HTML (paragraphs, lists, anchors) in <content:encoded>. Reading
+      // description first meant episode notes lost all structure and links.
+      global.fetch = mockFetchResponse(MOCK_CONTENT_ENCODED_RSS);
+
+      const result = await RSSService.transformPodcastFromRSS(
+        'https://example.com/feed.xml',
+      );
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        const description = result.data.episodes[0].description;
+        expect(description).toContain('<ul>');
+        expect(description).toContain('href="https://example.com/a"');
+        expect(description).not.toBe('Plain text only, no markup at all.');
+      }
+    });
+
+    it('should fall back to description when content:encoded is absent', async () => {
+      global.fetch = mockFetchResponse(MOCK_RSS_XML);
+
+      const result = await RSSService.transformPodcastFromRSS(
+        'https://example.com/feed.xml',
+      );
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.episodes[0].description).toBe(
+          'First episode description',
+        );
       }
     });
   });

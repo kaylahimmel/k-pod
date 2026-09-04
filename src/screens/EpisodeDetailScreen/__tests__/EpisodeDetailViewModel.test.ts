@@ -9,6 +9,8 @@ const mockUseQueueStore = jest.fn();
 const mockUsePlayerStore = jest.fn();
 
 // Mock the hooks
+const mockOpenUrl = jest.fn();
+
 jest.mock('../../../hooks', () => ({
   usePodcastStore: () => mockUsePodcastStore(),
   useQueueStore: () => mockUseQueueStore(),
@@ -21,6 +23,7 @@ jest.mock('../../../hooks', () => ({
     opacity: { value: 0 },
     dismissToast: jest.fn(),
   }),
+  useExternalLink: () => ({ openUrl: mockOpenUrl }),
 }));
 
 describe('useEpisodeDetailViewModel', () => {

@@ -33,6 +33,27 @@ const MOCK_RSS_XML = `<?xml version="1.0" encoding="UTF-8"?>
 </rss>`;
 
 /**
+ * RSS where the rich HTML lives in <content:encoded> and <description> only
+ * holds the plain-text version. Common in the wild (Megaphone, Acast, Omny)
+ * and the reason episode notes lost their lists and links.
+ */
+const MOCK_CONTENT_ENCODED_RSS = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Test Podcast</title>
+    <description>A podcast for testing</description>
+    <item>
+      <title>Episode 1</title>
+      <description>Plain text only, no markup at all.</description>
+      <content:encoded><![CDATA[<p>Rich intro.</p><ul><li><p>Call <a href="https://example.com/a">us</a></p></li></ul>]]></content:encoded>
+      <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
+      <guid>episode-1-guid</guid>
+      <enclosure url="https://example.com/ep1.mp3" type="audio/mpeg" length="123"/>
+    </item>
+  </channel>
+</rss>`;
+
+/**
  * RSS with a single episode (edge case - returns object, not array)
  */
 const MOCK_SINGLE_EPISODE_RSS = `<?xml version="1.0" encoding="UTF-8"?>
@@ -68,6 +89,7 @@ const MOCK_COMPLEX_GUID_RSS = `<?xml version="1.0"?>
 
 export {
   MOCK_RSS_XML,
+  MOCK_CONTENT_ENCODED_RSS,
   MOCK_SINGLE_EPISODE_RSS,
   MOCK_INVALID_RSS,
   MOCK_COMPLEX_GUID_RSS,

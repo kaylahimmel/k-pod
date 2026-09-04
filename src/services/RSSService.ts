@@ -135,6 +135,33 @@ async function fetchAndParseFeed(
 }
 
 /**
+ * Picks the richest episode description a feed offers.
+ *
+ * Many hosts (Megaphone, Acast, Omny) put a plain-text summary in
+ * <description> and the real HTML - paragraphs, lists, anchors - in
+ * <content:encoded>. Reading <description> first silently threw all of that
+ * away, so notes rendered as one unformatted block with dead links.
+ *
+ * Each candidate is type-checked: fast-xml-parser returns an object rather
+ * than a string when a field contains unescaped child elements.
+ */
+function pickDescription(item: RSSItem): string {
+  const candidates = [
+    item['content:encoded'],
+    item.description,
+    item['itunes:summary'],
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return candidate;
+    }
+  }
+
+  return '';
+}
+
+/**
  * Transform a parsed RSS feed into our Podcast model
  * This maps the RSS-specific fields to our app's data structure
  */
@@ -149,7 +176,7 @@ function transformFeedToPodcast(feed: RSSFeed, rssUrl: string): Podcast {
       id: guid || generateId(rssUrl + item.title + item.pubDate),
       podcastId: generateId(rssUrl),
       title: item.title || '',
-      description: item.description || item['itunes:summary'] || '',
+      description: pickDescription(item),
       audioUrl: extractAudioUrl(item),
       duration: parseDuration(item['itunes:duration']),
       publishDate: item.pubDate || now,

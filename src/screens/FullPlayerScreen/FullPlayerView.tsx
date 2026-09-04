@@ -18,8 +18,13 @@ import { styles } from './FullPlayer.styles';
 import { COLORS } from '../../constants';
 import { PlaybackSpeed } from '../../models';
 import { useSettingsStore, useToast } from '../../hooks';
-import { Toast, HeaderBackButton, HeaderCloseButton } from '../../components';
-import { stripHtml } from '../../utils';
+import {
+  Toast,
+  HeaderBackButton,
+  HeaderCloseButton,
+  LinkedText,
+  RichText,
+} from '../../components';
 
 export const FullPlayerView = ({
   episode,
@@ -79,12 +84,21 @@ export const FullPlayerView = ({
       </View>
       {viewModel.episode.description && (
         <View style={styles.descriptionContainer}>
-          <Text
-            style={styles.descriptionText}
-            numberOfLines={descriptionExpanded ? undefined : 2}
-          >
-            {stripHtml(viewModel.episode.description)}
-          </Text>
+          {descriptionExpanded ? (
+            <RichText
+              blocks={viewModel.descriptionBlocks}
+              onLinkPress={viewModel.handleLinkPress}
+            />
+          ) : (
+            // Collapsed uses flat segments: numberOfLines cannot clamp across
+            // the separate Views that block layout produces
+            <LinkedText
+              segments={viewModel.descriptionSegments}
+              onLinkPress={viewModel.handleLinkPress}
+              style={styles.descriptionText}
+              numberOfLines={2}
+            />
+          )}
           <TouchableOpacity
             style={styles.seeMoreButton}
             onPress={() => setDescriptionExpanded(!descriptionExpanded)}

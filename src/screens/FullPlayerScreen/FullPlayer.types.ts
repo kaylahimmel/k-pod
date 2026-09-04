@@ -1,4 +1,10 @@
-import { Episode, Podcast, PlaybackSpeed } from '../../models';
+import {
+  Episode,
+  Podcast,
+  PlaybackSpeed,
+  TextSegment,
+  RichTextBlock,
+} from '../../models';
 
 /**
  * Props passed from FullPlayerScreen to FullPlayerView
@@ -50,6 +56,8 @@ export interface FullPlayerViewModel {
   upNextItem: FormattedUpNextItem | null;
   hasUpNext: boolean;
   isEpisodeInQueue: boolean;
+  descriptionSegments: TextSegment[]; // Flat, for the collapsed 2-line state
+  descriptionBlocks: RichTextBlock[]; // Styled blocks, for the expanded state
 
   // Player state
   isPlaying: boolean;
@@ -66,6 +74,7 @@ export interface FullPlayerViewModel {
   handleAddToQueue: () => void;
   handleDismiss: () => void;
   handleBack: () => void;
+  handleLinkPress: (url: string) => void;
 }
 
 /**

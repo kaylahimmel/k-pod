@@ -4,7 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { EpisodeDetailViewProps } from './EpisodeDetail.types';
 import { useEpisodeDetailViewModel } from './EpisodeDetailViewModel';
 import { styles } from './EpisodeDetail.styles';
-import { StateLoading, EpisodeNotFoundState, Toast } from '../../components';
+import {
+  StateLoading,
+  EpisodeNotFoundState,
+  Toast,
+  RichText,
+} from '../../components';
 import { COLORS } from '../../constants';
 
 export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
@@ -117,9 +122,11 @@ export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
         {/* Episode description */}
         <View style={styles.descriptionContainer}>
           <Text style={styles.descriptionLabel}>Episode Notes</Text>
-          <Text style={styles.descriptionText}>
-            {formattedEpisode.description || 'No description available.'}
-          </Text>
+          <RichText
+            blocks={formattedEpisode.descriptionBlocks}
+            onLinkPress={viewModel.handleLinkPress}
+            fallback='No description available.'
+          />
         </View>
       </ScrollView>
       <Toast

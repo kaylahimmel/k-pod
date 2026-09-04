@@ -8,4 +8,5 @@ export * from './Podcast.types';
 export * from './Queue.types';
 export * from './RSSFeed.types';
 export * from './ServiceResult.types';
+export * from './Text.types';
 export * from './User.types';

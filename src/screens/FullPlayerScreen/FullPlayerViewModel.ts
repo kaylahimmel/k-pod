@@ -4,8 +4,10 @@ import {
   useQueueStore,
   useToast,
   usePlayerStore,
+  useExternalLink,
 } from '../../hooks';
 import { Episode, Podcast, PlaybackSpeed } from '../../models';
+import { parseLinkedText, parseRichText } from '../../utils';
 import {
   formatPlaybackTime,
   formatSpeedDisplay,
@@ -70,6 +72,23 @@ export const useFullPlayerViewModel = (
   const speedDisplay = useMemo(
     () => formatSpeedDisplay(storeSpeed),
     [storeSpeed],
+  );
+
+  const { openUrl } = useExternalLink();
+
+  // Parsed here rather than in the View so the View stays presentational, and
+  // so re-parsing only happens when the description actually changes
+  const descriptionSegments = useMemo(
+    () => parseLinkedText(episode.description),
+    [episode.description],
+  );
+
+  // Collapsed uses the flat segments so numberOfLines can clamp to 2 lines;
+  // block layout puts each paragraph in its own View, which numberOfLines
+  // cannot truncate across.
+  const descriptionBlocks = useMemo(
+    () => parseRichText(episode.description),
+    [episode.description],
   );
 
   // Get the next item in queue for "up next" preview
@@ -141,6 +160,8 @@ export const useFullPlayerViewModel = (
   return {
     episode,
     podcast,
+    descriptionSegments,
+    descriptionBlocks,
     playbackTime,
     speedDisplay,
     upNextItem,
@@ -158,5 +179,6 @@ export const useFullPlayerViewModel = (
     handleAddToQueue,
     handleDismiss,
     handleBack,
+    handleLinkPress: openUrl,
   };
 };
