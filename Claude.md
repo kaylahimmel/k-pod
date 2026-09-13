@@ -173,6 +173,11 @@ RootNavigator
   - `formatUtils.ts` — `formatEpisodeCount`, `formatDuration`, `formatDurationLong`, `formatCompletionPercentage`
   - `dateUtils.ts` — `formatRelativeDate`, `formatPublishDate`
   - `podcastUtils.ts` — `isSubscribed` · `historyUtils.ts` — `formatHistoryItemForList`
+  - Check the invariant before merging: this must return nothing.
+
+    ```bash
+    grep -rn "from '\.\./[A-Za-z]*Screen/" src/screens src/components --include="*.ts" --include="*.tsx" | grep -v tests
+    ```
   - `formatDuration` guards with `!Number.isFinite(seconds)`. Three different guards used to exist and two let `Infinity` through, rendering `Infinity:NaN:NaN` for a feed with an unknown duration
   - `formatRelativeDate(date, style)` takes an explicit style because two genuinely different ladders are in use: `'compact'` (Profile/history) stops at "N days ago" then shows "Mar 4"; `'detailed'` (Library) adds weeks and months then a full date. The style is never defaulted, so merging them can't silently change what a screen displays
   - `RSSService.createPodcastFromDiscovery()` owns fetch-feed-then-merge-discovery-metadata. It was inline in three ViewModels and had already drifted — only one surfaced the underlying error. Callers keep their own toast/alert handling

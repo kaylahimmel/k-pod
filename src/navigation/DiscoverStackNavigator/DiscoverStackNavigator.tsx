@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DiscoverStackParamList } from '../types';
 import { defaultScreenOptions } from '../screenOptions';
 import { DiscoverScreen } from '../../screens/DiscoverScreen';
-import { SearchResultsScreen } from '../../screens/SearchResultsScreen';
 import { PodcastPreviewScreen } from '../../screens/PodcastPreviewScreen';
 import { EpisodeDetailScreen } from '../../screens/EpisodeDetailScreen';
 import { NavigationBackButton } from '../../components';
@@ -17,15 +16,6 @@ export const DiscoverStackNavigator = () => {
         name='Discover'
         component={DiscoverScreen}
         options={{ title: 'Discover' }}
-      />
-      <Stack.Screen
-        name='SearchResults'
-        component={SearchResultsScreen}
-        options={{
-          title: 'Search Results',
-          headerBackVisible: false,
-          headerLeft: () => <NavigationBackButton />,
-        }}
       />
       <Stack.Screen
         name='PodcastPreview'

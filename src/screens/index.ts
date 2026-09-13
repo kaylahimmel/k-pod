@@ -13,5 +13,4 @@ export * from './PodcastDetailScreen/PodcastDetailScreen';
 export * from './PodcastPreviewScreen/PodcastPreviewScreen';
 export * from './ProfileScreen/ProfileScreen';
 export * from './QueueScreen/QueueScreen';
-export * from './SearchResultsScreen/SearchResultsScreen';
 export * from './SettingsScreen/SettingsScreen';

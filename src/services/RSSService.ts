@@ -264,9 +264,10 @@ async function refreshEpisodes(
  * presentation, because iTunes artwork and titles are generally better than
  * what feeds carry. Blank discovery fields fall back to the feed.
  *
- * This lived inline in three ViewModels (Discover, SearchResults,
- * PodcastPreview) and had already drifted - only one of them surfaced the
- * underlying error. Each caller still owns its own toast/alert handling.
+ * This lived inline in three ViewModels and had already drifted - only one
+ * surfaced the underlying error. Each caller still owns its own toast/alert
+ * handling. (The SearchResults screen was later deleted as a duplicate of
+ * Discover's inline search.)
  */
 async function createPodcastFromDiscovery(
   discoveryPodcast: DiscoveryPodcast,

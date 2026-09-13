@@ -22,7 +22,6 @@ export type LibraryStackParamList = {
 
 export type DiscoverStackParamList = {
   Discover: undefined;
-  SearchResults: { query: string };
   PodcastPreview: { podcast: DiscoveryPodcast };
   EpisodeDetail: {
     episodeId: string;
@@ -95,14 +94,6 @@ export type EpisodeDetailScreenProps = CompositeScreenProps<
 
 export type DiscoverScreenProps = CompositeScreenProps<
   NativeStackScreenProps<DiscoverStackParamList, 'Discover'>,
-  CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, 'DiscoverTab'>,
-    NativeStackScreenProps<RootStackParamList>
-  >
->;
-
-export type SearchResultsScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<DiscoverStackParamList, 'SearchResults'>,
   CompositeScreenProps<
     BottomTabScreenProps<BottomTabParamList, 'DiscoverTab'>,
     NativeStackScreenProps<RootStackParamList>
