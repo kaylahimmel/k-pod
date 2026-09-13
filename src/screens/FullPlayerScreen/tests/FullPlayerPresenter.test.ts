@@ -6,8 +6,6 @@ import {
   formatSpeedDisplay,
   formatUpNextItem,
   getNextQueueItem,
-  formatSpeedLabel,
-  calculateSeekPosition,
 } from '../FullPlayerPresenter';
 import { createMockQueueItem, createMockQueueItems } from '../../../__mocks__';
 
@@ -141,29 +139,6 @@ describe('FullPlayerPresenter', () => {
     it('should return null when index is out of bounds', () => {
       const queue = createMockQueueItems(3);
       expect(getNextQueueItem(queue, 5)).toBeNull();
-    });
-  });
-
-  describe('formatSpeedLabel', () => {
-    it('should format speed 1 as "1x"', () => {
-      expect(formatSpeedLabel(1)).toBe('1x');
-    });
-
-    it('should format other speeds with x suffix', () => {
-      expect(formatSpeedLabel(0.5)).toBe('0.5x');
-      expect(formatSpeedLabel(1.5)).toBe('1.5x');
-    });
-  });
-
-  describe('calculateSeekPosition', () => {
-    it('should convert slider value to seek position', () => {
-      expect(calculateSeekPosition(0.5, 300)).toBe(150);
-      expect(calculateSeekPosition(0, 300)).toBe(0);
-      expect(calculateSeekPosition(1, 300)).toBe(300);
-    });
-
-    it('should floor the result', () => {
-      expect(calculateSeekPosition(0.333, 100)).toBe(33);
     });
   });
 });

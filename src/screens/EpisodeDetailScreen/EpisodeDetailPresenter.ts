@@ -1,11 +1,12 @@
 import { Episode, Podcast } from '../../models';
 import { FormattedEpisodeDetail } from './EpisodeDetail.types';
-import { stripHtml, parseRichText } from '../../utils';
 import {
   formatDuration,
   formatDurationLong,
   formatPublishDate,
-} from '../PodcastDetailScreen/PodcastDetailPresenter';
+  parseRichText,
+  stripHtml,
+} from '../../utils';
 
 /**
  * Transforms an Episode and its parent Podcast into a detailed view-friendly format

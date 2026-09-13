@@ -1,3 +1,4 @@
+import { formatCompletionPercentage } from '../../../utils';
 import {
   createMockUser,
   createMockListeningHistory,
@@ -8,13 +9,10 @@ import {
 } from '../../../__mocks__';
 import {
   formatListeningTime,
-  formatRelativeDate,
-  formatCompletionPercentage,
   getInitialsFromEmail,
   formatUser,
   formatHistoryItem,
   formatHistoryItems,
-  getRecentHistory,
   calculateTotalListeningTime,
   countCompletedEpisodes,
   formatCountLabel,
@@ -49,45 +47,6 @@ describe('formatListeningTime', () => {
     expect(formatListeningTime(3660)).toBe('1h 1m');
     expect(formatListeningTime(5400)).toBe('1h 30m');
     expect(formatListeningTime(90000)).toBe('25h'); // 25 hours, 0 minutes returns just "25h"
-  });
-});
-
-describe('formatRelativeDate', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2024-01-20T12:00:00Z'));
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
-  it("should return 'Today' for same day", () => {
-    expect(formatRelativeDate(new Date('2024-01-20T08:00:00Z'))).toBe('Today');
-  });
-
-  it("should return 'Yesterday' for previous day", () => {
-    expect(formatRelativeDate(new Date('2024-01-19T12:00:00Z'))).toBe(
-      'Yesterday',
-    );
-  });
-
-  it("should return 'X days ago' for recent dates", () => {
-    expect(formatRelativeDate(new Date('2024-01-17T12:00:00Z'))).toBe(
-      '3 days ago',
-    );
-    expect(formatRelativeDate(new Date('2024-01-15T12:00:00Z'))).toBe(
-      '5 days ago',
-    );
-  });
-
-  it('should return formatted date for older dates', () => {
-    expect(formatRelativeDate(new Date('2024-01-10T12:00:00Z'))).toBe('Jan 10');
-    expect(formatRelativeDate(new Date('2023-12-15T12:00:00Z'))).toBe('Dec 15');
-  });
-
-  it('should handle string dates', () => {
-    expect(formatRelativeDate('2024-01-20T08:00:00Z')).toBe('Today');
   });
 });
 
@@ -205,54 +164,6 @@ describe('formatHistoryItems', () => {
 
   it('should return empty array for empty input', () => {
     expect(formatHistoryItems([])).toEqual([]);
-  });
-});
-
-describe('getRecentHistory', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2024-01-20T12:00:00Z'));
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
-  it('should return most recent items', () => {
-    const items = [
-      createMockListeningHistory({
-        episode: createMockEpisode({ id: 'old', title: 'Old Episode' }),
-        completedAt: new Date('2024-01-10T12:00:00Z').toISOString(),
-      }),
-      createMockListeningHistory({
-        episode: createMockEpisode({ id: 'new', title: 'New Episode' }),
-        completedAt: new Date('2024-01-19T12:00:00Z').toISOString(),
-      }),
-      createMockListeningHistory({
-        episode: createMockEpisode({ id: 'mid', title: 'Mid Episode' }),
-        completedAt: new Date('2024-01-15T12:00:00Z').toISOString(),
-      }),
-    ];
-
-    const recent = getRecentHistory(items, 2);
-
-    expect(recent).toHaveLength(2);
-    expect(recent[0].episodeTitle).toBe('New Episode');
-    expect(recent[1].episodeTitle).toBe('Mid Episode');
-  });
-
-  it('should default to 3 items', () => {
-    const items = createMockListeningHistoryItems(5);
-    const recent = getRecentHistory(items);
-
-    expect(recent).toHaveLength(3);
-  });
-
-  it('should return all items if less than limit', () => {
-    const items = createMockListeningHistoryItems(2);
-    const recent = getRecentHistory(items, 5);
-
-    expect(recent).toHaveLength(2);
   });
 });
 

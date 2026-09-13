@@ -8,6 +8,17 @@ import {
   SKIP_BACKWARD_OPTIONS,
 } from '../SettingsPresenter';
 import { AppSettings } from '../../../models';
+import Constants from 'expo-constants';
+
+// expoConfig is a non-configurable getter on the real module, so jest.spyOn
+// can't wrap it - mock the module and mutate the plain object instead
+jest.mock('expo-constants', () => ({
+  __esModule: true,
+  default: { expoConfig: { version: '1.0.0' } },
+}));
+
+type MutableConstants = { expoConfig: { version?: string } | null };
+const mockConstants = Constants as unknown as MutableConstants;
 
 describe('SettingsPresenter', () => {
   describe('SPEED_OPTIONS', () => {
@@ -107,10 +118,18 @@ describe('SettingsPresenter', () => {
   });
 
   describe('getAppVersion', () => {
-    it('should return a version string', () => {
-      const version = getAppVersion();
-      expect(typeof version).toBe('string');
-      expect(version).toBe('1.0.0');
+    it('should read the version from expo-constants, not a hardcoded string', () => {
+      // Hardcoding meant Settings silently drifted from app.json on every
+      // release bump
+      mockConstants.expoConfig = { version: '2.4.1' };
+
+      expect(getAppVersion()).toBe('2.4.1');
+    });
+
+    it('should fall back to a placeholder when no version is configured', () => {
+      mockConstants.expoConfig = null;
+
+      expect(getAppVersion()).toBe('1.0.0');
     });
   });
 });

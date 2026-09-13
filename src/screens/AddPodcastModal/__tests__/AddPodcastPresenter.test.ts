@@ -1,9 +1,9 @@
+import { formatEpisodeCount } from '../../../utils';
 import {
   validateRSSUrl,
   normalizeUrl,
   formatErrorMessage,
   formatPodcastPreview,
-  formatEpisodeCount,
 } from '../AddPodcastPresenter';
 import { createMockPodcast, createMockEpisode } from '../../../__mocks__';
 

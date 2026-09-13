@@ -1,3 +1,4 @@
+import { formatEpisodeCount } from '../../utils';
 import React from 'react';
 import {
   View,
@@ -13,10 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAddPodcastViewModel } from './AddPodcastViewModel';
 import { AddPodcastViewProps } from './AddPodcast.types';
-import {
-  formatPodcastPreview,
-  formatEpisodeCount,
-} from './AddPodcastPresenter';
+import { formatPodcastPreview } from './AddPodcastPresenter';
 import { styles } from './AddPodcast.styles';
 import { COLORS } from '../../constants';
 

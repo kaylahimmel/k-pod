@@ -1,23 +1,10 @@
 import { DiscoveryPodcast } from '../../models';
 import { FormattedDiscoveryPodcast } from './Discover.types';
-import { truncateText } from '../../utils';
+import { formatEpisodeCount, isSubscribed, truncateText } from '../../utils';
 
 export interface PodcastsByGenre {
   genre: string;
   podcasts: FormattedDiscoveryPodcast[];
-}
-
-/**
- * Formats episode count to a display label
- */
-export function formatEpisodeCount(count: number): string {
-  if (count === 0) {
-    return 'No episodes';
-  } else if (count === 1) {
-    return '1 episode';
-  } else {
-    return `${count} episodes`;
-  }
 }
 
 /**
@@ -71,32 +58,6 @@ export function groupPodcastsByGenre(
 }
 
 /**
- * Gets unique genres from a list of podcasts
- */
-export function getUniqueGenres(podcasts: DiscoveryPodcast[]): string[] {
-  const genres = new Set<string>();
-  podcasts.forEach((podcast) => {
-    if (podcast.genre) {
-      genres.add(podcast.genre);
-    }
-  });
-  return Array.from(genres).sort();
-}
-
-/**
- * Filters podcasts by genre
- */
-export function filterByGenre(
-  podcasts: DiscoveryPodcast[],
-  genre: string,
-): DiscoveryPodcast[] {
-  if (!genre || genre === 'All') {
-    return podcasts;
-  }
-  return podcasts.filter((p) => p.genre === genre);
-}
-
-/**
  * Filters out podcasts that are already subscribed
  */
 export function filterOutSubscribed(
@@ -108,18 +69,5 @@ export function filterOutSubscribed(
   );
   return discoveryPodcasts.filter(
     (p) => !subscribedSet.has(p.feedUrl.toLowerCase()),
-  );
-}
-
-/**
- * Checks if a podcast is already subscribed
- */
-export function isSubscribed(
-  feedUrl: string,
-  subscribedFeedUrls: string[],
-): boolean {
-  const normalizedFeedUrl = feedUrl.toLowerCase();
-  return subscribedFeedUrls.some(
-    (url) => url.toLowerCase() === normalizedFeedUrl,
   );
 }

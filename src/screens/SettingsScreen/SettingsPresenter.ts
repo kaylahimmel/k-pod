@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { AppSettings } from '../../models';
 import { FormattedSettings, SpeedOption, SkipOption } from './Settings.types';
 
@@ -72,10 +73,11 @@ export function formatSettings(settings: AppSettings): FormattedSettings {
 }
 
 /**
- * Gets the app version string
- * In a real app, this would come from app.json or Constants.expoConfig
+ * Gets the app version string from app.json via expo-constants.
+ *
+ * Reading it at runtime keeps the Settings screen in step with the real
+ * release; the previous hardcoded string drifted silently on every bump.
  */
 export function getAppVersion(): string {
-  // TODO: Replace with actual version from expo-constants when needed
-  return '1.0.0';
+  return Constants.expoConfig?.version ?? '1.0.0';
 }

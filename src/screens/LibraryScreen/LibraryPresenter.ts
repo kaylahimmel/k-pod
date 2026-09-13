@@ -1,50 +1,10 @@
 import { Podcast } from '../../models';
 import { FormattedPodcast, SortOption } from './Library.types';
-import { truncateText } from '../../utils';
-
-/**
- * Formats a date string to a relative time (e.g., "2 days ago")
- * or a formatted date if older than a week
- */
-export function formatRelativeDate(isoDateString: string): string {
-  const date = new Date(isoDateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    return 'Today';
-  } else if (diffDays === 1) {
-    return 'Yesterday';
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  } else if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7);
-    return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`;
-  } else if (diffDays < 365) {
-    const months = Math.floor(diffDays / 30);
-    return months === 1 ? '1 month ago' : `${months} months ago`;
-  } else {
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  }
-}
-
-/**
- * Formats episode count to a display label
- */
-export function formatEpisodeCount(count: number): string {
-  if (count === 0) {
-    return 'No episodes';
-  } else if (count === 1) {
-    return '1 episode';
-  } else {
-    return `${count} episodes`;
-  }
-}
+import {
+  formatEpisodeCount,
+  formatRelativeDate,
+  truncateText,
+} from '../../utils';
 
 /**
  * Transforms a Podcast model into a view-friendly format
@@ -59,7 +19,10 @@ export function formatPodcast(podcast: Podcast): FormattedPodcast {
     episodeCount: podcast.episodes.length,
     episodeCountLabel: formatEpisodeCount(podcast.episodes.length),
     subscribeDate: podcast.subscribeDate,
-    formattedSubscribeDate: formatRelativeDate(podcast.subscribeDate),
+    formattedSubscribeDate: formatRelativeDate(
+      podcast.subscribeDate,
+      'detailed',
+    ),
   };
 }
 

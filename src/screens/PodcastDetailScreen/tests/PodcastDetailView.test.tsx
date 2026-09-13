@@ -11,6 +11,7 @@ describe('PodcastDetailView', () => {
   const mockOnEpisodePress = jest.fn();
   const mockOnPlayEpisode = jest.fn();
   const mockOnUnsubscribe = jest.fn();
+  const mockOnViewCompleted = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -32,6 +33,7 @@ describe('PodcastDetailView', () => {
         onEpisodePress={mockOnEpisodePress}
         onPlayEpisode={mockOnPlayEpisode}
         onUnsubscribe={mockOnUnsubscribe}
+        onViewCompleted={mockOnViewCompleted}
       />,
     );
 

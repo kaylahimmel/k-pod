@@ -14,6 +14,7 @@ import {
 // Mock the services
 jest.mock('../../../services', () => ({
   RSSService: {
+    createPodcastFromDiscovery: jest.fn(),
     transformPodcastFromRSS: jest.fn(),
   },
 }));
@@ -49,6 +50,10 @@ describe('PodcastPreviewScreen', () => {
       podcasts: [],
       loading: false,
       error: null,
+    });
+    (RSSService.createPodcastFromDiscovery as jest.Mock).mockResolvedValue({
+      success: true,
+      data: mockRSSPodcast,
     });
     (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValue({
       success: true,

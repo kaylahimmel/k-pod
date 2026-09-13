@@ -31,6 +31,8 @@ const mockPlayerInstance = {
     return Promise.resolve();
   }),
   setPlaybackRate: jest.fn(),
+  setActiveForLockScreen: jest.fn(),
+  updateLockScreenMetadata: jest.fn(),
   remove: jest.fn(),
   addListener: jest.fn((_event: string, _listener: StatusListener) => ({
     remove: jest.fn(),
@@ -752,6 +754,59 @@ describe('AudioPlayerService', () => {
           didJustFinish: true,
         });
       }).not.toThrow();
+    });
+  });
+  // -----------------------------------------
+  // Lock Screen / Control Center Tests
+  // -----------------------------------------
+  describe('lock screen metadata', () => {
+    const mockPodcast = {
+      id: 'podcast-1',
+      title: 'Test Podcast',
+      author: 'Test Author',
+      rssUrl: 'https://example.com/feed.xml',
+      artworkUrl: 'https://example.com/art.jpg',
+      description: 'desc',
+      subscribeDate: '2024-01-01T00:00:00Z',
+      lastUpdated: '2024-01-01T00:00:00Z',
+      episodes: [],
+    };
+
+    it('should publish episode metadata to the lock screen on load', async () => {
+      await AudioPlayerService.loadEpisode(mockEpisode, mockPodcast);
+
+      expect(mockPlayerInstance.setActiveForLockScreen).toHaveBeenCalledWith(
+        true,
+        {
+          title: 'Test Episode',
+          artist: 'Test Author',
+          albumTitle: 'Test Podcast',
+          artworkUrl: 'https://example.com/art.jpg',
+        },
+        { showSeekForward: true, showSeekBackward: true },
+      );
+    });
+
+    it('should still load when no podcast metadata is supplied', async () => {
+      const result = await AudioPlayerService.loadEpisode(mockEpisode);
+
+      expect(result.success).toBe(true);
+      expect(mockPlayerInstance.setActiveForLockScreen).toHaveBeenCalledWith(
+        true,
+        expect.objectContaining({ title: 'Test Episode' }),
+        expect.any(Object),
+      );
+    });
+
+    it('should release the lock screen session when the player is unloaded', async () => {
+      await AudioPlayerService.loadEpisode(mockEpisode, mockPodcast);
+      (mockPlayerInstance.setActiveForLockScreen as jest.Mock).mockClear();
+
+      await AudioPlayerService.cleanup();
+
+      expect(mockPlayerInstance.setActiveForLockScreen).toHaveBeenCalledWith(
+        false,
+      );
     });
   });
 });

@@ -215,3 +215,50 @@ describe('podcastStore', () => {
     });
   });
 });
+
+describe('markEpisodePlayed', () => {
+  it('should mark a single episode as played', () => {
+    // Nothing in the app set episode.played before this: listening recorded a
+    // history entry but left every episode flagged unplayed
+    const podcast = createMockPodcast({
+      id: 'podcast-1',
+      episodes: [
+        createMockEpisode({ id: 'ep-1', played: false }),
+        createMockEpisode({ id: 'ep-2', played: false }),
+      ],
+    });
+    podcastStore.setState({ podcasts: [podcast] });
+
+    podcastStore.getState().markEpisodePlayed('podcast-1', 'ep-1');
+
+    const episodes = podcastStore.getState().podcasts[0].episodes;
+    expect(episodes.find((e) => e.id === 'ep-1')?.played).toBe(true);
+    expect(episodes.find((e) => e.id === 'ep-2')?.played).toBe(false);
+  });
+
+  it('should leave state untouched for an unknown podcast', () => {
+    const podcast = createMockPodcast({
+      id: 'podcast-1',
+      episodes: [createMockEpisode({ id: 'ep-1', played: false })],
+    });
+    podcastStore.setState({ podcasts: [podcast] });
+    const before = podcastStore.getState().podcasts;
+
+    podcastStore.getState().markEpisodePlayed('nope', 'ep-1');
+
+    expect(podcastStore.getState().podcasts).toBe(before);
+  });
+
+  it('should leave state untouched for an unknown episode', () => {
+    const podcast = createMockPodcast({
+      id: 'podcast-1',
+      episodes: [createMockEpisode({ id: 'ep-1', played: false })],
+    });
+    podcastStore.setState({ podcasts: [podcast] });
+    const before = podcastStore.getState().podcasts;
+
+    podcastStore.getState().markEpisodePlayed('podcast-1', 'nope');
+
+    expect(podcastStore.getState().podcasts).toBe(before);
+  });
+});

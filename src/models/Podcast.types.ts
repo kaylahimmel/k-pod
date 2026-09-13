@@ -21,6 +21,7 @@ export interface PodcastStore {
   addPodcast: (podcast: Podcast) => void; // append single podcast to list when a new one is available
   removePodcast: (podcastId: string) => void; // Remove specific podcast library when user unsubscribes
   updatePodcastEpisodes: (podcastId: string, episodes: Episode[]) => void; // Update episodes for a podcast (preserves played state)
+  markEpisodePlayed: (podcastId: string, episodeId: string) => void; // Flag an episode as completed
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
 }

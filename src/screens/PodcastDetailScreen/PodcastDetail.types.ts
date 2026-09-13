@@ -5,6 +5,7 @@ export interface PodcastDetailViewProps {
   onEpisodePress: (episodeId: string) => void;
   onPlayEpisode: (episode: Episode, podcast: Podcast) => void;
   onUnsubscribe: () => void;
+  onViewCompleted: () => void;
 }
 
 export interface FormattedEpisode {

@@ -20,3 +20,23 @@ export interface HistoryStore {
   clearHistory: () => void;
   setHistory: (history: ListeningHistory[]) => void;
 }
+
+/**
+ * A ListeningHistory entry formatted for display.
+ *
+ * Lives in models rather than a screen's types because Profile,
+ * ListeningHistory, CompletedEpisodes and the CardHistoryItem component all
+ * consume it; keeping it under ProfileScreen forced cross-screen imports that
+ * break the layering rule.
+ */
+export interface FormattedHistoryItem {
+  id: string;
+  episodeTitle: string;
+  displayTitle: string;
+  podcastTitle: string;
+  podcastArtworkUrl: string;
+  completedAt: string;
+  formattedCompletedAt: string;
+  completionPercentage: number;
+  formattedCompletionPercentage: string;
+}

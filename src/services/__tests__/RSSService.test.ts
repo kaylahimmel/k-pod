@@ -333,4 +333,130 @@ describe('RSSService', () => {
       }
     });
   });
+  describe('fetch timeouts', () => {
+    it('should report a timeout rather than hanging when a feed stalls', async () => {
+      // A hung feed used to stall Promise.all in refreshAllPodcasts forever,
+      // which meant lastRefreshTime never updated and every foreground fired
+      // another parallel storm of hanging requests
+      const abortError = new Error('The operation was aborted');
+      abortError.name = 'AbortError';
+      global.fetch = jest.fn(() => Promise.reject(abortError));
+
+      const result = await RSSService.fetchAndParseFeed(
+        'https://example.com/feed.xml',
+      );
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toMatch(/timed out/i);
+      }
+    });
+
+    it('should pass an abort signal to fetch', async () => {
+      const spy = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          text: () => Promise.resolve(MOCK_RSS_XML),
+        } as Response),
+      );
+      global.fetch = spy;
+
+      await RSSService.fetchAndParseFeed('https://example.com/feed.xml');
+
+      expect(spy).toHaveBeenCalledWith(
+        'https://example.com/feed.xml',
+        expect.objectContaining({ signal: expect.anything() }),
+      );
+    });
+  });
+  describe('episode link', () => {
+    it('should capture the episode web link from the feed', async () => {
+      // Episode carried only audioUrl (a raw .mp3), which is a poor thing to
+      // share. RSS <link> is the human-facing episode page.
+      global.fetch = mockFetchResponse(MOCK_RSS_XML);
+
+      const result = await RSSService.transformPodcastFromRSS(
+        'https://example.com/feed.xml',
+      );
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.episodes[0].link).toBe(
+          'https://example.com/episodes/1',
+        );
+      }
+    });
+
+    it('should leave link undefined when the feed omits it', async () => {
+      global.fetch = mockFetchResponse(MOCK_RSS_XML);
+
+      const result = await RSSService.transformPodcastFromRSS(
+        'https://example.com/feed.xml',
+      );
+
+      if (result.success) {
+        expect(result.data.episodes[1].link).toBeUndefined();
+      }
+    });
+  });
+  describe('createPodcastFromDiscovery', () => {
+    const discoveryPodcast = {
+      id: 'itunes-123',
+      title: 'Discovery Title',
+      author: 'Discovery Author',
+      feedUrl: 'https://example.com/feed.xml',
+      artworkUrl: 'https://example.com/discovery-art.jpg',
+      genre: 'Comedy',
+      episodeCount: 2,
+      description: 'Discovery description',
+    };
+
+    it('should merge discovery metadata over the parsed feed', async () => {
+      // Discovery artwork and titles are higher quality than most feeds', so
+      // they win; the feed supplies the episodes
+      global.fetch = mockFetchResponse(MOCK_RSS_XML);
+
+      const result =
+        await RSSService.createPodcastFromDiscovery(discoveryPodcast);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.id).toBe('itunes-123');
+        expect(result.data.title).toBe('Discovery Title');
+        expect(result.data.artworkUrl).toBe(
+          'https://example.com/discovery-art.jpg',
+        );
+        expect(result.data.episodes.length).toBeGreaterThan(0);
+      }
+    });
+
+    it('should fall back to feed values when discovery fields are blank', async () => {
+      global.fetch = mockFetchResponse(MOCK_RSS_XML);
+
+      const result = await RSSService.createPodcastFromDiscovery({
+        ...discoveryPodcast,
+        title: '',
+        author: '',
+        artworkUrl: '',
+        description: undefined,
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.title).toBe('Test Podcast');
+        expect(result.data.author).toBe('Test Author');
+      }
+    });
+
+    it('should surface a failure when the feed cannot be fetched', async () => {
+      global.fetch = mockFetchResponse('', false, 404);
+
+      const result =
+        await RSSService.createPodcastFromDiscovery(discoveryPodcast);
+
+      expect(result.success).toBe(false);
+    });
+  });
 });

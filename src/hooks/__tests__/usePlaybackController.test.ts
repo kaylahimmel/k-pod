@@ -8,6 +8,7 @@ import { StorageService } from '../../services';
 import { playerStore } from '../../stores/playerStore';
 import { queueStore } from '../../stores/queueStore';
 import { settingsStore } from '../../stores/settingsStore';
+import { podcastStore } from '../../stores/podcastStore';
 import {
   createMockEpisode,
   createMockPodcast,
@@ -151,6 +152,8 @@ describe('usePlaybackController', () => {
       await waitFor(() => {
         expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
           mockEpisode,
+          // podcast is passed through for lock screen metadata
+          expect.objectContaining({ id: expect.any(String) }),
         );
         expect(AudioPlayerService.setPlaybackSpeed).toHaveBeenCalled();
         expect(AudioPlayerService.play).toHaveBeenCalled();
@@ -351,6 +354,8 @@ describe('usePlaybackController', () => {
       await waitFor(() => {
         expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
           mockEpisode2,
+          // podcast is passed through for lock screen metadata
+          expect.objectContaining({ id: expect.any(String) }),
         );
       });
     });
@@ -371,6 +376,8 @@ describe('usePlaybackController', () => {
       await waitFor(() => {
         expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
           mockEpisode,
+          // podcast is passed through for lock screen metadata
+          expect.objectContaining({ id: expect.any(String) }),
         );
       });
     });
@@ -450,7 +457,43 @@ describe('usePlaybackController', () => {
         expect(queueStore.getState().queue).toHaveLength(1);
         expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
           mockEpisode2,
+          // podcast is passed through for lock screen metadata
+          expect.objectContaining({ id: expect.any(String) }),
         );
+      });
+    });
+
+    it('should mark the finished episode as played on the podcast', async () => {
+      // History and episode.played are separate records of "completed".
+      // Only history was written, so the Completed screen stayed empty no
+      // matter how many episodes the user finished.
+      act(() => {
+        podcastStore.setState({
+          podcasts: [{ ...mockPodcast, episodes: [{ ...mockEpisode }] }],
+        });
+        playerStore.getState().setCurrentEpisode(mockEpisode);
+        playerStore.getState().setCurrentPodcast(mockPodcast);
+        playerStore.getState().setDuration(3600);
+      });
+
+      let onEndCallback: (() => void) | null = null;
+      (AudioPlayerService.setOnEnd as jest.Mock).mockImplementation((cb) => {
+        onEndCallback = cb;
+      });
+
+      renderHook(() => usePlaybackEvents());
+
+      await act(async () => {
+        if (onEndCallback) onEndCallback();
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      });
+
+      await waitFor(() => {
+        const episode = podcastStore
+          .getState()
+          .podcasts.find((p) => p.id === mockPodcast.id)
+          ?.episodes.find((e) => e.id === mockEpisode.id);
+        expect(episode?.played).toBe(true);
       });
     });
 

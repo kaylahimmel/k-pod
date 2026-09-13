@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
     borderColor: COLORS.border,
     alignItems: 'center',
   },
-  archivedButton: {
+  completedButton: {
     flex: 1,
   },
   footerButtonText: {

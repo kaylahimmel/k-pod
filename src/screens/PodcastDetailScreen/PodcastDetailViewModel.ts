@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { formatPodcastDetail } from './PodcastDetailPresenter';
 import { Episode, Podcast, QueueItem } from '../../models';
 import { usePodcastStore, useQueueStore, useToast } from '../../hooks';
-import { RSSService } from '../../services/RSSService';
+import { RefreshService } from '../../services/RefreshService';
 
 // ViewModel: Manages state and logic
 export const usePodcastDetailViewModel = (
@@ -16,38 +16,32 @@ export const usePodcastDetailViewModel = (
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showAllEpisodes, setShowAllEpisodes] = useState(false);
   const toast = useToast();
-  const { podcasts, loading, updatePodcastEpisodes } = usePodcastStore();
+  const { podcasts, loading } = usePodcastStore();
   const { addToQueue, queue } = useQueueStore();
   const podcast = podcasts.find((p) => p.id === podcastId);
   // Format podcast for display
   const formattedPodcast = podcast ? formatPodcastDetail(podcast) : null;
 
-  // Refreshes episodes for this podcast by fetching latest from RSS feed
+  // Refreshes episodes for this podcast via RefreshService, which owns the
+  // fetch/diff/store-update sequence shared with the Library pull-to-refresh
   const handleEpisodeRefresh = useCallback(async () => {
     if (!podcast) return;
 
     setRefreshing(true);
+    const result = await RefreshService.refreshPodcast(podcast);
+    setRefreshing(false);
 
-    const result = await RSSService.refreshEpisodes(podcast.id, podcast.rssUrl);
-
-    if (result.success && result.data) {
-      const existingIds = new Set(podcast.episodes.map((ep) => ep.id));
-      const newEpisodes = result.data.filter((ep) => !existingIds.has(ep.id));
-      updatePodcastEpisodes(podcast.id, result.data);
-
-      if (newEpisodes.length > 0) {
-        toast.showToast(
-          `Found ${newEpisodes.length} new episode${newEpisodes.length === 1 ? '' : 's'}`,
-        );
-      } else {
-        toast.showToast('No new episodes');
-      }
-    } else {
+    if (!result.success) {
       toast.showToast('Failed to refresh episodes');
+      return;
     }
 
-    setRefreshing(false);
-  }, [podcast, updatePodcastEpisodes, toast]);
+    toast.showToast(
+      result.newEpisodeCount > 0
+        ? `Found ${result.newEpisodeCount} new episode${result.newEpisodeCount === 1 ? '' : 's'}`
+        : 'No new episodes',
+    );
+  }, [podcast, toast]);
 
   const handleEpisodeUnsubscribe = useCallback(() => {
     Alert.alert(
