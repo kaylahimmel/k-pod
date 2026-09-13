@@ -151,6 +151,8 @@ describe('usePlaybackController', () => {
       await waitFor(() => {
         expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
           mockEpisode,
+          // podcast is passed through for lock screen metadata
+          expect.objectContaining({ id: expect.any(String) }),
         );
         expect(AudioPlayerService.setPlaybackSpeed).toHaveBeenCalled();
         expect(AudioPlayerService.play).toHaveBeenCalled();
@@ -351,6 +353,8 @@ describe('usePlaybackController', () => {
       await waitFor(() => {
         expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
           mockEpisode2,
+          // podcast is passed through for lock screen metadata
+          expect.objectContaining({ id: expect.any(String) }),
         );
       });
     });
@@ -371,6 +375,8 @@ describe('usePlaybackController', () => {
       await waitFor(() => {
         expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
           mockEpisode,
+          // podcast is passed through for lock screen metadata
+          expect.objectContaining({ id: expect.any(String) }),
         );
       });
     });
@@ -450,6 +456,8 @@ describe('usePlaybackController', () => {
         expect(queueStore.getState().queue).toHaveLength(1);
         expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
           mockEpisode2,
+          // podcast is passed through for lock screen metadata
+          expect.objectContaining({ id: expect.any(String) }),
         );
       });
     });

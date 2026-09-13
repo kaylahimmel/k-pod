@@ -71,32 +71,6 @@ export function groupPodcastsByGenre(
 }
 
 /**
- * Gets unique genres from a list of podcasts
- */
-export function getUniqueGenres(podcasts: DiscoveryPodcast[]): string[] {
-  const genres = new Set<string>();
-  podcasts.forEach((podcast) => {
-    if (podcast.genre) {
-      genres.add(podcast.genre);
-    }
-  });
-  return Array.from(genres).sort();
-}
-
-/**
- * Filters podcasts by genre
- */
-export function filterByGenre(
-  podcasts: DiscoveryPodcast[],
-  genre: string,
-): DiscoveryPodcast[] {
-  if (!genre || genre === 'All') {
-    return podcasts;
-  }
-  return podcasts.filter((p) => p.genre === genre);
-}
-
-/**
  * Filters out podcasts that are already subscribed
  */
 export function filterOutSubscribed(

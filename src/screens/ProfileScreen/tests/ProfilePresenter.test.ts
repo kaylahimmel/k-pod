@@ -14,7 +14,6 @@ import {
   formatUser,
   formatHistoryItem,
   formatHistoryItems,
-  getRecentHistory,
   calculateTotalListeningTime,
   countCompletedEpisodes,
   formatCountLabel,
@@ -205,54 +204,6 @@ describe('formatHistoryItems', () => {
 
   it('should return empty array for empty input', () => {
     expect(formatHistoryItems([])).toEqual([]);
-  });
-});
-
-describe('getRecentHistory', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2024-01-20T12:00:00Z'));
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
-  it('should return most recent items', () => {
-    const items = [
-      createMockListeningHistory({
-        episode: createMockEpisode({ id: 'old', title: 'Old Episode' }),
-        completedAt: new Date('2024-01-10T12:00:00Z').toISOString(),
-      }),
-      createMockListeningHistory({
-        episode: createMockEpisode({ id: 'new', title: 'New Episode' }),
-        completedAt: new Date('2024-01-19T12:00:00Z').toISOString(),
-      }),
-      createMockListeningHistory({
-        episode: createMockEpisode({ id: 'mid', title: 'Mid Episode' }),
-        completedAt: new Date('2024-01-15T12:00:00Z').toISOString(),
-      }),
-    ];
-
-    const recent = getRecentHistory(items, 2);
-
-    expect(recent).toHaveLength(2);
-    expect(recent[0].episodeTitle).toBe('New Episode');
-    expect(recent[1].episodeTitle).toBe('Mid Episode');
-  });
-
-  it('should default to 3 items', () => {
-    const items = createMockListeningHistoryItems(5);
-    const recent = getRecentHistory(items);
-
-    expect(recent).toHaveLength(3);
-  });
-
-  it('should return all items if less than limit', () => {
-    const items = createMockListeningHistoryItems(2);
-    const recent = getRecentHistory(items, 5);
-
-    expect(recent).toHaveLength(2);
   });
 });
 

@@ -291,3 +291,28 @@ describe('useToast', () => {
     });
   });
 });
+
+describe('useToast unmount cleanup', () => {
+  it('should clear the auto-dismiss timer when the hook unmounts', () => {
+    // Without this, the timer fires after unmount and calls setState on a
+    // component that no longer exists
+    jest.useFakeTimers();
+    const clearSpy = jest.spyOn(global, 'clearTimeout');
+
+    const { result, unmount } = renderHook(() => useToast(3000));
+
+    act(() => {
+      result.current.showToast('hello');
+    });
+
+    const pendingBefore = jest.getTimerCount();
+    unmount();
+
+    expect(pendingBefore).toBeGreaterThan(0);
+    expect(clearSpy).toHaveBeenCalled();
+    expect(jest.getTimerCount()).toBe(0);
+
+    clearSpy.mockRestore();
+    jest.useRealTimers();
+  });
+});

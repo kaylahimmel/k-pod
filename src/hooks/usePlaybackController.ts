@@ -45,7 +45,8 @@ async function loadAndPlay(episode: Episode, podcast: Podcast): Promise<void> {
 
   // Load the episode (this may take several seconds)
   // Note: loadEpisode handles unloading the previous player
-  const loadResult = await AudioPlayerService.loadEpisode(episode);
+  // The podcast is passed for lock screen / Control Center metadata
+  const loadResult = await AudioPlayerService.loadEpisode(episode, podcast);
   if (!loadResult.success) {
     console.error('Failed to load episode:', loadResult.error);
     return;

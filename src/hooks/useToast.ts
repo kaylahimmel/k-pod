@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Animated } from 'react-native';
 
 interface UseToastReturn {
@@ -16,6 +16,18 @@ export const useToast = (duration: number = 3000): UseToastReturn => {
   const translateY = useRef(new Animated.Value(100)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cancel the pending auto-dismiss on unmount, or the timer fires against a
+  // component that no longer exists
+  useEffect(
+    () => () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    },
+    [],
+  );
 
   const dismissToast = useCallback(() => {
     // Clear any existing timer

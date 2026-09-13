@@ -1,5 +1,6 @@
 import { XMLParser } from 'fast-xml-parser';
 import { Episode, Podcast, RSSFeed, RSSItem, ServiceResult } from '../models';
+import { fetchWithTimeout, isTimeoutError } from '../utils';
 
 // ============================================
 // PARSER CONFIGURATION
@@ -107,7 +108,7 @@ async function fetchAndParseFeed(
   rssUrl: string,
 ): Promise<ServiceResult<RSSFeed>> {
   try {
-    const response = await fetch(rssUrl);
+    const response = await fetchWithTimeout(rssUrl);
 
     if (!response.ok) {
       return {
@@ -129,6 +130,12 @@ async function fetchAndParseFeed(
 
     return { success: true, data: feed };
   } catch (error) {
+    if (isTimeoutError(error)) {
+      return {
+        success: false,
+        error: 'Feed request timed out. Check your connection and try again.',
+      };
+    }
     const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `RSS parsing failed: ${message}` };
   }

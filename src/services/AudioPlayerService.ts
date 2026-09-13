@@ -1,4 +1,5 @@
 import {
+  AudioMetadata,
   AudioPlayer,
   AudioStatus,
   createAudioPlayer,
@@ -12,6 +13,7 @@ import {
   OnProgressCallback,
   ServiceResult,
   Episode,
+  Podcast,
 } from '../models';
 
 // ============================================
@@ -125,6 +127,9 @@ function unloadCurrentPlayer(): void {
   }
   if (playerInstance) {
     try {
+      // Drop the lock screen / Control Center session first, or the OS keeps
+      // showing transport controls for a player that no longer exists
+      playerInstance.setActiveForLockScreen(false);
       // remove() only deregisters the player natively; without an explicit
       // pause() the old audio keeps playing until garbage collection
       playerInstance.pause();
@@ -141,10 +146,33 @@ function unloadCurrentPlayer(): void {
 // MAIN FUNCTIONS
 // ============================================
 /**
+ * Builds the now-playing metadata the OS shows on the lock screen,
+ * Control Center, the Android media notification, and - because both car
+ * platforms surface the same media session - CarPlay and Android Auto.
+ */
+function buildLockScreenMetadata(
+  episode: Episode,
+  podcast?: Podcast,
+): AudioMetadata {
+  return {
+    title: episode.title,
+    artist: podcast?.author,
+    albumTitle: podcast?.title,
+    artworkUrl: podcast?.artworkUrl,
+  };
+}
+
+/**
  * Load an episode for playback
  * Unloads any previously loaded episode
+ *
+ * @param podcast - Optional, used only for lock screen metadata. Playback
+ *   still works without it, so callers that lack the podcast aren't blocked.
  */
-async function loadEpisode(episode: Episode): Promise<ServiceResult<void>> {
+async function loadEpisode(
+  episode: Episode,
+  podcast?: Podcast,
+): Promise<ServiceResult<void>> {
   // Configure audio mode if not already done
   const modeResult = await configureAudioMode();
   if (!modeResult.success) {
@@ -166,6 +194,18 @@ async function loadEpisode(episode: Episode): Promise<ServiceResult<void>> {
 
     playerInstance = player;
     currentEpisodeId = episode.id;
+
+    // Publish now-playing info so the OS transport controls work. Failing
+    // here must not fail the load - audio plays fine without a lock screen.
+    try {
+      player.setActiveForLockScreen(
+        true,
+        buildLockScreenMetadata(episode, podcast),
+        { showSeekForward: true, showSeekBackward: true },
+      );
+    } catch {
+      // Lock screen controls unavailable on this platform; ignore
+    }
 
     return { success: true, data: undefined };
   } catch (error) {

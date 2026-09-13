@@ -210,6 +210,8 @@ describe('DiscoveryService', () => {
 
       expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining('limit=10'),
+        // second arg carries the abort signal added for request timeouts
+        expect.objectContaining({ signal: expect.anything() }),
       );
     });
   });
@@ -236,6 +238,8 @@ describe('DiscoveryService', () => {
 
       expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining('genreId=1318'),
+        // second arg carries the abort signal added for request timeouts
+        expect.objectContaining({ signal: expect.anything() }),
       );
     });
 

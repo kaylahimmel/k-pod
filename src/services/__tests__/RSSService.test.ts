@@ -333,4 +333,42 @@ describe('RSSService', () => {
       }
     });
   });
+  describe('fetch timeouts', () => {
+    it('should report a timeout rather than hanging when a feed stalls', async () => {
+      // A hung feed used to stall Promise.all in refreshAllPodcasts forever,
+      // which meant lastRefreshTime never updated and every foreground fired
+      // another parallel storm of hanging requests
+      const abortError = new Error('The operation was aborted');
+      abortError.name = 'AbortError';
+      global.fetch = jest.fn(() => Promise.reject(abortError));
+
+      const result = await RSSService.fetchAndParseFeed(
+        'https://example.com/feed.xml',
+      );
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toMatch(/timed out/i);
+      }
+    });
+
+    it('should pass an abort signal to fetch', async () => {
+      const spy = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          text: () => Promise.resolve(MOCK_RSS_XML),
+        } as Response),
+      );
+      global.fetch = spy;
+
+      await RSSService.fetchAndParseFeed('https://example.com/feed.xml');
+
+      expect(spy).toHaveBeenCalledWith(
+        'https://example.com/feed.xml',
+        expect.objectContaining({ signal: expect.anything() }),
+      );
+    });
+  });
 });

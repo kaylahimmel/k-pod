@@ -45,20 +45,6 @@ export function formatAllHistory(
 }
 
 /**
- * Gets the original episode and podcast IDs from a formatted history item
- * The id format is "episodeId-index", so we extract just the episode portion
- */
-export function extractEpisodeIdFromHistoryItem(
-  item: FormattedHistoryItem,
-): string {
-  // The id is formatted as "episodeId-index", so we need to remove the index suffix
-  const parts = item.id.split('-');
-  // Remove the last part (index) and rejoin in case episodeId contains dashes
-  parts.pop();
-  return parts.join('-');
-}
-
-/**
  * Gets a summary message for the history screen header
  */
 export function getHistorySummary(itemCount: number): string {

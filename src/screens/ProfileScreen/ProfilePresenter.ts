@@ -131,22 +131,6 @@ export function formatHistoryItems(
 }
 
 /**
- * Gets the most recent history items (limited count)
- */
-export function getRecentHistory(
-  history: ListeningHistory[],
-  limit: number = 3,
-): FormattedHistoryItem[] {
-  // Newest first. completedAt is an ISO string, so it needs parsing to compare.
-  const sorted = [...history].sort(
-    (a, b) =>
-      new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime(),
-  );
-
-  return formatHistoryItems(sorted.slice(0, limit));
-}
-
-/**
  * Calculates total listening time from history
  * Returns total seconds listened
  */

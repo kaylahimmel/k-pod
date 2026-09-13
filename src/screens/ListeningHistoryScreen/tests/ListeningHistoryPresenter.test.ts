@@ -7,7 +7,6 @@ import {
 import {
   formatHistoryItemForList,
   formatAllHistory,
-  extractEpisodeIdFromHistoryItem,
   getHistorySummary,
 } from '../ListeningHistoryPresenter';
 
@@ -120,30 +119,6 @@ describe('formatAllHistory', () => {
       expect(item).toHaveProperty('formattedCompletedAt');
       expect(item).toHaveProperty('formattedCompletionPercentage');
     });
-  });
-});
-
-describe('extractEpisodeIdFromHistoryItem', () => {
-  it('should extract episode ID from formatted item', () => {
-    const history = createMockListeningHistory({
-      episode: createMockEpisode({ id: 'episode-123' }),
-    });
-    const formatted = formatHistoryItemForList(history, 5);
-
-    const episodeId = extractEpisodeIdFromHistoryItem(formatted);
-
-    expect(episodeId).toBe('episode-123');
-  });
-
-  it('should handle episode IDs with dashes', () => {
-    const history = createMockListeningHistory({
-      episode: createMockEpisode({ id: 'ep-with-many-dashes' }),
-    });
-    const formatted = formatHistoryItemForList(history, 0);
-
-    const episodeId = extractEpisodeIdFromHistoryItem(formatted);
-
-    expect(episodeId).toBe('ep-with-many-dashes');
   });
 });
 

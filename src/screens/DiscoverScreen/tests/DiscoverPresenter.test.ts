@@ -4,8 +4,6 @@ import {
   formatDiscoveryPodcast,
   formatDiscoveryPodcasts,
   groupPodcastsByGenre,
-  getUniqueGenres,
-  filterByGenre,
   filterOutSubscribed,
   isSubscribed,
 } from '../DiscoverPresenter';
@@ -131,63 +129,6 @@ describe('groupPodcastsByGenre', () => {
 
   it('should return empty array for empty input', () => {
     expect(groupPodcastsByGenre([])).toEqual([]);
-  });
-});
-
-describe('getUniqueGenres', () => {
-  it('should return unique genres sorted alphabetically', () => {
-    const podcasts = [
-      createMockDiscoveryPodcast({ genre: 'Technology' }),
-      createMockDiscoveryPodcast({ genre: 'Comedy' }),
-      createMockDiscoveryPodcast({ genre: 'Technology' }),
-      createMockDiscoveryPodcast({ genre: 'Arts' }),
-    ];
-
-    const genres = getUniqueGenres(podcasts);
-
-    expect(genres).toEqual(['Arts', 'Comedy', 'Technology']);
-  });
-
-  it('should exclude empty genres', () => {
-    const podcasts = [
-      createMockDiscoveryPodcast({ genre: 'Technology' }),
-      createMockDiscoveryPodcast({ genre: '' }),
-    ];
-
-    const genres = getUniqueGenres(podcasts);
-
-    expect(genres).toEqual(['Technology']);
-  });
-
-  it('should return empty array for empty input', () => {
-    expect(getUniqueGenres([])).toEqual([]);
-  });
-});
-
-describe('filterByGenre', () => {
-  const podcasts = [
-    createMockDiscoveryPodcast({ id: '1', genre: 'Technology' }),
-    createMockDiscoveryPodcast({ id: '2', genre: 'Comedy' }),
-    createMockDiscoveryPodcast({ id: '3', genre: 'Technology' }),
-  ];
-
-  it('should filter podcasts by genre', () => {
-    const filtered = filterByGenre(podcasts, 'Technology');
-
-    expect(filtered).toHaveLength(2);
-    expect(filtered.every((p) => p.genre === 'Technology')).toBe(true);
-  });
-
-  it("should return all podcasts for 'All' genre", () => {
-    const filtered = filterByGenre(podcasts, 'All');
-
-    expect(filtered).toHaveLength(3);
-  });
-
-  it('should return all podcasts for empty genre', () => {
-    const filtered = filterByGenre(podcasts, '');
-
-    expect(filtered).toHaveLength(3);
   });
 });
 

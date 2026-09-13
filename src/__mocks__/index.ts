@@ -50,19 +50,6 @@ export {
   createMockPlayerPodcast,
 } from './mockFullPlayer';
 
-// Service mocks (for mocking API/storage services in tests)
-export {
-  createMockStorageService,
-  createMockDiscoveryService,
-  createMockRSSService,
-  createMockAudioPlayerService,
-  MOCK_STORAGE_SERVICE,
-  MOCK_DISCOVERY_SERVICE,
-  MOCK_RSS_SERVICE,
-  MOCK_AUDIO_PLAYER_SERVICE,
-  MOCK_ALL_SERVICES,
-} from './mockServices';
-
 // Component mocks (formatted types for UI component testing)
 export {
   createMockFormattedDiscoveryPodcast,
