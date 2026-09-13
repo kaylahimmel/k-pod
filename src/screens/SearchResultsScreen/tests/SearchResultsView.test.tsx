@@ -16,6 +16,7 @@ jest.mock('../../../services', () => ({
     searchPodcasts: jest.fn(),
   },
   RSSService: {
+    createPodcastFromDiscovery: jest.fn(),
     transformPodcastFromRSS: jest.fn(),
   },
 }));
@@ -37,7 +38,7 @@ describe('SearchResultsView', () => {
       success: true,
       data: mockResults,
     });
-    (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValue({
+    (RSSService.createPodcastFromDiscovery as jest.Mock).mockResolvedValue({
       success: true,
       data: createMockPodcast(),
     });
@@ -216,15 +217,19 @@ describe('SearchResultsView', () => {
       fireEvent.press(subscribeButton);
 
       await waitFor(() => {
-        expect(RSSService.transformPodcastFromRSS).toHaveBeenCalledWith(
-          'https://example.com/single-feed.xml',
+        // The service now takes the whole discovery record, not just the URL
+        expect(RSSService.createPodcastFromDiscovery).toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: 'single-1',
+            feedUrl: 'https://example.com/single-feed.xml',
+          }),
         );
         expect(addPodcastSpy).toHaveBeenCalled();
       });
     });
 
     it('should show alert when subscription fails', async () => {
-      (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValue({
+      (RSSService.createPodcastFromDiscovery as jest.Mock).mockResolvedValue({
         success: false,
         error: 'Failed to fetch RSS feed',
       });

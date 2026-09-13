@@ -1,3 +1,4 @@
+import { isSubscribed } from '../../utils';
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { usePodcastStore, useToast, useQueueStore } from '../../hooks';
@@ -6,7 +7,6 @@ import { DiscoveryPodcast, Episode, Podcast, QueueItem } from '../../models';
 import {
   formatPodcastPreview,
   formatPreviewEpisodes,
-  isSubscribed,
 } from './PodcastPreviewPresenter';
 
 // Subscribe button display state type
@@ -130,20 +130,10 @@ export const usePodcastPreviewViewModel = (
     setIsSubscribing(true);
 
     try {
-      const result = await RSSService.transformPodcastFromRSS(podcast.feedUrl);
+      const result = await RSSService.createPodcastFromDiscovery(podcast);
 
       if (result.success) {
-        // Use RSS data but preserve discovery metadata for better quality
-        const podcastToAdd: Podcast = {
-          ...result.data,
-          id: podcast.id,
-          title: podcast.title || result.data.title,
-          author: podcast.author || result.data.author,
-          artworkUrl: podcast.artworkUrl || result.data.artworkUrl,
-          description: podcast.description || result.data.description,
-        };
-
-        addPodcast(podcastToAdd);
+        addPodcast(result.data);
         toast.showToast(`Subscribed to "${podcast.title}"`);
         onSubscribe();
       } else {

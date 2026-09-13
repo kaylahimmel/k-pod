@@ -1,33 +1,11 @@
-import { ListeningHistory } from '../../models';
-import { FormattedHistoryItem } from '../ProfileScreen/Profile.types';
-import {
-  formatRelativeDate,
-  formatCompletionPercentage,
-} from '../ProfileScreen/ProfilePresenter';
-import { truncateText } from '../../utils';
+import { FormattedHistoryItem, ListeningHistory } from '../../models';
 
-/**
- * Formats a listening history item for display in the full history list
- * Similar to ProfilePresenter.formatHistoryItem but optimized for the history screen
- */
-export function formatHistoryItemForList(
-  item: ListeningHistory,
-  index: number,
-): FormattedHistoryItem {
-  return {
-    id: `${item.episode.id}-${index}`,
-    episodeTitle: item.episode.title,
-    displayTitle: truncateText(item.episode.title, 50),
-    podcastTitle: item.podcast.title,
-    podcastArtworkUrl: item.podcast.artworkUrl,
-    completedAt: item.completedAt,
-    formattedCompletedAt: formatRelativeDate(item.completedAt),
-    completionPercentage: item.completionPercentage,
-    formattedCompletionPercentage: formatCompletionPercentage(
-      item.completionPercentage,
-    ),
-  };
-}
+import {
+  formatCompletionPercentage,
+  formatHistoryItemForList,
+  formatRelativeDate,
+  truncateText,
+} from '../../utils';
 
 /**
  * Formats and sorts all history items for display (most recent first)

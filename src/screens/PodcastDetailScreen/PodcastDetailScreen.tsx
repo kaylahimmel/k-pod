@@ -34,6 +34,11 @@ export const PodcastDetailScreen = ({
     [playEpisode],
   );
 
+  // Navigation handler: show episodes already completed for this podcast
+  const handleViewCompletedNav = useCallback(() => {
+    navigation.navigate('CompletedEpisodes', { podcastId });
+  }, [navigation, podcastId]);
+
   // Navigation handler: Remove podcast and go back
   const handleUnsubscribeNav = useCallback(async () => {
     // Check if the currently playing episode belongs to this podcast
@@ -68,6 +73,7 @@ export const PodcastDetailScreen = ({
       onEpisodePress={handleEpisodePressNav}
       onPlayEpisode={handlePlayEpisodeNav}
       onUnsubscribe={handleUnsubscribeNav}
+      onViewCompleted={handleViewCompletedNav}
     />
   );
 };

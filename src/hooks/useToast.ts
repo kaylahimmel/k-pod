@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Animated } from 'react-native';
 
-interface UseToastReturn {
+export interface UseToastReturn {
   message: string;
   visible: boolean;
   translateY: Animated.Value;

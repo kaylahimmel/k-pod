@@ -1,8 +1,7 @@
+import { formatEpisodeCount, isSubscribed } from '../../../utils';
 import {
-  formatEpisodeCount,
   formatSearchResult,
   formatSearchResults,
-  isSubscribed,
   formatResultsHeader,
 } from '../SearchResultsPresenter';
 import { createMockDiscoveryPodcast } from '../../../__mocks__';

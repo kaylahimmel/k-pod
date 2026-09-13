@@ -15,6 +15,7 @@ const MOCK_RSS_XML = `<?xml version="1.0" encoding="UTF-8"?>
     </image>
     <item>
       <title>Episode 1</title>
+      <link>https://example.com/episodes/1</link>
       <description>First episode description</description>
       <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
       <guid>episode-1-guid</guid>

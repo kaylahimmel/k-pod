@@ -1,3 +1,4 @@
+import { formatHistoryItemForList } from '../../../utils';
 import {
   createMockListeningHistory,
   createMockListeningHistoryItems,
@@ -5,7 +6,6 @@ import {
   createMockEpisode,
 } from '../../../__mocks__';
 import {
-  formatHistoryItemForList,
   formatAllHistory,
   getHistorySummary,
 } from '../ListeningHistoryPresenter';

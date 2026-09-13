@@ -77,6 +77,21 @@ describe('PodcastDetailScreen', () => {
     });
   });
 
+  describe('Navigation - Completed episodes', () => {
+    it('should navigate to CompletedEpisodes when the Completed button is pressed', () => {
+      // Regression guard: this button shipped with an empty onPress, so
+      // tapping it silently did nothing
+      const { getByText } = renderPodcastDetailScreen();
+
+      fireEvent.press(getByText('Completed'));
+
+      expect(mockNavigation.navigate).toHaveBeenCalledWith(
+        'CompletedEpisodes',
+        { podcastId: 'podcast-1' },
+      );
+    });
+  });
+
   describe('Navigation - Unsubscribe', () => {
     it('should navigate back and remove podcast when unsubscribe is confirmed', async () => {
       const removePodcastSpy = jest.fn();

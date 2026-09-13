@@ -1,3 +1,4 @@
+import { isSubscribed } from '../../utils';
 import { useState, useCallback, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { usePodcastStore, useToast } from '../../hooks';
@@ -6,7 +7,6 @@ import { DiscoveryPodcast, Podcast } from '../../models';
 import {
   formatSearchResults,
   formatResultsHeader,
-  isSubscribed,
 } from './SearchResultsPresenter';
 
 /**
@@ -113,22 +113,10 @@ export const useSearchResultsViewModel = (
   const handleSubscribe = useCallback(
     async (podcast: DiscoveryPodcast) => {
       try {
-        const result = await RSSService.transformPodcastFromRSS(
-          podcast.feedUrl,
-        );
+        const result = await RSSService.createPodcastFromDiscovery(podcast);
 
         if (result.success) {
-          // Use RSS data but preserve discovery metadata for better quality
-          const podcastToAdd: Podcast = {
-            ...result.data,
-            id: podcast.id,
-            title: podcast.title || result.data.title,
-            author: podcast.author || result.data.author,
-            artworkUrl: podcast.artworkUrl || result.data.artworkUrl,
-            description: podcast.description || result.data.description,
-          };
-
-          addPodcast(podcastToAdd);
+          addPodcast(result.data);
           toast.showToast(`Subscribed to "${podcast.title}"`);
         } else {
           Alert.alert(

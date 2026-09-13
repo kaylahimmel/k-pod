@@ -11,6 +11,7 @@ import {
 // Mock the services
 jest.mock('../../../services', () => ({
   RSSService: {
+    createPodcastFromDiscovery: jest.fn(),
     transformPodcastFromRSS: jest.fn(),
   },
 }));
@@ -76,6 +77,10 @@ describe('usePodcastPreviewViewModel', () => {
       removeFromQueue: jest.fn(),
     });
     (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValue({
+      success: true,
+      data: mockRSSPodcast,
+    });
+    (RSSService.createPodcastFromDiscovery as jest.Mock).mockResolvedValue({
       success: true,
       data: mockRSSPodcast,
     });
@@ -222,7 +227,9 @@ describe('usePodcastPreviewViewModel', () => {
       expect(mockOnSubscribe).toHaveBeenCalled();
     });
 
-    it('should preserve discovery metadata when subscribing', async () => {
+    it('should hand the discovery record to the service and store its result', async () => {
+      // Merging discovery metadata over the feed now lives in
+      // RSSService.createPodcastFromDiscovery and is tested there
       const { result } = renderViewModel();
 
       await waitFor(() => {
@@ -233,21 +240,17 @@ describe('usePodcastPreviewViewModel', () => {
         await result.current.handleSubscribe();
       });
 
-      const addedPodcast = mockAddPodcast.mock.calls[0][0];
-      expect(addedPodcast.id).toBe('discovery-1');
-      expect(addedPodcast.title).toBe('Test Podcast');
+      expect(RSSService.createPodcastFromDiscovery).toHaveBeenCalledWith(
+        mockDiscoveryPodcast,
+      );
+      expect(mockAddPodcast).toHaveBeenCalledWith(mockRSSPodcast);
     });
 
     it('should show alert on subscription failure', async () => {
-      (RSSService.transformPodcastFromRSS as jest.Mock)
-        .mockResolvedValueOnce({
-          success: true,
-          data: mockRSSPodcast,
-        })
-        .mockResolvedValueOnce({
-          success: false,
-          error: 'Failed to subscribe',
-        });
+      (RSSService.createPodcastFromDiscovery as jest.Mock).mockResolvedValue({
+        success: false,
+        error: 'Failed to subscribe',
+      });
 
       const { result } = renderViewModel();
 
@@ -267,12 +270,9 @@ describe('usePodcastPreviewViewModel', () => {
     });
 
     it('should handle unexpected errors', async () => {
-      (RSSService.transformPodcastFromRSS as jest.Mock)
-        .mockResolvedValueOnce({
-          success: true,
-          data: mockRSSPodcast,
-        })
-        .mockRejectedValueOnce(new Error('Unexpected error'));
+      (RSSService.createPodcastFromDiscovery as jest.Mock).mockRejectedValue(
+        new Error('Unexpected error'),
+      );
 
       const { result } = renderViewModel();
 
@@ -306,8 +306,9 @@ describe('usePodcastPreviewViewModel', () => {
         await result.current.handleSubscribe();
       });
 
-      // transformPodcastFromRSS should only be called once (for fetching episodes on mount)
-      expect(RSSService.transformPodcastFromRSS).toHaveBeenCalledTimes(1);
+      // Mount fetches episodes via transformPodcastFromRSS; the subscribe
+      // service must not be touched at all when already subscribed
+      expect(RSSService.createPodcastFromDiscovery).not.toHaveBeenCalled();
       expect(mockAddPodcast).not.toHaveBeenCalled();
     });
   });

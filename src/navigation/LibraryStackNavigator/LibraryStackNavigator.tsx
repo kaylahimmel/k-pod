@@ -7,6 +7,7 @@ import {
   PodcastDetailScreen,
   EpisodeDetailScreen,
   DiscoverScreen,
+  CompletedEpisodesScreen,
 } from '../../screens';
 import { NavigationBackButton } from '../../components';
 
@@ -34,6 +35,15 @@ export const LibraryStackNavigator = () => {
         component={EpisodeDetailScreen}
         options={{
           title: 'Episode',
+          headerBackVisible: false,
+          headerLeft: () => <NavigationBackButton />,
+        }}
+      />
+      <Stack.Screen
+        name='CompletedEpisodes'
+        component={CompletedEpisodesScreen}
+        options={{
+          title: 'Completed',
           headerBackVisible: false,
           headerLeft: () => <NavigationBackButton />,
         }}

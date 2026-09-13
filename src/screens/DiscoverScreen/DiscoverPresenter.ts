@@ -1,23 +1,10 @@
 import { DiscoveryPodcast } from '../../models';
 import { FormattedDiscoveryPodcast } from './Discover.types';
-import { truncateText } from '../../utils';
+import { formatEpisodeCount, isSubscribed, truncateText } from '../../utils';
 
 export interface PodcastsByGenre {
   genre: string;
   podcasts: FormattedDiscoveryPodcast[];
-}
-
-/**
- * Formats episode count to a display label
- */
-export function formatEpisodeCount(count: number): string {
-  if (count === 0) {
-    return 'No episodes';
-  } else if (count === 1) {
-    return '1 episode';
-  } else {
-    return `${count} episodes`;
-  }
 }
 
 /**
@@ -82,18 +69,5 @@ export function filterOutSubscribed(
   );
   return discoveryPodcasts.filter(
     (p) => !subscribedSet.has(p.feedUrl.toLowerCase()),
-  );
-}
-
-/**
- * Checks if a podcast is already subscribed
- */
-export function isSubscribed(
-  feedUrl: string,
-  subscribedFeedUrls: string[],
-): boolean {
-  const normalizedFeedUrl = feedUrl.toLowerCase();
-  return subscribedFeedUrls.some(
-    (url) => url.toLowerCase() === normalizedFeedUrl,
   );
 }

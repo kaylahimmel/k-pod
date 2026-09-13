@@ -1,11 +1,13 @@
 import {
   formatDuration,
-  formatPublishDate,
   formatEpisodeCount,
+  formatPublishDate,
+  isSubscribed,
+} from '../../../utils';
+import {
   formatPreviewEpisode,
   formatPreviewEpisodes,
   formatPodcastPreview,
-  isSubscribed,
 } from '../PodcastPreviewPresenter';
 import {
   createMockDiscoveryPodcast,

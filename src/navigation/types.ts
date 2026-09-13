@@ -15,6 +15,7 @@ export type AuthStackParamList = {
 export type LibraryStackParamList = {
   Library: undefined;
   PodcastDetail: { podcastId: string };
+  CompletedEpisodes: { podcastId: string };
   EpisodeDetail: { episodeId: string; podcastId: string };
   Discover: undefined;
 };
@@ -62,6 +63,14 @@ export type RootStackParamList = {
 
 export type LibraryScreenProps = CompositeScreenProps<
   NativeStackScreenProps<LibraryStackParamList, 'Library'>,
+  CompositeScreenProps<
+    BottomTabScreenProps<BottomTabParamList, 'LibraryTab'>,
+    NativeStackScreenProps<RootStackParamList>
+  >
+>;
+
+export type CompletedEpisodesScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<LibraryStackParamList, 'CompletedEpisodes'>,
   CompositeScreenProps<
     BottomTabScreenProps<BottomTabParamList, 'LibraryTab'>,
     NativeStackScreenProps<RootStackParamList>

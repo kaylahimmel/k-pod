@@ -1,13 +1,11 @@
 import { createMockDiscoveryPodcast } from '../../../__mocks__';
 import {
-  formatEpisodeCount,
   formatDiscoveryPodcast,
   formatDiscoveryPodcasts,
   groupPodcastsByGenre,
   filterOutSubscribed,
-  isSubscribed,
 } from '../DiscoverPresenter';
-import { truncateText } from '../../../utils';
+import { formatEpisodeCount, isSubscribed, truncateText } from '../../../utils';
 
 describe('truncateText', () => {
   it('should return original text if shorter than max length', () => {

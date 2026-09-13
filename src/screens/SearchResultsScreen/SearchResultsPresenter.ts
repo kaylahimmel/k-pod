@@ -1,19 +1,6 @@
 import { DiscoveryPodcast } from '../../models';
 import { FormattedSearchResult } from './SearchResults.types';
-import { truncateText } from '../../utils';
-
-/**
- * Formats episode count to a display label
- */
-export function formatEpisodeCount(count: number): string {
-  if (count === 0) {
-    return 'No episodes';
-  } else if (count === 1) {
-    return '1 episode';
-  } else {
-    return `${count} episodes`;
-  }
-}
+import { formatEpisodeCount, isSubscribed, truncateText } from '../../utils';
 
 /**
  * Transforms a DiscoveryPodcast into a view-friendly format for search results
@@ -41,19 +28,6 @@ export function formatSearchResults(
   podcasts: DiscoveryPodcast[],
 ): FormattedSearchResult[] {
   return podcasts.map(formatSearchResult);
-}
-
-/**
- * Checks if a podcast is already subscribed
- */
-export function isSubscribed(
-  feedUrl: string,
-  subscribedFeedUrls: string[],
-): boolean {
-  const normalizedFeedUrl = feedUrl.toLowerCase();
-  return subscribedFeedUrls.some(
-    (url) => url.toLowerCase() === normalizedFeedUrl,
-  );
 }
 
 /**

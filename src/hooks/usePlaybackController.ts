@@ -6,7 +6,12 @@ import { useHistoryStore } from './useHistoryStore';
 import { AudioPlayerService } from '../services/AudioPlayerService';
 import { StorageService } from '../services';
 import { Episode, Podcast, PlaybackSpeed, QueueItem } from '../models';
-import { queueStore, playerStore, settingsStore } from '../stores';
+import {
+  queueStore,
+  playerStore,
+  settingsStore,
+  podcastStore,
+} from '../stores';
 
 // ============================================
 // SHARED PLAYBACK BOOKKEEPING
@@ -129,6 +134,13 @@ export const usePlaybackEvents = () => {
     if (freshEpisode && freshPodcast && freshDuration > 0) {
       const completionPercentage = 100;
       addToHistory(freshEpisode, freshPodcast, completionPercentage);
+
+      // Flag it on the podcast too. History and episode.played are separate
+      // records of "completed" and both have to be written, or the Completed
+      // screen and any played indicator stay empty while history fills up.
+      podcastStore
+        .getState()
+        .markEpisodePlayed(freshPodcast.id, freshEpisode.id);
 
       // Clear saved playback position since episode is complete
       StorageService.removePlaybackPosition(freshEpisode.id);
@@ -378,6 +390,9 @@ export const usePlaybackController = () => {
                 freshPodcast,
                 completionPercentage,
               );
+              podcastStore
+                .getState()
+                .markEpisodePlayed(freshPodcast.id, freshEpisode.id);
               // Clear saved position since it's essentially complete
               await StorageService.removePlaybackPosition(freshEpisode.id);
             }

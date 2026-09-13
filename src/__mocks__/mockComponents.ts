@@ -1,9 +1,10 @@
+import { FormattedHistoryItem } from '../models';
 import { FormattedDiscoveryPodcast } from '../screens/DiscoverScreen/Discover.types';
 import {
   FormattedEpisode,
   FormattedPodcastDetail,
 } from '../screens/PodcastDetailScreen/PodcastDetail.types';
-import { FormattedHistoryItem } from '../screens/ProfileScreen/Profile.types';
+
 import { FormattedQueueItem } from '../screens/QueueScreen/Queue.types';
 
 /**

@@ -1,10 +1,15 @@
-import { ListeningHistory, User, Podcast } from '../../models';
 import {
   FormattedHistoryItem,
-  FormattedUser,
-  ProfileStats,
-} from './Profile.types';
-import { truncateText } from '../../utils';
+  ListeningHistory,
+  Podcast,
+  User,
+} from '../../models';
+import { FormattedUser, ProfileStats } from './Profile.types';
+import {
+  formatCompletionPercentage,
+  formatRelativeDate,
+  truncateText,
+} from '../../utils';
 
 /**
  * Formats listening time in seconds to a human-readable string
@@ -27,43 +32,6 @@ export function formatListeningTime(seconds: number): string {
   }
 
   return `${hours}h ${minutes}m`;
-}
-
-/**
- * Formats a date to a relative time string or formatted date
- * Examples: "Today", "Yesterday", "3 days ago", "Jan 15"
- */
-export function formatRelativeDate(date: Date | string): string {
-  const now = new Date();
-  const targetDate = typeof date === 'string' ? new Date(date) : date;
-  const diffMs = now.getTime() - targetDate.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    return 'Today';
-  }
-
-  if (diffDays === 1) {
-    return 'Yesterday';
-  }
-
-  if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  }
-
-  const month = targetDate.toLocaleDateString('en-US', { month: 'short' });
-  const day = targetDate.getDate();
-  return `${month} ${day}`;
-}
-
-/**
- * Formats completion percentage to a display string
- */
-export function formatCompletionPercentage(percentage: number): string {
-  if (percentage >= 100) {
-    return 'Completed';
-  }
-  return `${Math.round(percentage)}% listened`;
 }
 
 /**
@@ -113,7 +81,7 @@ export function formatHistoryItem(
     podcastTitle: item.podcast.title,
     podcastArtworkUrl: item.podcast.artworkUrl,
     completedAt: item.completedAt,
-    formattedCompletedAt: formatRelativeDate(item.completedAt),
+    formattedCompletedAt: formatRelativeDate(item.completedAt, 'compact'),
     completionPercentage: item.completionPercentage,
     formattedCompletionPercentage: formatCompletionPercentage(
       item.completionPercentage,

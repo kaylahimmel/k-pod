@@ -14,6 +14,7 @@ jest.mock('../../../services', () => ({
     searchPodcasts: jest.fn(),
   },
   RSSService: {
+    createPodcastFromDiscovery: jest.fn(),
     transformPodcastFromRSS: jest.fn(),
   },
 }));
@@ -241,7 +242,7 @@ describe('useSearchResultsViewModel', () => {
   describe('handleSubscribe', () => {
     it('should subscribe to podcast successfully', async () => {
       const mockRSSPodcast = createMockPodcast();
-      (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValue({
+      (RSSService.createPodcastFromDiscovery as jest.Mock).mockResolvedValue({
         success: true,
         data: mockRSSPodcast,
       });
@@ -258,14 +259,14 @@ describe('useSearchResultsViewModel', () => {
         await result.current.handleSubscribe(mockDiscoveryPodcast);
       });
 
-      expect(RSSService.transformPodcastFromRSS).toHaveBeenCalledWith(
-        'https://example.com/feed.xml',
+      expect(RSSService.createPodcastFromDiscovery).toHaveBeenCalledWith(
+        mockDiscoveryPodcast,
       );
       expect(mockAddPodcast).toHaveBeenCalled();
     });
 
     it('should show alert on subscription failure', async () => {
-      (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValue({
+      (RSSService.createPodcastFromDiscovery as jest.Mock).mockResolvedValue({
         success: false,
         error: 'Failed to fetch RSS',
       });
@@ -290,7 +291,7 @@ describe('useSearchResultsViewModel', () => {
     });
 
     it('should handle unexpected errors', async () => {
-      (RSSService.transformPodcastFromRSS as jest.Mock).mockRejectedValue(
+      (RSSService.createPodcastFromDiscovery as jest.Mock).mockRejectedValue(
         new Error('Unexpected error'),
       );
 
