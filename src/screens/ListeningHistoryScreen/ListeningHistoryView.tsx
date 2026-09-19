@@ -1,3 +1,4 @@
+import { FormattedHistoryItem } from '../../models';
 import React from 'react';
 import {
   View,
@@ -11,7 +12,6 @@ import { styles } from './ListeningHistory.styles';
 import { COLORS } from '../../constants';
 import { CardHistoryItem } from '../../components';
 import { ListeningHistoryViewProps } from './ListeningHistory.types';
-import { FormattedHistoryItem } from '../ProfileScreen/Profile.types';
 
 export const ListeningHistoryView = ({
   onClearHistory,

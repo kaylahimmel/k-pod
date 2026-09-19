@@ -1,14 +1,17 @@
 import { createMockEpisode, createMockPodcast } from '../../../__mocks__';
 import {
-  formatDuration,
-  formatDurationLong,
-  formatPublishDate,
-  formatEpisodeCount,
   formatEpisode,
   formatEpisodes,
   formatPodcastDetail,
 } from '../PodcastDetailPresenter';
-import { truncateText, stripHtml } from '../../../utils';
+import {
+  formatDuration,
+  formatDurationLong,
+  formatEpisodeCount,
+  formatPublishDate,
+  stripHtml,
+  truncateText,
+} from '../../../utils';
 
 describe('formatDuration', () => {
   it('should format seconds to MM:SS', () => {

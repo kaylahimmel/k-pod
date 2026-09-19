@@ -1,6 +1,6 @@
+import { formatEpisodeCount, formatRelativeDate } from '../../utils';
 import { Podcast } from '../../models';
 import { URLValidationResult, PodcastPreviewData } from './AddPodcast.types';
-import { formatRelativeDate } from '../ProfileScreen/ProfilePresenter';
 
 /**
  * Validates if the provided string is a valid RSS URL format
@@ -86,7 +86,7 @@ export function formatPodcastPreview(podcast: Podcast): PodcastPreviewData {
   // Get the latest episode date
   const latestEpisode = podcast.episodes[0];
   const latestEpisodeDate = latestEpisode
-    ? formatRelativeDate(latestEpisode.publishDate)
+    ? formatRelativeDate(latestEpisode.publishDate, 'compact')
     : 'No episodes';
 
   // Truncate description if too long
@@ -104,17 +104,4 @@ export function formatPodcastPreview(podcast: Podcast): PodcastPreviewData {
     episodeCount: podcast.episodes.length,
     latestEpisodeDate,
   };
-}
-
-/**
- * Formats episode count for display
- */
-export function formatEpisodeCount(count: number): string {
-  if (count === 0) {
-    return 'No episodes';
-  }
-  if (count === 1) {
-    return '1 episode';
-  }
-  return `${count} episodes`;
 }

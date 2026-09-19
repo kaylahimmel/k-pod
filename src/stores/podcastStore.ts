@@ -54,6 +54,40 @@ export const podcastStore = create<PodcastStore>()(
 
           return { podcasts: updatedPodcasts };
         }),
+      /**
+       * Flags one episode as played.
+       *
+       * Returns the existing state object untouched when the podcast or
+       * episode is missing, so subscribers don't re-render for a no-op.
+       */
+      markEpisodePlayed: (podcastId: string, episodeId: string) =>
+        set((state) => {
+          const podcastIndex = state.podcasts.findIndex(
+            (p) => p.id === podcastId,
+          );
+          if (podcastIndex === -1) return state;
+
+          const podcast = state.podcasts[podcastIndex];
+          const episodeIndex = podcast.episodes.findIndex(
+            (ep) => ep.id === episodeId,
+          );
+          if (episodeIndex === -1) return state;
+          if (podcast.episodes[episodeIndex].played) return state;
+
+          const updatedEpisodes = [...podcast.episodes];
+          updatedEpisodes[episodeIndex] = {
+            ...updatedEpisodes[episodeIndex],
+            played: true,
+          };
+
+          const updatedPodcasts = [...state.podcasts];
+          updatedPodcasts[podcastIndex] = {
+            ...podcast,
+            episodes: updatedEpisodes,
+          };
+
+          return { podcasts: updatedPodcasts };
+        }),
       setLoading: (loading) => set({ loading }),
       setError: (error) => set({ error }),
     }),

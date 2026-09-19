@@ -1,5 +1,13 @@
 import { XMLParser } from 'fast-xml-parser';
-import { Episode, Podcast, RSSFeed, RSSItem, ServiceResult } from '../models';
+import {
+  DiscoveryPodcast,
+  Episode,
+  Podcast,
+  RSSFeed,
+  RSSItem,
+  ServiceResult,
+} from '../models';
+import { fetchWithTimeout, isTimeoutError } from '../utils';
 
 // ============================================
 // PARSER CONFIGURATION
@@ -107,7 +115,7 @@ async function fetchAndParseFeed(
   rssUrl: string,
 ): Promise<ServiceResult<RSSFeed>> {
   try {
-    const response = await fetch(rssUrl);
+    const response = await fetchWithTimeout(rssUrl);
 
     if (!response.ok) {
       return {
@@ -129,6 +137,12 @@ async function fetchAndParseFeed(
 
     return { success: true, data: feed };
   } catch (error) {
+    if (isTimeoutError(error)) {
+      return {
+        success: false,
+        error: 'Feed request timed out. Check your connection and try again.',
+      };
+    }
     const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `RSS parsing failed: ${message}` };
   }
@@ -181,6 +195,10 @@ function transformFeedToPodcast(feed: RSSFeed, rssUrl: string): Podcast {
       duration: parseDuration(item['itunes:duration']),
       publishDate: item.pubDate || now,
       played: false,
+      // Optional: the human-facing episode page, used when sharing.
+      // Type-checked because fast-xml-parser returns an object when <link>
+      // carries attributes or child elements.
+      link: typeof item.link === 'string' ? item.link : undefined,
     };
   });
 
@@ -239,11 +257,46 @@ async function refreshEpisodes(
   return { success: true, data: episodes };
 }
 
+/**
+ * Builds a subscribable Podcast from a Discovery result.
+ *
+ * The feed supplies the episodes; the discovery record supplies identity and
+ * presentation, because iTunes artwork and titles are generally better than
+ * what feeds carry. Blank discovery fields fall back to the feed.
+ *
+ * This lived inline in three ViewModels and had already drifted - only one
+ * surfaced the underlying error. Each caller still owns its own toast/alert
+ * handling. (The SearchResults screen was later deleted as a duplicate of
+ * Discover's inline search.)
+ */
+async function createPodcastFromDiscovery(
+  discoveryPodcast: DiscoveryPodcast,
+): Promise<ServiceResult<Podcast>> {
+  const result = await transformPodcastFromRSS(discoveryPodcast.feedUrl);
+
+  if (!result.success) {
+    return result;
+  }
+
+  return {
+    success: true,
+    data: {
+      ...result.data,
+      id: discoveryPodcast.id,
+      title: discoveryPodcast.title || result.data.title,
+      author: discoveryPodcast.author || result.data.author,
+      artworkUrl: discoveryPodcast.artworkUrl || result.data.artworkUrl,
+      description: discoveryPodcast.description || result.data.description,
+    },
+  };
+}
+
 // ============================================
 // EXPORTS
 // ============================================
 export const RSSService = {
   transformPodcastFromRSS,
+  createPodcastFromDiscovery,
   refreshEpisodes,
   fetchAndParseFeed,
   // Expose helpers for testing

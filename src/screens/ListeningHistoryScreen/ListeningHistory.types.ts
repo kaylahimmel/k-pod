@@ -1,5 +1,4 @@
-import { FormattedHistoryItem } from '../ProfileScreen/Profile.types';
-
+import { FormattedHistoryItem } from '../../models';
 export interface ListeningHistoryViewProps {
   onClearHistory: () => void;
 }

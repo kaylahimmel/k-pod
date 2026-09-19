@@ -60,7 +60,10 @@ export const PodcastDetailView = (props: PodcastDetailViewProps) => {
     const totalEpisodes = viewModel.formattedPodcast?.episodes.length || 0;
     const showingLimited = !viewModel.showAllEpisodes && totalEpisodes > 5;
 
-    if (!showingLimited && totalEpisodes <= 5) return null;
+    // Only "See more" depends on the episode count. The footer used to hide
+    // entirely for podcasts with 5 or fewer episodes, which also hid the
+    // Completed button and left no way to reach that screen.
+    if (totalEpisodes === 0) return null;
 
     return (
       <View style={styles.footerButtons}>
@@ -73,12 +76,10 @@ export const PodcastDetailView = (props: PodcastDetailViewProps) => {
           </TouchableOpacity>
         )}
         <TouchableOpacity
-          style={[styles.footerButton, styles.archivedButton]}
-          onPress={() => {
-            // TODO: Navigate to archived episodes
-          }}
+          style={[styles.footerButton, styles.completedButton]}
+          onPress={props.onViewCompleted}
         >
-          <Text style={styles.footerButtonText}>Archived</Text>
+          <Text style={styles.footerButtonText}>Completed</Text>
         </TouchableOpacity>
       </View>
     );

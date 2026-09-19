@@ -5,6 +5,7 @@ import {
   SearchParams,
   ServiceResult,
 } from '../models';
+import { fetchWithTimeout, isTimeoutError } from '../utils';
 import { PODCAST_GENRES, PodcastGenre } from '../constants';
 
 // ============================================
@@ -76,7 +77,7 @@ async function searchPodcasts(
       country,
     });
 
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
 
     if (!response.ok) {
       return {
@@ -91,6 +92,12 @@ async function searchPodcasts(
 
     return { success: true, data: podcasts };
   } catch (error) {
+    if (isTimeoutError(error)) {
+      return {
+        success: false,
+        error: 'Request timed out. Check your connection and try again.',
+      };
+    }
     const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Search failed: ${message}` };
   }
@@ -119,7 +126,7 @@ async function getTrendingPodcasts(
       country,
     });
 
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
 
     if (!response.ok) {
       return {
@@ -134,6 +141,12 @@ async function getTrendingPodcasts(
 
     return { success: true, data: podcasts };
   } catch (error) {
+    if (isTimeoutError(error)) {
+      return {
+        success: false,
+        error: 'Request timed out. Check your connection and try again.',
+      };
+    }
     const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Failed to fetch trending: ${message}` };
   }
@@ -170,7 +183,7 @@ async function getRecommendations(
         country,
       });
 
-      const response = await fetch(url);
+      const response = await fetchWithTimeout(url);
 
       if (response.ok) {
         const data: ITunesSearchResponse = await response.json();
@@ -187,6 +200,12 @@ async function getRecommendations(
 
     return { success: true, data: uniqueResults };
   } catch (error) {
+    if (isTimeoutError(error)) {
+      return {
+        success: false,
+        error: 'Request timed out. Check your connection and try again.',
+      };
+    }
     const message = error instanceof Error ? error.message : 'Unknown error';
     return {
       success: false,
@@ -204,7 +223,7 @@ async function getPodcastById(
 ): Promise<ServiceResult<DiscoveryPodcast>> {
   try {
     const url = `${ITUNES_LOOKUP_BASE}?id=${podcastId}&entity=podcast`;
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
 
     if (!response.ok) {
       return {
@@ -226,6 +245,12 @@ async function getPodcastById(
 
     return { success: true, data: transformToDiscoveryPodcast(podcast) };
   } catch (error) {
+    if (isTimeoutError(error)) {
+      return {
+        success: false,
+        error: 'Request timed out. Check your connection and try again.',
+      };
+    }
     const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Lookup failed: ${message}` };
   }

@@ -3,18 +3,6 @@ export interface ProfileViewProps {
   onChangePasswordPress: () => void;
 }
 
-export interface FormattedHistoryItem {
-  id: string;
-  episodeTitle: string;
-  displayTitle: string;
-  podcastTitle: string;
-  podcastArtworkUrl: string;
-  completedAt: string;
-  formattedCompletedAt: string;
-  completionPercentage: number;
-  formattedCompletionPercentage: string;
-}
-
 export interface ProfileStats {
   totalListeningTime: string;
   episodesCompleted: number;

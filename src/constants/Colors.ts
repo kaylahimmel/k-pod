@@ -11,4 +11,5 @@ export const COLORS = {
   danger: '#FF3B30',
   success: '#15ab3b',
   played: '#C7C7CC',
+  overlay: 'rgba(0, 0, 0, 0.5)',
 };

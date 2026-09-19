@@ -38,4 +38,11 @@ export const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginTop: 2,
   },
+  menuButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    justifyContent: 'center',
+    minWidth: 40,
+    alignItems: 'center',
+  },
 });

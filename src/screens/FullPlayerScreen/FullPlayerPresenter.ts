@@ -102,20 +102,3 @@ export function getNextQueueItem(
   }
   return null;
 }
-
-/**
- * Formats the speed label for compact display (button)
- */
-export function formatSpeedLabel(speed: PlaybackSpeed): string {
-  return speed === 1 ? '1x' : `${speed}x`;
-}
-
-/**
- * Calculates seek position from a slider value (0-1 range to seconds)
- */
-export function calculateSeekPosition(
-  sliderValue: number,
-  duration: number,
-): number {
-  return Math.floor(sliderValue * duration);
-}

@@ -4,7 +4,6 @@ import {
   createMockQueueItem,
 } from '../../../__mocks__';
 import {
-  formatDuration,
   calculateRemainingTime,
   formatRemainingTime,
   formatPositionLabel,
@@ -15,7 +14,7 @@ import {
   formatQueueCount,
   getQueueStats,
 } from '../QueuePresenter';
-import { truncateText } from '../../../utils';
+import { formatDuration, truncateText } from '../../../utils';
 
 describe('formatDuration', () => {
   it('should return 0:00 for 0 seconds', () => {

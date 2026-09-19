@@ -1,14 +1,12 @@
 import { createMockPodcast } from '../../../__mocks__';
 import {
-  formatRelativeDate,
-  formatEpisodeCount,
   formatPodcast,
   formatPodcasts,
   sortPodcasts,
   filterPodcasts,
   preparePodcastsForDisplay,
 } from '../LibraryPresenter';
-import { truncateText } from '../../../utils';
+import { formatEpisodeCount, truncateText } from '../../../utils';
 
 describe('truncateText', () => {
   it('should return the original text if shorter than maxLength', () => {
@@ -29,46 +27,6 @@ describe('truncateText', () => {
 
   it('should trim whitespace before adding ellipsis', () => {
     expect(truncateText('Hello    World', 7)).toBe('Hello…');
-  });
-});
-
-describe('formatRelativeDate', () => {
-  const now = new Date();
-
-  it("should return 'Today' for today's date", () => {
-    const today = new Date().toISOString();
-    expect(formatRelativeDate(today)).toBe('Today');
-  });
-
-  it("should return 'Yesterday' for yesterday's date", () => {
-    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    expect(formatRelativeDate(yesterday.toISOString())).toBe('Yesterday');
-  });
-
-  it("should return 'X days ago' for dates within a week", () => {
-    const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
-    expect(formatRelativeDate(threeDaysAgo.toISOString())).toBe('3 days ago');
-  });
-
-  it("should return '1 week ago' for dates exactly one week old", () => {
-    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    expect(formatRelativeDate(oneWeekAgo.toISOString())).toBe('1 week ago');
-  });
-
-  it("should return 'X weeks ago' for dates within a month", () => {
-    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-    expect(formatRelativeDate(twoWeeksAgo.toISOString())).toBe('2 weeks ago');
-  });
-
-  it("should return '1 month ago' for dates around one month old", () => {
-    const oneMonthAgo = new Date(now.getTime() - 32 * 24 * 60 * 60 * 1000);
-    expect(formatRelativeDate(oneMonthAgo.toISOString())).toBe('1 month ago');
-  });
-
-  it('should return formatted date for dates older than a year', () => {
-    const oldDate = new Date('2020-06-15').toISOString();
-    const result = formatRelativeDate(oldDate);
-    expect(result).toContain('2020');
   });
 });
 
