@@ -467,8 +467,9 @@ Note: EpisodeDetailScreen is now tracked separately in section 6.7
 
 ### 8.5 Notification Section on SettingsScreen
 
-- [ ] Add a notification section to the existing SettingsScreen, with an option to toggle on/off all podcasts at once, or just toggle notifications on/off for each episode
-- [ ] Setup push notifications for new episodes for each of the podcasts
+- [x] Add a notification section to the existing SettingsScreen, with an option to toggle on/off all podcasts at once, or just toggle notifications on/off for each podcast
+- [x] Setup local notifications (background refresh) for new episodes for each of the podcasts
+- [ ] Optional: move new-episode detection to a Firebase backend (Firestore + scheduled Cloud Functions + FCM) for timely push
 
 ## Phase 9: Authentication (If Required)
 
