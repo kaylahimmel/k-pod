@@ -10,6 +10,8 @@ const defaultSettings: AppSettings = {
   downloadOnWiFi: true,
   skipForwardSeconds: 30,
   skipBackwardSeconds: 15,
+  newEpisodeNotifications: false,
+  mutedNotificationPodcastIds: [],
 };
 
 export const settingsStore = create<SettingsStore>()(
@@ -44,6 +46,23 @@ export const settingsStore = create<SettingsStore>()(
       partialize: (state) => ({
         settings: state.settings,
       }),
+      // persist's default merge is SHALLOW: the stored `settings` object
+      // replaces the in-memory one wholesale. On an install that saved
+      // settings before a field existed (e.g. newEpisodeNotifications), that
+      // field would rehydrate as `undefined` instead of its default. Merging
+      // the stored settings over defaultSettings fills in any missing fields.
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as
+          | { settings?: Partial<AppSettings> }
+          | undefined;
+        return {
+          ...currentState,
+          settings: {
+            ...defaultSettings,
+            ...persisted?.settings,
+          },
+        };
+      },
     },
   ),
 );

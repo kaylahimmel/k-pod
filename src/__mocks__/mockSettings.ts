@@ -22,5 +22,7 @@ export const createMockAppSettings = (
   downloadOnWiFi: true,
   skipForwardSeconds: 30,
   skipBackwardSeconds: 15,
+  newEpisodeNotifications: false,
+  mutedNotificationPodcastIds: [],
   ...overrides,
 });
