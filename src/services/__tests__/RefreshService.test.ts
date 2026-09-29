@@ -58,6 +58,9 @@ describe('RefreshService', () => {
 
       expect(result.success).toBe(true);
       expect(result.newEpisodeCount).toBe(1);
+      // Only the episode that wasn't already stored is reported as new
+      expect(result.newEpisodes.map((ep) => ep.id)).toEqual(['ep2']);
+      expect(result.newEpisodes[0].title).toBe('New Episode');
       expect(result.podcastId).toBe('p1');
       expect(RSSService.refreshEpisodes).toHaveBeenCalledWith(
         'p1',
@@ -83,6 +86,7 @@ describe('RefreshService', () => {
       expect(result.success).toBe(false);
       expect(result.error).toBe('Network error');
       expect(result.newEpisodeCount).toBe(0);
+      expect(result.newEpisodes).toEqual([]);
     });
 
     it('should count zero new episodes when no new episodes found', async () => {
@@ -103,6 +107,7 @@ describe('RefreshService', () => {
 
       expect(result.success).toBe(true);
       expect(result.newEpisodeCount).toBe(0);
+      expect(result.newEpisodes).toEqual([]);
     });
   });
 

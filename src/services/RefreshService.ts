@@ -1,7 +1,7 @@
 import { AppState, AppStateStatus } from 'react-native';
 import { RSSService } from './RSSService';
 import { podcastStore } from '../stores';
-import { Podcast } from '../models';
+import { Episode, Podcast } from '../models';
 
 // Minimum interval between automatic refreshes (in milliseconds)
 const MIN_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
@@ -11,15 +11,16 @@ let lastRefreshTime: number | null = null;
 let appStateSubscription: ReturnType<typeof AppState.addEventListener> | null =
   null;
 
-interface RefreshResult {
+export interface RefreshResult {
   podcastId: string;
   podcastTitle: string;
   success: boolean;
   newEpisodeCount: number;
+  newEpisodes: Episode[]; // The episodes behind newEpisodeCount (used for notification text); empty on failure
   error?: string;
 }
 
-interface RefreshAllResult {
+export interface RefreshAllResult {
   totalPodcasts: number;
   successCount: number;
   failCount: number;
@@ -40,6 +41,7 @@ async function refreshPodcast(podcast: Podcast): Promise<RefreshResult> {
       podcastTitle: podcast.title,
       success: false,
       newEpisodeCount: 0,
+      newEpisodes: [],
       error: result.error,
     };
   }
@@ -55,6 +57,7 @@ async function refreshPodcast(podcast: Podcast): Promise<RefreshResult> {
     podcastTitle: podcast.title,
     success: true,
     newEpisodeCount: newEpisodes.length,
+    newEpisodes,
   };
 }
 

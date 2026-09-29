@@ -1,6 +1,11 @@
 import Constants from 'expo-constants';
-import { AppSettings } from '../../models';
-import { FormattedSettings, SpeedOption, SkipOption } from './Settings.types';
+import { AppSettings, Podcast } from '../../models';
+import {
+  FormattedSettings,
+  NotificationPodcast,
+  SpeedOption,
+  SkipOption,
+} from './Settings.types';
 
 /**
  * Available playback speed options
@@ -69,7 +74,25 @@ export function formatSettings(settings: AppSettings): FormattedSettings {
     skipForwardLabel: formatSkipDuration(settings.skipForwardSeconds),
     skipBackwardSeconds: settings.skipBackwardSeconds,
     skipBackwardLabel: formatSkipDuration(settings.skipBackwardSeconds),
+    newEpisodeNotifications: settings.newEpisodeNotifications,
   };
+}
+
+/**
+ * Builds the per-podcast notification rows.
+ * Settings store a *muted* list rather than an enabled list, so a podcast
+ * subscribed after notifications were turned on is enabled by default.
+ */
+export function formatNotificationPodcasts(
+  podcasts: Podcast[],
+  mutedIds: string[],
+): NotificationPodcast[] {
+  const muted = new Set(mutedIds);
+  return podcasts.map((podcast) => ({
+    id: podcast.id,
+    title: podcast.title,
+    enabled: !muted.has(podcast.id),
+  }));
 }
 
 /**

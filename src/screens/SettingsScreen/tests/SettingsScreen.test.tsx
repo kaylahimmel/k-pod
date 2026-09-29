@@ -22,6 +22,8 @@ describe('SettingsScreen', () => {
         downloadOnWiFi: true,
         skipForwardSeconds: 30,
         skipBackwardSeconds: 15,
+        newEpisodeNotifications: false,
+        mutedNotificationPodcastIds: [],
       },
       loading: false,
       error: null,

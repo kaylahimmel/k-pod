@@ -84,6 +84,40 @@ export const SettingsView = () => {
         />
       </View>
 
+      {/* Notifications */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Notifications</Text>
+      </View>
+      <View style={styles.settingsSection}>
+        <SettingToggleRow
+          label='New episode alerts'
+          value={viewModel.settings.newEpisodeNotifications}
+          onValueChange={viewModel.handleToggleNotifications}
+          isLast={
+            !viewModel.settings.newEpisodeNotifications ||
+            viewModel.notificationPodcasts.length === 0
+          }
+        />
+        {viewModel.settings.newEpisodeNotifications &&
+          viewModel.notificationPodcasts.map((podcast, index) => (
+            <SettingToggleRow
+              key={podcast.id}
+              label={podcast.title}
+              value={podcast.enabled}
+              onValueChange={() =>
+                viewModel.handleTogglePodcastNotifications(podcast.id)
+              }
+              isLast={index === viewModel.notificationPodcasts.length - 1}
+            />
+          ))}
+      </View>
+      {viewModel.settings.newEpisodeNotifications &&
+        viewModel.notificationPodcasts.length === 0 && (
+          <Text style={styles.sectionHint}>
+            Subscribe to a podcast to choose which shows send alerts.
+          </Text>
+        )}
+
       {/* Legal */}
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Legal</Text>
