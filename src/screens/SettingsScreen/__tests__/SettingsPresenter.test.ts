@@ -2,12 +2,14 @@ import {
   formatPlaybackSpeed,
   formatSkipDuration,
   formatSettings,
+  formatNotificationPodcasts,
   getAppVersion,
   SPEED_OPTIONS,
   SKIP_FORWARD_OPTIONS,
   SKIP_BACKWARD_OPTIONS,
 } from '../SettingsPresenter';
 import { AppSettings } from '../../../models';
+import { createMockPodcast } from '../../../__mocks__';
 import Constants from 'expo-constants';
 
 // expoConfig is a non-configurable getter on the real module, so jest.spyOn
@@ -102,6 +104,7 @@ describe('SettingsPresenter', () => {
       expect(formatted.skipForwardLabel).toBe('30 sec');
       expect(formatted.skipBackwardSeconds).toBe(15);
       expect(formatted.skipBackwardLabel).toBe('15 sec');
+      expect(formatted.newEpisodeNotifications).toBe(false);
     });
 
     it('should handle default settings', () => {
@@ -118,6 +121,32 @@ describe('SettingsPresenter', () => {
       const formatted = formatSettings(defaultSettings);
 
       expect(formatted.defaultSpeedLabel).toBe('1x (Normal)');
+    });
+  });
+
+  describe('formatNotificationPodcasts', () => {
+    it('should mark podcasts enabled unless their id is muted', () => {
+      const podcasts = [
+        createMockPodcast({ id: 'p1', title: 'One' }),
+        createMockPodcast({ id: 'p2', title: 'Two' }),
+      ];
+
+      expect(formatNotificationPodcasts(podcasts, ['p2'])).toEqual([
+        { id: 'p1', title: 'One', enabled: true },
+        { id: 'p2', title: 'Two', enabled: false },
+      ]);
+    });
+
+    it('should enable every podcast when nothing is muted', () => {
+      const podcasts = [createMockPodcast({ id: 'p1', title: 'One' })];
+
+      expect(formatNotificationPodcasts(podcasts, [])).toEqual([
+        { id: 'p1', title: 'One', enabled: true },
+      ]);
+    });
+
+    it('should return an empty list with no subscriptions', () => {
+      expect(formatNotificationPodcasts([], ['p1'])).toEqual([]);
     });
   });
 

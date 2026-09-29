@@ -2,8 +2,8 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ActivityIndicator, Alert, Linking } from 'react-native';
 import { SettingsView } from '../SettingsView';
-import { settingsStore } from '../../../stores';
-import { createMockAppSettings } from '../../../__mocks__';
+import { podcastStore, settingsStore } from '../../../stores';
+import { createMockAppSettings, createMockPodcast } from '../../../__mocks__';
 
 jest.spyOn(Alert, 'alert');
 jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
@@ -18,6 +18,7 @@ describe('SettingsView', () => {
       loading: false,
       error: null,
     });
+    podcastStore.setState({ podcasts: [] });
   });
 
   const renderSettingsView = () => render(<SettingsView />);
@@ -104,6 +105,97 @@ describe('SettingsView', () => {
       // Just verify the toggle displays - testing the actual toggle is complex
       // due to how React Native Switch components work
       expect(getByText('Download on WiFi only')).toBeTruthy();
+    });
+  });
+
+  describe('Notifications Section', () => {
+    // Switch order: auto-play, WiFi, new episode alerts, then one per podcast
+    const MASTER_SWITCH_INDEX = 2;
+
+    const subscribe = () =>
+      podcastStore.setState({
+        podcasts: [
+          createMockPodcast({ id: 'p1', title: 'Podcast One' }),
+          createMockPodcast({ id: 'p2', title: 'Podcast Two' }),
+        ],
+      });
+
+    const enableNotifications = (mutedIds: string[] = []) =>
+      settingsStore.setState({
+        settings: createMockAppSettings({
+          newEpisodeNotifications: true,
+          mutedNotificationPodcastIds: mutedIds,
+        }),
+      });
+
+    it('should display the section header and master toggle', () => {
+      const { getByText } = renderSettingsView();
+
+      expect(getByText('Notifications')).toBeTruthy();
+      expect(getByText('New episode alerts')).toBeTruthy();
+    });
+
+    it('should hide per-podcast toggles while alerts are off', () => {
+      subscribe();
+
+      const { queryByText } = renderSettingsView();
+
+      expect(queryByText('Podcast One')).toBeNull();
+    });
+
+    it('should show a toggle per podcast while alerts are on', () => {
+      subscribe();
+      enableNotifications(['p2']);
+
+      const { getByText, getAllByTestId } = renderSettingsView();
+
+      expect(getByText('Podcast One')).toBeTruthy();
+      expect(getByText('Podcast Two')).toBeTruthy();
+      const switches = getAllByTestId('setting-toggle-switch');
+      expect(switches[MASTER_SWITCH_INDEX + 1].props.value).toBe(true);
+      expect(switches[MASTER_SWITCH_INDEX + 2].props.value).toBe(false);
+    });
+
+    it('should show a hint when alerts are on with no subscriptions', () => {
+      enableNotifications();
+
+      const { getByText } = renderSettingsView();
+
+      expect(
+        getByText('Subscribe to a podcast to choose which shows send alerts.'),
+      ).toBeTruthy();
+    });
+
+    it('should mute a podcast when its toggle is switched off', () => {
+      subscribe();
+      enableNotifications();
+
+      const { getAllByTestId } = renderSettingsView();
+      fireEvent(
+        getAllByTestId('setting-toggle-switch')[MASTER_SWITCH_INDEX + 1],
+        'valueChange',
+        false,
+      );
+
+      expect(
+        settingsStore.getState().settings.mutedNotificationPodcastIds,
+      ).toEqual(['p1']);
+    });
+
+    it('should turn alerts on once permission is granted', async () => {
+      const { getAllByTestId } = renderSettingsView();
+
+      fireEvent(
+        getAllByTestId('setting-toggle-switch')[MASTER_SWITCH_INDEX],
+        'valueChange',
+        true,
+      );
+
+      await waitFor(() => {
+        expect(settingsStore.getState().settings.newEpisodeNotifications).toBe(
+          true,
+        );
+      });
     });
   });
 
