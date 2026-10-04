@@ -2,6 +2,17 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { SkeletonList } from '../SkeletonList';
 
+// toJSON() is typed as a single node OR an array (when the root is a
+// fragment). SkeletonList always renders one container View, so assert that
+// instead of casting, and the test fails clearly if that ever changes
+const renderRoot = (ui: React.ReactElement) => {
+  const tree = render(ui).toJSON();
+  if (!tree || Array.isArray(tree)) {
+    throw new Error('Expected SkeletonList to render a single root node');
+  }
+  return tree;
+};
+
 describe('SkeletonList', () => {
   beforeEach(() => {
     jest.useFakeTimers();
@@ -17,18 +28,16 @@ describe('SkeletonList', () => {
   });
 
   it('renders default count of 3 skeleton cards', () => {
-    const { toJSON } = render(<SkeletonList />);
-    const tree = toJSON();
+    const tree = renderRoot(<SkeletonList />);
 
     // The container should have 3 children (skeleton cards)
-    expect(tree?.children?.length).toBe(3);
+    expect(tree.children?.length).toBe(3);
   });
 
   it('renders custom count of skeleton cards', () => {
-    const { toJSON } = render(<SkeletonList count={5} />);
-    const tree = toJSON();
+    const tree = renderRoot(<SkeletonList count={5} />);
 
-    expect(tree?.children?.length).toBe(5);
+    expect(tree.children?.length).toBe(5);
   });
 
   it('renders with custom card height', () => {
@@ -54,7 +63,7 @@ describe('SkeletonList', () => {
   });
 
   it('renders with all custom props', () => {
-    const { toJSON } = render(
+    const tree = renderRoot(
       <SkeletonList
         count={4}
         cardHeight={120}
@@ -63,24 +72,21 @@ describe('SkeletonList', () => {
         style={{ padding: 8 }}
       />,
     );
-    const tree = toJSON();
 
-    expect(tree?.children?.length).toBe(4);
+    expect(tree.children?.length).toBe(4);
   });
 
   it('renders single skeleton card when count is 1', () => {
-    const { toJSON } = render(<SkeletonList count={1} />);
-    const tree = toJSON();
+    const tree = renderRoot(<SkeletonList count={1} />);
 
-    expect(tree?.children?.length).toBe(1);
+    expect(tree.children?.length).toBe(1);
   });
 
   it('renders empty when count is 0', () => {
-    const { toJSON } = render(<SkeletonList count={0} />);
-    const tree = toJSON();
+    const tree = renderRoot(<SkeletonList count={0} />);
 
     // Container exists but has no children
-    expect(tree?.children).toBeNull();
+    expect(tree.children).toBeNull();
   });
 
   it('animations work correctly with multiple cards', () => {
