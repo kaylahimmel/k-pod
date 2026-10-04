@@ -5,6 +5,9 @@
  */
 export const DEFAULT_FETCH_TIMEOUT_MS = 15000;
 
+/** Name given to the error fetchWithTimeout throws when its timer fires */
+const TIMEOUT_ERROR_NAME = 'TimeoutError';
+
 /**
  * fetch() that gives up after `timeoutMs`.
  *
@@ -22,6 +25,17 @@ export async function fetchWithTimeout(
 
   try {
     return await fetch(url, { signal: controller.signal });
+  } catch (error) {
+    // Expo replaces the global fetch with expo/fetch (SDK 56+), which rejects
+    // an aborted request with a generic FetchError named "Error" rather than
+    // "AbortError". Checking our own signal identifies the timeout no matter
+    // which fetch implementation threw, so callers can rely on isTimeoutError()
+    if (controller.signal.aborted) {
+      const timeoutError = new Error(`Request timed out after ${timeoutMs}ms`);
+      timeoutError.name = TIMEOUT_ERROR_NAME;
+      throw timeoutError;
+    }
+    throw error;
   } finally {
     clearTimeout(timer);
   }
@@ -32,5 +46,8 @@ export async function fetchWithTimeout(
  * say "timed out" instead of surfacing a generic network error.
  */
 export function isTimeoutError(error: unknown): boolean {
-  return error instanceof Error && error.name === 'AbortError';
+  return (
+    error instanceof Error &&
+    (error.name === TIMEOUT_ERROR_NAME || error.name === 'AbortError')
+  );
 }
