@@ -2,13 +2,9 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    // TypeScript 6+ (bundled with VS Code) no longer auto-includes every
-    // package in node_modules/@types, so ambient globals like `jest` and
-    // `NodeJS.Timeout` must be listed explicitly. Harmless on TS 5.x.
+    // TypeScript 6+ no longer auto-includes every package in
+    // node_modules/@types, so ambient globals like `jest` and
+    // `NodeJS.Timeout` must be listed explicitly.
     "types": ["jest", "node"]
   },
   "exclude": [
