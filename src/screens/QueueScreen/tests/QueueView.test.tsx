@@ -326,6 +326,115 @@ describe('QueueView', () => {
     });
   });
 
+  // The draggable list only holds the upcoming items (the currently playing
+  // item is pinned above it), so onDragEnd's from/to are list indices that
+  // QueueView must translate into real queue indices. jest.setup.ts mocks the
+  // library as a plain FlatList, so these tests call onDragEnd the way the
+  // library would after a drop. They can't catch native gesture/animation
+  // breakage from Reanimated or worklets bumps — that still needs a device
+  describe('Drag and drop', () => {
+    const DraggableFlatList = jest.requireMock(
+      'react-native-draggable-flatlist',
+    ).default;
+
+    const dropItem = (
+      view: ReturnType<typeof renderQueueView>,
+      from: number,
+      to: number,
+    ) => {
+      const list = view.UNSAFE_getByType(DraggableFlatList);
+      act(() => {
+        list.props.onDragEnd({ data: list.props.data, from, to });
+      });
+    };
+
+    const queueIds = () => queueStore.getState().queue.map((item) => item.id);
+
+    it('should only make the upcoming items draggable', () => {
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
+          createMockQueueItem({ id: 'q3' }),
+        ],
+        currentIndex: 0,
+      });
+
+      const view = renderQueueView();
+      const list = view.UNSAFE_getByType(DraggableFlatList);
+
+      expect(
+        list.props.data.map((item: { id: string }) => item.id),
+      ).toEqual(['q2', 'q3']);
+    });
+
+    it('should offset list indices past the pinned currently playing item', () => {
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
+          createMockQueueItem({ id: 'q3' }),
+        ],
+        currentIndex: 0,
+      });
+
+      // List index 0 → 1 is q2 → q3, i.e. queue index 1 → 2
+      dropItem(renderQueueView(), 0, 1);
+
+      expect(queueIds()).toEqual(['q1', 'q3', 'q2']);
+      expect(queueStore.getState().currentIndex).toBe(0);
+    });
+
+    it('should keep the currently playing item current when dragging across it', () => {
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
+          createMockQueueItem({ id: 'q3' }),
+          createMockQueueItem({ id: 'q4' }),
+        ],
+        currentIndex: 1,
+      });
+
+      // Upcoming list is [q1, q3, q4]; move q1 to where q4 sits
+      dropItem(renderQueueView(), 0, 2);
+
+      const { queue, currentIndex } = queueStore.getState();
+      expect(queue[queue.length - 1].id).toBe('q1');
+      expect(queue[currentIndex].id).toBe('q2');
+    });
+
+    it('should leave the queue unchanged when dropped in place', () => {
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
+          createMockQueueItem({ id: 'q3' }),
+        ],
+        currentIndex: 0,
+      });
+
+      dropItem(renderQueueView(), 1, 1);
+
+      expect(queueIds()).toEqual(['q1', 'q2', 'q3']);
+    });
+
+    it('should ignore drops with out-of-range indices', () => {
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
+          createMockQueueItem({ id: 'q3' }),
+        ],
+        currentIndex: 0,
+      });
+
+      dropItem(renderQueueView(), 0, 5);
+
+      expect(queueIds()).toEqual(['q1', 'q2', 'q3']);
+    });
+  });
+
   describe('Episode Artwork', () => {
     it('should display podcast artwork when available', () => {
       queueStore.setState({
