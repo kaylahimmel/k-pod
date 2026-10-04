@@ -363,9 +363,10 @@ describe('QueueView', () => {
       const view = renderQueueView();
       const list = view.UNSAFE_getByType(DraggableFlatList);
 
-      expect(
-        list.props.data.map((item: { id: string }) => item.id),
-      ).toEqual(['q2', 'q3']);
+      expect(list.props.data.map((item: { id: string }) => item.id)).toEqual([
+        'q2',
+        'q3',
+      ]);
     });
 
     it('should offset list indices past the pinned currently playing item', () => {
