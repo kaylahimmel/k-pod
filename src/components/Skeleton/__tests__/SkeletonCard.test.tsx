@@ -1,4 +1,5 @@
 import React from 'react';
+import { Animated } from 'react-native';
 import { render } from '@testing-library/react-native';
 import { SkeletonCard } from '../SkeletonCard';
 
@@ -67,5 +68,32 @@ describe('SkeletonCard', () => {
     jest.advanceTimersByTime(4000);
 
     expect(toJSON()).toBeTruthy();
+  });
+
+  it('does not restart the shimmer loop when re-rendered', () => {
+    const loopSpy = jest.spyOn(Animated, 'loop');
+    const { rerender } = render(<SkeletonCard height={100} />);
+
+    // The loop effect depends on the animated value, so it only re-runs if
+    // that value's identity changes between renders. It must stay stable, or
+    // every parent re-render would stop and restart the shimmer mid-cycle
+    rerender(<SkeletonCard height={120} />);
+    rerender(<SkeletonCard height={140} />);
+
+    expect(loopSpy).toHaveBeenCalledTimes(1);
+    loopSpy.mockRestore();
+  });
+
+  it('stops the shimmer loop on unmount', () => {
+    const stop = jest.fn();
+    const loopSpy = jest
+      .spyOn(Animated, 'loop')
+      .mockReturnValue({ start: jest.fn(), stop, reset: jest.fn() });
+    const { unmount } = render(<SkeletonCard />);
+
+    unmount();
+
+    expect(stop).toHaveBeenCalledTimes(1);
+    loopSpy.mockRestore();
   });
 });
