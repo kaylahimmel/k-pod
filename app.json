@@ -26,11 +26,6 @@
     "name": "k-pod",
     "orientation": "portrait",
     "slug": "k-pod",
-    "splash": {
-      "backgroundColor": "#ffffff",
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain"
-    },
     "userInterfaceStyle": "light",
     "version": "1.0.0",
     "web": {
@@ -40,7 +35,24 @@
       "expo-audio",
       "expo-font",
       "expo-asset",
-      "expo-status-bar"
+      "expo-status-bar",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "enableSceneSupport": true
+          }
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain"
+        }
+      ]
     ]
   }
 }
