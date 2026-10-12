@@ -102,8 +102,9 @@ jest.mock('firebase/app', () => ({
 
 // Mock safe area insets with the library's official jest mock (insets of 0;
 // tests can override via useSafeAreaInsets.mockReturnValue)
-jest.mock('react-native-safe-area-context', () =>
-  require('react-native-safe-area-context/jest/mock').default,
+jest.mock(
+  'react-native-safe-area-context',
+  () => require('react-native-safe-area-context/jest/mock').default,
 );
 
 // Mock AudioPlayerService to avoid expo-audio native module requirements
@@ -127,4 +128,30 @@ jest.mock('./src/services/AudioPlayerService', () => ({
     setOnError: jest.fn(),
     cleanup: jest.fn().mockResolvedValue(undefined),
   },
+}));
+
+// Mock expo-notifications native module (NotificationService)
+jest.mock('expo-notifications', () => ({
+  setNotificationHandler: jest.fn(),
+  setNotificationChannelAsync: jest.fn().mockResolvedValue(null),
+  getPermissionsAsync: jest.fn().mockResolvedValue({ granted: false }),
+  requestPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
+  scheduleNotificationAsync: jest.fn().mockResolvedValue('notification-id'),
+  AndroidImportance: { DEFAULT: 3 },
+}));
+
+// Mock expo-background-task native module (BackgroundRefreshTask).
+// Enum values mirror the real module's.
+jest.mock('expo-background-task', () => ({
+  getStatusAsync: jest.fn().mockResolvedValue(2),
+  registerTaskAsync: jest.fn().mockResolvedValue(undefined),
+  unregisterTaskAsync: jest.fn().mockResolvedValue(undefined),
+  BackgroundTaskStatus: { Restricted: 1, Available: 2 },
+  BackgroundTaskResult: { Success: 1, Failed: 2 },
+}));
+
+// Mock expo-task-manager native module (BackgroundRefreshTask)
+jest.mock('expo-task-manager', () => ({
+  defineTask: jest.fn(),
+  isTaskRegisteredAsync: jest.fn().mockResolvedValue(false),
 }));

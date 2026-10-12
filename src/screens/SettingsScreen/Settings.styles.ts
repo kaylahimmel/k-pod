@@ -25,6 +25,12 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.cardBackground,
     marginBottom: 8,
   },
+  sectionHint: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',

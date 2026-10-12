@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { settingsStore } from '../../stores';
 import { AppSettings } from '../../models';
 import { STORAGE_KEYS } from '../../constants';
@@ -9,6 +10,8 @@ describe('settingsStore', () => {
     downloadOnWiFi: true,
     skipForwardSeconds: 30,
     skipBackwardSeconds: 15,
+    newEpisodeNotifications: false,
+    mutedNotificationPodcastIds: [],
   };
 
   beforeEach(() => {
@@ -122,6 +125,8 @@ describe('settingsStore', () => {
         downloadOnWiFi: false,
         skipForwardSeconds: 45,
         skipBackwardSeconds: 10,
+        newEpisodeNotifications: false,
+        mutedNotificationPodcastIds: [],
       };
 
       settingsStore.getState().loadSettings(newSettings);
@@ -138,6 +143,8 @@ describe('settingsStore', () => {
         downloadOnWiFi: true,
         skipForwardSeconds: 30,
         skipBackwardSeconds: 15,
+        newEpisodeNotifications: false,
+        mutedNotificationPodcastIds: [],
       };
 
       settingsStore.getState().loadSettings(newSettings);
@@ -205,6 +212,8 @@ describe('settingsStore', () => {
         downloadOnWiFi: false,
         skipForwardSeconds: 45,
         skipBackwardSeconds: 20,
+        newEpisodeNotifications: false,
+        mutedNotificationPodcastIds: [],
       };
 
       state.loadSettings(newSettings);
@@ -234,6 +243,55 @@ describe('settingsStore', () => {
       expect(partialized).toEqual({
         settings: settingsStore.getState().settings,
       });
+    });
+
+    it('should fill in defaults for fields missing from older persisted settings', async () => {
+      // An install that saved settings before the notification fields
+      // existed. persist's default shallow merge would leave them undefined.
+      const legacySettings = {
+        autoPlayNext: false,
+        defaultSpeed: 1.5,
+        downloadOnWiFi: false,
+        skipForwardSeconds: 45,
+        skipBackwardSeconds: 10,
+      };
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce(
+        JSON.stringify({ state: { settings: legacySettings }, version: 0 }),
+      );
+
+      await settingsStore.persist.rehydrate();
+
+      expect(settingsStore.getState().settings).toEqual({
+        ...legacySettings,
+        newEpisodeNotifications: false,
+        mutedNotificationPodcastIds: [],
+      });
+    });
+
+    it('should keep persisted values over defaults when merging', () => {
+      const options = settingsStore.persist.getOptions();
+      const merged = options.merge?.(
+        {
+          settings: {
+            newEpisodeNotifications: true,
+            mutedNotificationPodcastIds: ['podcast-1'],
+          },
+        },
+        settingsStore.getState(),
+      );
+
+      expect(merged?.settings.newEpisodeNotifications).toBe(true);
+      expect(merged?.settings.mutedNotificationPodcastIds).toEqual([
+        'podcast-1',
+      ]);
+      expect(merged?.settings.skipForwardSeconds).toBe(30);
+    });
+
+    it('should fall back to defaults when nothing is persisted', () => {
+      const options = settingsStore.persist.getOptions();
+      const merged = options.merge?.(undefined, settingsStore.getState());
+
+      expect(merged?.settings).toEqual(defaultSettings);
     });
   });
 });

@@ -6,6 +6,8 @@ export interface AppSettings {
   downloadOnWiFi: boolean; // Whether to download episodes only on WiFi
   skipForwardSeconds: number; // Number of seconds to skip forward
   skipBackwardSeconds: number; // Number of seconds to skip backward
+  newEpisodeNotifications: boolean; // Master switch for new-episode alerts (off until the user opts in)
+  mutedNotificationPodcastIds: string[]; // podcast.id values the user opted out of; new subscriptions notify by default
 }
 
 export interface SettingsStore {
