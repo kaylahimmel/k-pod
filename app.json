@@ -15,7 +15,8 @@
           "audio"
         ]
       },
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.kpod"
     },
     "name": "k-pod",
     "newArchEnabled": true,
