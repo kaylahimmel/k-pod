@@ -33,7 +33,7 @@ const mockPlayerInstance = {
   setPlaybackRate: jest.fn(),
   setActiveForLockScreen: jest.fn(),
   updateLockScreenMetadata: jest.fn(),
-  remove: jest.fn(),
+  release: jest.fn(),
   addListener: jest.fn((_event: string, _listener: StatusListener) => ({
     remove: jest.fn(),
   })),
@@ -123,22 +123,22 @@ describe('AudioPlayerService', () => {
       expect(AudioPlayerService.getCurrentEpisodeId()).toBe(mockEpisode.id);
     });
 
-    it('should remove previous player before loading new one', async () => {
+    it('should release previous player before loading new one', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       await AudioPlayerService.loadEpisode({
         ...mockEpisode,
         id: 'episode-2',
       });
 
-      expect(mockPlayerInstance.remove).toHaveBeenCalled();
+      expect(mockPlayerInstance.release).toHaveBeenCalled();
     });
 
-    it('should pause the previous player before removing it when loading a new episode', async () => {
-      // expo-audio's remove() only deregisters the player natively; without an
-      // explicit pause() the old episode's audio keeps playing until GC
+    it('should pause the previous player before releasing it when loading a new episode', async () => {
+      // Pausing first guarantees the old episode's audio stops immediately
+      // rather than whenever the native player is torn down
       await AudioPlayerService.loadEpisode(mockEpisode);
       mockPlayerInstance.pause.mockClear();
-      mockPlayerInstance.remove.mockClear();
+      mockPlayerInstance.release.mockClear();
 
       await AudioPlayerService.loadEpisode({
         ...mockEpisode,
@@ -146,9 +146,9 @@ describe('AudioPlayerService', () => {
       });
 
       expect(mockPlayerInstance.pause).toHaveBeenCalled();
-      expect(mockPlayerInstance.remove).toHaveBeenCalled();
+      expect(mockPlayerInstance.release).toHaveBeenCalled();
       expect(mockPlayerInstance.pause.mock.invocationCallOrder[0]).toBeLessThan(
-        mockPlayerInstance.remove.mock.invocationCallOrder[0],
+        mockPlayerInstance.release.mock.invocationCallOrder[0],
       );
     });
 
@@ -541,7 +541,7 @@ describe('AudioPlayerService', () => {
   // Cleanup Tests
   // -----------------------------------------
   describe('cleanup', () => {
-    it('should remove player and clear callbacks', async () => {
+    it('should release player and clear callbacks', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       AudioPlayerService.setOnProgress(jest.fn());
       AudioPlayerService.setOnEnd(jest.fn());
@@ -549,7 +549,7 @@ describe('AudioPlayerService', () => {
 
       await AudioPlayerService.cleanup();
 
-      expect(mockPlayerInstance.remove).toHaveBeenCalled();
+      expect(mockPlayerInstance.release).toHaveBeenCalled();
       expect(AudioPlayerService.getCurrentEpisodeId()).toBeNull();
     });
 
