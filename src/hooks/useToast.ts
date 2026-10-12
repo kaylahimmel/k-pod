@@ -13,8 +13,11 @@ export interface UseToastReturn {
 export const useToast = (duration: number = 3000): UseToastReturn => {
   const [message, setMessage] = useState('');
   const [visible, setVisible] = useState(false);
-  const translateY = useRef(new Animated.Value(100)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
+  // useState (not useRef(...).current) so render never reads a ref, which the
+  // React Compiler lint rules forbid. The lazy initializer also avoids
+  // allocating a throwaway Animated.Value on every render
+  const [translateY] = useState(() => new Animated.Value(100));
+  const [opacity] = useState(() => new Animated.Value(0));
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Cancel the pending auto-dismiss on unmount, or the timer fires against a

@@ -65,6 +65,21 @@ describe('useToast', () => {
       expect(result.current.opacity).toBeDefined();
     });
 
+    it('should keep the same animated values across re-renders', () => {
+      const { result, rerender } = renderHook(() => useToast());
+      const { translateY, opacity } = result.current;
+
+      // A new Animated.Value per render would detach the Animated.View that is
+      // bound to the old one and snap the toast back to its start position
+      rerender({});
+      act(() => {
+        result.current.showToast('Re-render me');
+      });
+
+      expect(result.current.translateY).toBe(translateY);
+      expect(result.current.opacity).toBe(opacity);
+    });
+
     it('should return showToast function', () => {
       const { result } = renderHook(() => useToast());
 

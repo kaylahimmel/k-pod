@@ -11,12 +11,15 @@ jest.mock('../RSSService', () => ({
   },
 }));
 
-// Mock AppState
-jest.mock('react-native', () => ({
-  AppState: {
-    addEventListener: jest.fn(),
-  },
-}));
+// Mock AppState only. Keep the rest of react-native real: SDK 56's lazy
+// global fetch loads expo-modules-core, which needs Platform at import time
+jest.mock('react-native', () => {
+  const actual = jest.requireActual('react-native');
+  return Object.setPrototypeOf(
+    { AppState: { addEventListener: jest.fn() } },
+    actual,
+  );
+});
 
 describe('RefreshService', () => {
   beforeEach(() => {

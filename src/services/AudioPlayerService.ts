@@ -130,10 +130,13 @@ function unloadCurrentPlayer(): void {
       // Drop the lock screen / Control Center session first, or the OS keeps
       // showing transport controls for a player that no longer exists
       playerInstance.setActiveForLockScreen(false);
-      // remove() only deregisters the player natively; without an explicit
-      // pause() the old audio keeps playing until garbage collection
+      // Pause before releasing so the old audio stops immediately rather than
+      // whenever the native player is torn down
       playerInstance.pause();
-      playerInstance.remove();
+      // release() frees the native player right away (Android's ExoPlayer and
+      // media session, iOS's AVPlayer). remove() only dropped it from expo-audio's
+      // registry, leaving it alive until JS garbage collection
+      playerInstance.release();
     } catch {
       // Ignore removal errors - player may already be released
     }
