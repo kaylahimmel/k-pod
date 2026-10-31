@@ -17,9 +17,8 @@ import { FullPlayerViewProps, PLAYBACK_SPEEDS } from './FullPlayer.types';
 import { styles } from './FullPlayer.styles';
 import { COLORS } from '../../constants';
 import { PlaybackSpeed } from '../../models';
-import { useSettingsStore, useToast } from '../../hooks';
+import { useSettingsStore } from '../../hooks';
 import {
-  Toast,
   HeaderBackButton,
   HeaderCloseButton,
   LinkedText,
@@ -33,7 +32,6 @@ export const FullPlayerView = ({
 }: FullPlayerViewProps) => {
   const viewModel = useFullPlayerViewModel(episode, podcast, onDismiss);
   const { settings } = useSettingsStore();
-  const toast = useToast();
   const [speedPickerVisible, setSpeedPickerVisible] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   // On Android the modal is full-screen and edge-to-edge draws under the
@@ -43,11 +41,6 @@ export const FullPlayerView = ({
   // small fixed padding matching the header buttons' own padding instead
   const insets = useSafeAreaInsets();
   const topPadding = Platform.OS === 'android' ? insets.top + 8 : 8;
-
-  const handleAddToQueue = () => {
-    viewModel.handleAddToQueue();
-    toast.showToast('Added to queue');
-  };
 
   const handleSpeedSelect = (speed: PlaybackSpeed) => {
     viewModel.handleSpeedChange(speed);
@@ -177,22 +170,6 @@ export const FullPlayerView = ({
           </TouchableOpacity>
         </View>
 
-        {!viewModel.isEpisodeInQueue && (
-          <View style={styles.actionsContainer}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={handleAddToQueue}
-              accessibilityLabel='Add to queue'
-            >
-              <Ionicons
-                name='list-outline'
-                size={20}
-                color={COLORS.textPrimary}
-              />
-              <Text style={styles.actionButtonText}>Add to Queue</Text>
-            </TouchableOpacity>
-          </View>
-        )}
         <Modal
           visible={speedPickerVisible}
           transparent
@@ -239,16 +216,6 @@ export const FullPlayerView = ({
           </Pressable>
         </Modal>
       </ScrollView>
-      {/* Outside the ScrollView so it stays at the screen's bottom edge
-          instead of scrolling with the content */}
-      <Toast
-        message={toast.message}
-        visible={toast.visible}
-        translateY={toast.translateY}
-        opacity={toast.opacity}
-        onDismiss={toast.dismissToast}
-        bottomOffset={insets.bottom + 8}
-      />
     </>
   );
 };

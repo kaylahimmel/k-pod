@@ -132,28 +132,6 @@ export const styles = StyleSheet.create({
   speedButtonTextActive: {
     color: COLORS.cardBackground,
   },
-  actionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 24,
-    marginBottom: 24,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: COLORS.cardBackground,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    gap: 8,
-  },
-  actionButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: COLORS.textPrimary,
-  },
   speedPickerOverlay: {
     flex: 1,
     backgroundColor: COLORS.overlay,

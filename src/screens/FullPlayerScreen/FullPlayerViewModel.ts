@@ -2,7 +2,6 @@ import { useCallback, useMemo, useEffect } from 'react';
 import {
   usePlaybackController,
   useQueueStore,
-  useToast,
   usePlayerStore,
   useExternalLink,
 } from '../../hooks';
@@ -27,8 +26,7 @@ export const useFullPlayerViewModel = (
 ): FullPlayerViewModel => {
   // Playback controller for actions
   const playbackController = usePlaybackController();
-  const { queue, currentIndex, addToQueue } = useQueueStore();
-  const toast = useToast();
+  const { queue, currentIndex } = useQueueStore();
   // Get stable references from playerStore for proper re-renders
   const {
     currentEpisode: storeCurrentEpisode,
@@ -104,11 +102,6 @@ export const useFullPlayerViewModel = (
 
   const hasUpNext = upNextItem !== null;
 
-  // Check if current episode is already in the queue
-  const isEpisodeInQueue = useMemo(() => {
-    return queue.some((item) => item.episode.id === episode.id);
-  }, [queue, episode.id]);
-
   // Playback control handlers - delegate to PlaybackController
   const handlePlayPause = useCallback(() => {
     playbackController.togglePlayPause();
@@ -136,18 +129,6 @@ export const useFullPlayerViewModel = (
     [playbackController],
   );
 
-  // Add current episode to queue (at end)
-  const handleAddToQueue = useCallback(() => {
-    const queueItem = {
-      id: `${episode.id}-${Date.now()}`,
-      episode,
-      podcast,
-      position: queue.length,
-    };
-    addToQueue(queueItem);
-    toast.showToast(`"${episode.title}" added to queue`);
-  }, [episode, podcast, queue.length, addToQueue, toast]);
-
   const handleDismiss = useCallback(() => {
     onDismiss();
   }, [onDismiss]);
@@ -166,7 +147,6 @@ export const useFullPlayerViewModel = (
     speedDisplay,
     upNextItem,
     hasUpNext,
-    isEpisodeInQueue,
     isPlaying: storeIsPlaying,
     position: storePosition,
     duration: storeDuration,
@@ -176,7 +156,6 @@ export const useFullPlayerViewModel = (
     handleSkipBackward,
     handleSeek,
     handleSpeedChange,
-    handleAddToQueue,
     handleDismiss,
     handleBack,
     handleLinkPress: openUrl,

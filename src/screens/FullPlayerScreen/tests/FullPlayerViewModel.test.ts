@@ -75,45 +75,14 @@ describe('useFullPlayerViewModel', () => {
   });
 
   it('should automatically add episode to queue when viewModel is created', async () => {
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),
     );
     await act(async () => {});
 
-    // Episode should be automatically added to queue
-    expect(result.current.isEpisodeInQueue).toBe(true);
-
     const queue = queueStore.getState().queue;
     expect(queue.length).toBe(1);
     expect(queue[0].episode.id).toBe(mockEpisode.id);
-  });
-
-  describe('handleAddToQueue', () => {
-    it('should add episode to queue when manually called', async () => {
-      // Pre-set the episode in playerStore to avoid auto-add
-      act(() => {
-        playerStore.getState().setCurrentEpisode(mockEpisode);
-        playerStore.getState().setCurrentPodcast(mockPodcast);
-      });
-
-      const { result } = renderHook(() =>
-        useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),
-      );
-      await act(async () => {});
-
-      // Clear the queue to test manual add
-      act(() => {
-        queueStore.getState().clearQueue();
-      });
-
-      act(() => {
-        result.current.handleAddToQueue();
-      });
-
-      const queue = queueStore.getState().queue;
-      expect(queue.length).toBe(1);
-      expect(queue[0].episode.id).toBe(mockEpisode.id);
-    });
   });
 
   describe('playback handlers', () => {
