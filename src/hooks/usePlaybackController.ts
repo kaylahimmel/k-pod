@@ -153,14 +153,53 @@ export async function restoreLastEpisode(): Promise<void> {
   );
 
   // The user may have started an episode during the await above
-  const player = playerStore.getState();
-  if (player.currentEpisode) return;
+  if (playerStore.getState().currentEpisode) return;
 
-  restoredEpisodeId = item.episode.id;
-  player.setCurrentEpisode(item.episode);
+  showPaused(item.episode, podcast, savedPosition);
+}
+
+/**
+ * Puts an episode in the player without loading audio, which waits for the
+ * user's first tap
+ */
+function showPaused(
+  episode: Episode,
+  podcast: Podcast,
+  position: number,
+): void {
+  const player = playerStore.getState();
+  restoredEpisodeId = episode.id;
+  player.setCurrentEpisode(episode);
   player.setCurrentPodcast(podcast);
-  player.setPosition(savedPosition);
-  player.setDuration(item.episode.duration);
+  player.setIsPlaying(false);
+  player.setPosition(position);
+  player.setDuration(episode.duration);
+}
+
+/**
+ * Empties the player without touching speed, which playerStore.reset() would
+ * put back to 1x instead of the user's default
+ */
+function clearPlayer(): void {
+  const player = playerStore.getState();
+  player.setCurrentEpisode(null);
+  player.setCurrentPodcast(null);
+  player.setIsPlaying(false);
+  player.setPosition(0);
+  player.setDuration(0);
+}
+
+/**
+ * Saves the current episode's position, then stops its audio. Used when the
+ * episode leaves the queue, so it can resume from there if it's added back.
+ */
+async function saveAndStopCurrent(): Promise<void> {
+  const { currentEpisode, position } = playerStore.getState();
+  if (currentEpisode && position > 0) {
+    await StorageService.savePlaybackPosition(currentEpisode.id, position);
+    lastSavedPosition = position;
+  }
+  await AudioPlayerService.stop();
 }
 
 /**
@@ -344,15 +383,20 @@ export const usePlaybackController = () => {
     position,
     duration,
     speed,
-    setCurrentEpisode,
     setCurrentPodcast,
     setIsPlaying,
     setPosition,
-    setDuration,
     setSpeed,
   } = usePlayerStore();
 
-  const { queue, currentIndex, setCurrentIndex, setQueue } = useQueueStore();
+  const {
+    queue,
+    currentIndex,
+    setCurrentIndex,
+    setQueue,
+    removeFromQueue,
+    clearQueue,
+  } = useQueueStore();
 
   const { settings } = useSettingsStore();
 
@@ -665,6 +709,59 @@ export const usePlaybackController = () => {
   );
 
   /**
+   * Remove an item from the queue. Removing the current episode also stops
+   * its audio and moves to the next one, otherwise the old audio keeps playing
+   * while the queue shows the next item as Now Playing.
+   */
+  const removeQueueItem = useCallback(
+    async (itemId: string) => {
+      const { queue: freshQueue } = queueStore.getState();
+      const { currentEpisode: freshEpisode, isPlaying: wasPlaying } =
+        playerStore.getState();
+      const removedItem = freshQueue.find((item) => item.id === itemId);
+      const isCurrent = removedItem?.episode.id === freshEpisode?.id;
+
+      removeFromQueue(itemId);
+      if (!removedItem || !isCurrent) return;
+
+      await saveAndStopCurrent();
+
+      // removeFromQueue already pointed currentIndex at the next item
+      const { queue: nextQueue, currentIndex: nextIndex } =
+        queueStore.getState();
+      const nextItem = nextQueue[nextIndex];
+      if (!nextItem) {
+        clearPlayer();
+        return;
+      }
+
+      if (wasPlaying) {
+        isLoadingEpisode = true;
+        try {
+          await loadAndPlay(nextItem.episode, nextItem.podcast);
+        } finally {
+          isLoadingEpisode = false;
+        }
+      } else {
+        const savedPosition = await StorageService.loadPlaybackPosition(
+          nextItem.episode.id,
+        );
+        showPaused(nextItem.episode, nextItem.podcast, savedPosition);
+      }
+    },
+    [removeFromQueue],
+  );
+
+  /**
+   * Empty the queue and stop whatever was playing from it
+   */
+  const clearQueueAndStop = useCallback(async () => {
+    clearQueue();
+    await saveAndStopCurrent();
+    clearPlayer();
+  }, [clearQueue]);
+
+  /**
    * Stop current playback and play the next episode in the queue
    * Used when the currently playing episode needs to be removed (e.g., unsubscribe)
    * Note: After removeFromQueue adjusts currentIndex, it already points to the next item
@@ -690,19 +787,9 @@ export const usePlaybackController = () => {
       await loadAndPlay(nextItem.episode, nextItem.podcast);
     } else {
       // No next episode - reset player state
-      setCurrentEpisode(null);
-      setCurrentPodcast(null);
-      setIsPlaying(false);
-      setPosition(0);
-      setDuration(0);
+      clearPlayer();
     }
-  }, [
-    setCurrentEpisode,
-    setCurrentPodcast,
-    setIsPlaying,
-    setPosition,
-    setDuration,
-  ]);
+  }, []);
 
   return {
     // State
@@ -724,6 +811,8 @@ export const usePlaybackController = () => {
     playPrevious,
     playQueueItem,
     stopCurrentAndPlayNext,
+    removeQueueItem,
+    clearQueueAndStop,
 
     // Queue info
     hasNext: currentIndex < queue.length - 1,

@@ -786,6 +786,125 @@ describe('usePlaybackController', () => {
     });
   });
 
+  describe('Removing from the queue', () => {
+    const firstItem = createMockQueueItem({
+      id: 'item-1',
+      episode: mockEpisode,
+      podcast: mockPodcast,
+    });
+    const secondItem = createMockQueueItem({
+      id: 'item-2',
+      episode: mockEpisode2,
+      podcast: mockPodcast,
+    });
+
+    const startWith = (isPlaying: boolean, queue = [firstItem, secondItem]) => {
+      act(() => {
+        queueStore.setState({ queue, currentIndex: 0 });
+        const player = playerStore.getState();
+        player.setCurrentEpisode(mockEpisode);
+        player.setCurrentPodcast(mockPodcast);
+        player.setIsPlaying(isPlaying);
+        player.setPosition(120);
+      });
+    };
+
+    beforeEach(() => {
+      (AudioPlayerService.stop as jest.Mock).mockResolvedValue({
+        success: true,
+      });
+      jest.spyOn(StorageService, 'savePlaybackPosition').mockResolvedValue();
+      jest.spyOn(StorageService, 'loadPlaybackPosition').mockResolvedValue(0);
+    });
+
+    it('stops a playing episode and plays the next one', async () => {
+      startWith(true);
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.removeQueueItem('item-1');
+      });
+
+      expect(StorageService.savePlaybackPosition).toHaveBeenCalledWith(
+        'episode-1',
+        120,
+      );
+      expect(AudioPlayerService.stop).toHaveBeenCalled();
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
+        mockEpisode2,
+        mockPodcast,
+      );
+      expect(playerStore.getState().currentEpisode?.id).toBe('episode-2');
+      expect(playerStore.getState().isPlaying).toBe(true);
+    });
+
+    it('shows the next episode paused when nothing was playing', async () => {
+      startWith(false);
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.removeQueueItem('item-1');
+      });
+
+      expect(AudioPlayerService.stop).toHaveBeenCalled();
+      expect(AudioPlayerService.loadEpisode).not.toHaveBeenCalled();
+      expect(playerStore.getState().currentEpisode?.id).toBe('episode-2');
+      expect(playerStore.getState().isPlaying).toBe(false);
+
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
+        mockEpisode2,
+        mockPodcast,
+      );
+    });
+
+    it('resets the player when the last episode is removed', async () => {
+      startWith(true, [firstItem]);
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.removeQueueItem('item-1');
+      });
+
+      expect(AudioPlayerService.stop).toHaveBeenCalled();
+      expect(playerStore.getState().currentEpisode).toBeNull();
+      expect(playerStore.getState().isPlaying).toBe(false);
+    });
+
+    it('leaves playback alone when removing an upcoming episode', async () => {
+      startWith(true);
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.removeQueueItem('item-2');
+      });
+
+      expect(AudioPlayerService.stop).not.toHaveBeenCalled();
+      expect(queueStore.getState().queue).toEqual([firstItem]);
+      expect(playerStore.getState().currentEpisode?.id).toBe('episode-1');
+    });
+
+    it('stops playback and resets the player when the queue is cleared', async () => {
+      startWith(true);
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.clearQueueAndStop();
+      });
+
+      expect(StorageService.savePlaybackPosition).toHaveBeenCalledWith(
+        'episode-1',
+        120,
+      );
+      expect(AudioPlayerService.stop).toHaveBeenCalled();
+      expect(queueStore.getState().queue).toEqual([]);
+      expect(playerStore.getState().currentEpisode).toBeNull();
+    });
+  });
+
   describe('Playback error messages', () => {
     const failedLoad = { success: false, error: 'offline' };
     let alertSpy: jest.SpyInstance;

@@ -1,6 +1,10 @@
 import { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { useQueueStore, usePlayerStore } from '../../hooks';
+import {
+  useQueueStore,
+  usePlayerStore,
+  usePlaybackController,
+} from '../../hooks';
 import { queueStore } from '../../stores';
 import { QueueItem } from '../../models';
 import {
@@ -20,14 +24,11 @@ export const useQueueViewModel = (
   ) => void,
   onPlayItem?: (item: QueueItem) => void,
 ) => {
-  const {
-    queue,
-    currentIndex,
-    removeFromQueue,
-    reorderQueue,
-    clearQueue,
-    setCurrentIndex,
-  } = useQueueStore();
+  const { queue, currentIndex, reorderQueue, setCurrentIndex } =
+    useQueueStore();
+
+  // These also stop the audio when the playing episode leaves the queue
+  const { removeQueueItem, clearQueueAndStop } = usePlaybackController();
 
   const { isPlaying } = usePlayerStore();
 
@@ -67,9 +68,9 @@ export const useQueueViewModel = (
   // Actions
   const handleRemoveFromQueue = useCallback(
     (itemId: string) => {
-      removeFromQueue(itemId);
+      removeQueueItem(itemId);
     },
-    [removeFromQueue],
+    [removeQueueItem],
   );
 
   const handleReorder = useCallback(
@@ -117,11 +118,11 @@ export const useQueueViewModel = (
         {
           text: 'Clear',
           style: 'destructive',
-          onPress: () => clearQueue(),
+          onPress: () => clearQueueAndStop(),
         },
       ],
     );
-  }, [clearQueue]);
+  }, [clearQueueAndStop]);
 
   const handlePlayItem = useCallback(
     (item: FormattedQueueItem) => {
