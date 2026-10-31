@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { PodcastPreviewView } from '../PodcastPreviewView';
 import { RSSService } from '../../../services';
 import { podcastStore } from '../../../stores';
@@ -187,6 +188,64 @@ describe('PodcastPreviewView', () => {
       fireEvent.press(showMoreButton);
 
       expect(await findByText('Show less')).toBeTruthy();
+    });
+  });
+
+  describe('Pull to refresh', () => {
+    const failedFetch = { success: false, error: 'Network down' };
+    const refresh = async (
+      getByTestId: ReturnType<typeof render>['getByTestId'],
+    ) => {
+      const scroll = getByTestId('podcast-preview-scroll');
+      await act(async () => {
+        await scroll.props.refreshControl.props.onRefresh();
+      });
+    };
+
+    it('should fetch the feed again', async () => {
+      const { findByText, getByTestId } = renderPodcastPreviewView();
+      await findByText('Recent Episodes');
+
+      await refresh(getByTestId);
+
+      expect(RSSService.transformPodcastFromRSS).toHaveBeenCalledTimes(2);
+    });
+
+    it('should keep the episodes and alert when a refresh fails', async () => {
+      const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation();
+      const { findByTestId, getByTestId, queryByText } =
+        renderPodcastPreviewView();
+      await findByTestId('podcast-preview-scroll');
+      await act(async () => {});
+      const episodeCount = getByTestId('podcast-preview-scroll').findAll(
+        (node) => node.props.onAddToQueue !== undefined,
+      ).length;
+
+      (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValueOnce(
+        failedFetch,
+      );
+      await refresh(getByTestId);
+
+      expect(queryByText('Network down')).toBeNull();
+      expect(alertSpy).toHaveBeenCalledWith('Refresh Failed', 'Network down');
+      expect(
+        getByTestId('podcast-preview-scroll').findAll(
+          (node) => node.props.onAddToQueue !== undefined,
+        ).length,
+      ).toBe(episodeCount);
+      alertSpy.mockRestore();
+    });
+
+    it('should show the error state when there are no episodes to keep', async () => {
+      (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValue(
+        failedFetch,
+      );
+      const { findByText, getByTestId } = renderPodcastPreviewView();
+      await findByText('Network down');
+
+      await refresh(getByTestId);
+
+      expect(await findByText('Network down')).toBeTruthy();
     });
   });
 

@@ -38,6 +38,7 @@ export const usePodcastPreviewViewModel = (
   const [episodeError, setEpisodeError] = useState<string | null>(null);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { podcasts, addPodcast } = usePodcastStore();
   const { queue, addToQueue } = useQueueStore();
@@ -122,6 +123,26 @@ export const usePodcastPreviewViewModel = (
 
     setIsLoadingEpisodes(false);
   }, [podcast.feedUrl]);
+
+  // Pull-to-refresh: a failure keeps any episodes already on screen
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    const result = await RSSService.transformPodcastFromRSS(podcast.feedUrl);
+    setIsRefreshing(false);
+
+    if (result.success) {
+      setEpisodes(result.data.episodes);
+      setEpisodeError(null);
+      return;
+    }
+
+    const message = result.error || 'Failed to load episodes';
+    if (episodes.length > 0) {
+      Alert.alert('Refresh Failed', message);
+    } else {
+      setEpisodeError(message);
+    }
+  }, [podcast.feedUrl, episodes.length]);
 
   // Subscribe to the podcast
   const handleSubscribe = useCallback(async () => {
@@ -242,6 +263,8 @@ export const usePodcastPreviewViewModel = (
     subscribeButtonState,
     toast,
     handleRetryEpisodes,
+    handleRefresh,
+    isRefreshing,
     handleSubscribe,
     toggleDescription,
     handleEpisodePress,

@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { useListeningHistoryViewModel } from './ListeningHistoryViewModel';
 import { styles } from './ListeningHistory.styles';
-import { CardHistoryItem, SkeletonList } from '../../components';
+import { CardHistoryItem, SkeletonList, StateEmpty } from '../../components';
 import { ListeningHistoryViewProps } from './ListeningHistory.types';
 
 export const ListeningHistoryView = ({
@@ -21,13 +21,11 @@ export const ListeningHistoryView = ({
 
   if (viewModel.isEmpty) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyTitle}>No Listening History</Text>
-        <Text style={styles.emptyText}>
-          Start listening to podcasts to see your history here. Your completed
-          and partially listened episodes will appear in this list.
-        </Text>
-      </View>
+      <StateEmpty
+        icon='time-outline'
+        title='No Listening History'
+        message='Start listening to podcasts to see your history here. Your completed and partially listened episodes will appear in this list.'
+      />
     );
   }
 

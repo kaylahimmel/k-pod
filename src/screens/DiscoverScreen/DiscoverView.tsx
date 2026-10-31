@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, FlatList, SectionList } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  SectionList,
+  RefreshControl,
+} from 'react-native';
 import { DiscoveryPodcast } from '../../models';
 import { FormattedDiscoveryPodcast } from './Discover.types';
 import { useDiscoverViewModel } from './DiscoverViewModel';
@@ -12,6 +18,7 @@ import {
   StateNoResults,
   Toast,
 } from '../../components';
+import { COLORS } from '../../constants';
 import { styles } from './Discover.styles';
 
 interface DiscoverViewProps {
@@ -180,11 +187,16 @@ export const DiscoverView = ({ onPodcastPress }: DiscoverViewProps) => {
           onChangeText={viewModel.handleSearchQueryChange}
           onSubmit={viewModel.handleSearch}
         />
-        {viewModel.hasNoTrendingResults ? (
+        {viewModel.hasTrendingError ? (
+          <StateError
+            message={viewModel.trendingError!}
+            onRetry={viewModel.handleRetryTrending}
+          />
+        ) : viewModel.hasNoTrendingResults ? (
           <StateEmpty
             icon='search-outline'
             title='Discover Podcasts'
-            message='Search for your favorite podcasts or browse trending shows below'
+            message='Search for your favorite podcasts'
           />
         ) : (
           <SectionList
@@ -197,6 +209,14 @@ export const DiscoverView = ({ onPodcastPress }: DiscoverViewProps) => {
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
             stickySectionHeadersEnabled={false}
+            testID='discover-list'
+            refreshControl={
+              <RefreshControl
+                refreshing={viewModel.isRefreshing}
+                onRefresh={viewModel.handleRefresh}
+                tintColor={COLORS.primary}
+              />
+            }
           />
         )}
       </View>

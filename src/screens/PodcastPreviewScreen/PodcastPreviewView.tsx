@@ -3,6 +3,7 @@ import {
   View,
   Text,
   ScrollView,
+  RefreshControl,
   Image,
   TouchableOpacity,
   ActivityIndicator,
@@ -110,6 +111,14 @@ export const PodcastPreviewView = ({
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        testID='podcast-preview-scroll'
+        refreshControl={
+          <RefreshControl
+            refreshing={viewModel.isRefreshing}
+            onRefresh={viewModel.handleRefresh}
+            tintColor={COLORS.primary}
+          />
+        }
       >
         {/* Header with artwork and info */}
         <View style={styles.header}>

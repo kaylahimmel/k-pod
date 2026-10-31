@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { ActivityIndicator, Alert, Linking } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { SettingsView } from '../SettingsView';
 import { podcastStore, settingsStore } from '../../../stores';
 import { createMockAppSettings, createMockPodcast } from '../../../__mocks__';

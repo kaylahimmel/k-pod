@@ -22,6 +22,8 @@ export const useDiscoverViewModel = (
   const [loadingTrending, setLoadingTrending] = useState(true);
   const [subscribing, setSubscribing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [trendingError, setTrendingError] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   const { podcasts, addPodcast } = usePodcastStore();
@@ -45,19 +47,46 @@ export const useDiscoverViewModel = (
   const hasSearchError = hasSearched && error !== null;
   const hasNoSearchResults =
     hasSearched && searchResults.length === 0 && !loading && !error;
+  // A failed refresh keeps the list already on screen
+  const hasTrendingError =
+    trendingError !== null && trendingPodcasts.length === 0;
   const hasNoTrendingResults = sections.length === 0;
 
+  // Returns the error message so a refresh can decide how to show it
+  const fetchTrending = useCallback(async (): Promise<string | null> => {
+    const result = await DiscoveryService.getTrendingPodcasts('ALL', 20);
+    if (result.success) {
+      setTrendingPodcasts(result.data);
+      setTrendingError(null);
+      return null;
+    }
+    setTrendingError(result.error);
+    return result.error;
+  }, []);
+
   useEffect(() => {
-    const fetchTrending = async () => {
-      setLoadingTrending(true);
-      const result = await DiscoveryService.getTrendingPodcasts('ALL', 20);
-      if (result.success && result.data) {
-        setTrendingPodcasts(result.data);
-      }
+    const loadInitialTrending = async () => {
+      await fetchTrending();
       setLoadingTrending(false);
     };
-    fetchTrending();
-  }, []);
+    loadInitialTrending();
+  }, [fetchTrending]);
+
+  const handleRetryTrending = useCallback(async () => {
+    setLoadingTrending(true);
+    await fetchTrending();
+    setLoadingTrending(false);
+  }, [fetchTrending]);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    const refreshError = await fetchTrending();
+    setIsRefreshing(false);
+
+    if (refreshError && trendingPodcasts.length > 0) {
+      Alert.alert('Refresh Failed', refreshError);
+    }
+  }, [fetchTrending, trendingPodcasts.length]);
 
   const handleSearch = useCallback(async () => {
     if (!searchQuery.trim()) {
@@ -163,10 +192,15 @@ export const useDiscoverViewModel = (
     isSearching,
     hasSearchError,
     hasNoSearchResults,
+    hasTrendingError,
     hasNoTrendingResults,
+    isRefreshing,
+    trendingError,
     toast,
     handleSearch,
     handleSearchQueryChange,
+    handleRefresh,
+    handleRetryTrending,
     getOriginalPodcast,
     checkIsSubscribed,
     handlePodcastPress,

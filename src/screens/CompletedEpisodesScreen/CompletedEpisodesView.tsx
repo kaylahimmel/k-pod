@@ -9,6 +9,7 @@ import {
   CardHistoryItem,
   EpisodeActionsMenu,
   SkeletonList,
+  StateEmpty,
   Toast,
 } from '../../components';
 
@@ -27,12 +28,11 @@ export const CompletedEpisodesView = ({
 
   if (viewModel.isEmpty) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyTitle}>No Completed Episodes</Text>
-        <Text style={styles.emptyText}>
-          Episodes you finish from this podcast will appear here.
-        </Text>
-      </View>
+      <StateEmpty
+        icon='checkmark-circle-outline'
+        title='No Completed Episodes'
+        message='Episodes you finish from this podcast will appear here.'
+      />
     );
   }
 
