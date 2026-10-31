@@ -15,7 +15,7 @@ import {
 import { usePodcastPreviewViewModel } from './usePodcastPreviewViewModel';
 import {
   Toast,
-  StateLoading,
+  SkeletonList,
   StateError,
   StateEmpty,
   CardEpisode,
@@ -68,7 +68,7 @@ export const PodcastPreviewView = ({
 
   const renderEpisodesContent = () => {
     if (viewModel.isLoadingEpisodes) {
-      return <StateLoading message='Loading episodes...' />;
+      return <SkeletonList count={4} cardHeight={100} />;
     }
 
     if (viewModel.hasEpisodeError) {

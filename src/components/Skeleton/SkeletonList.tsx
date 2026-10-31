@@ -28,7 +28,7 @@ export const SkeletonList = ({
   spacing = 12,
   style,
 }: SkeletonListProps) => (
-  <View style={[styles.listContainer, style]}>
+  <View style={[styles.listContainer, style]} testID='skeleton-list'>
     {Array.from({ length: count }).map((_, index) => (
       <SkeletonCard
         key={index}

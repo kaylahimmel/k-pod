@@ -98,9 +98,4 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.danger,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
 });

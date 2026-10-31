@@ -1,14 +1,9 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useProfileViewModel } from './ProfileViewModel';
 import { styles } from './Profile.styles';
+import { SkeletonList } from '../../components';
 import { COLORS } from '../../constants';
 import { ProfileViewProps } from './Profile.types';
 
@@ -23,8 +18,8 @@ export const ProfileView = ({
 
   if (viewModel.isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size='large' color={COLORS.primary} />
+      <View style={styles.container}>
+        <SkeletonList count={4} cardHeight={120} />
       </View>
     );
   }

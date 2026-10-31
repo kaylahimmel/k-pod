@@ -237,9 +237,9 @@ describe('DiscoverView', () => {
         () => new Promise(() => {}),
       );
 
-      const { getByText } = renderDiscoverView();
+      const { getByTestId } = renderDiscoverView();
 
-      expect(getByText('Searching...')).toBeTruthy();
+      expect(getByTestId('skeleton-list')).toBeTruthy();
     });
   });
 });

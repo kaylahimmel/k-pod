@@ -29,9 +29,9 @@ describe('SettingsView', () => {
     it('should display loading indicator when loading', () => {
       settingsStore.setState({ loading: true });
 
-      const { UNSAFE_queryByType } = renderSettingsView();
+      const { getByTestId } = renderSettingsView();
 
-      expect(UNSAFE_queryByType(ActivityIndicator)).toBeTruthy();
+      expect(getByTestId('skeleton-list')).toBeTruthy();
     });
   });
 

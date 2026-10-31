@@ -202,9 +202,9 @@ describe('PodcastPreviewView', () => {
         () => new Promise(() => {}), // Never resolves to keep loading
       );
 
-      const { getByText } = renderPodcastPreviewView();
+      const { getByTestId } = renderPodcastPreviewView();
 
-      expect(getByText('Loading episodes...')).toBeTruthy();
+      expect(getByTestId('skeleton-list')).toBeTruthy();
     });
 
     it('should display episodes after loading', async () => {

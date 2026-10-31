@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { Alert } from 'react-native';
 import { usePlayerStore } from './usePlayerStore';
 import { useQueueStore } from './useQueueStore';
 import { useSettingsStore } from './useSettingsStore';
@@ -27,8 +28,11 @@ let isLoadingEpisode = false;
 // Last position written to storage, to throttle saves to every ~10 seconds
 let lastSavedPosition = 0;
 
+const PLAYBACK_ERROR_MESSAGE =
+  "This episode couldn't be played. Check your connection and try again.";
+
 /**
- * The episode shown after a restart, before any audio has loaded for it.
+ * The episode shown after a restart or a failed load, before any audio has loaded for it.
  * Compared against the player store so it stops applying by itself as soon
  * as a different episode becomes current.
  */
@@ -53,6 +57,9 @@ async function loadAtSavedPosition(
   const loadResult = await AudioPlayerService.loadEpisode(episode, podcast);
   if (!loadResult.success) {
     console.error('Failed to load episode:', loadResult.error);
+    Alert.alert('Playback Error', PLAYBACK_ERROR_MESSAGE);
+    // No audio loaded, so the next play tap has to load it again
+    restoredEpisodeId = episode.id;
     return false;
   }
   restoredEpisodeId = null;
@@ -274,6 +281,7 @@ export const usePlaybackEvents = () => {
   const handleError = useCallback(
     (error: string) => {
       console.error('Playback error:', error);
+      Alert.alert('Playback Error', PLAYBACK_ERROR_MESSAGE);
       setIsPlaying(false);
     },
     [setIsPlaying],

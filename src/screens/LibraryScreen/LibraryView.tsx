@@ -7,7 +7,7 @@ import {
   SearchBar,
   CardLibraryPodcast,
   StateEmpty,
-  StateLoading,
+  SkeletonList,
   StateError,
   StateNoResults,
   Toast,
@@ -22,7 +22,7 @@ export const LibraryView = ({
 
   // Loading state
   if (viewModel.isLoading) {
-    return <StateLoading message='Loading podcasts...' />;
+    return <SkeletonList count={6} cardHeight={88} />;
   }
 
   // Error state

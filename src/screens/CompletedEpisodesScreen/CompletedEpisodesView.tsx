@@ -1,12 +1,16 @@
 import { FormattedHistoryItem } from '../../models';
 import React from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 
 import { CompletedEpisodesViewProps } from './CompletedEpisodes.types';
 import { useCompletedEpisodesViewModel } from './CompletedEpisodesViewModel';
 import { styles } from './CompletedEpisodes.styles';
-import { CardHistoryItem, EpisodeActionsMenu, Toast } from '../../components';
-import { COLORS } from '../../constants';
+import {
+  CardHistoryItem,
+  EpisodeActionsMenu,
+  SkeletonList,
+  Toast,
+} from '../../components';
 
 export const CompletedEpisodesView = ({
   podcastId,
@@ -16,7 +20,7 @@ export const CompletedEpisodesView = ({
   if (viewModel.isLoading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size='large' color={COLORS.primary} />
+        <SkeletonList count={6} cardHeight={72} />
       </View>
     );
   }

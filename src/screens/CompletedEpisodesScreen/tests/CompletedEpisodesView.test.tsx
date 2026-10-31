@@ -22,6 +22,15 @@ const entry = (
   });
 
 describe('CompletedEpisodesView', () => {
+  it('should show a skeleton until the history store hydrates', () => {
+    historyStore.setState({ hasHydrated: false });
+
+    const { getByTestId } = render(<CompletedEpisodesView podcastId='p1' />);
+
+    expect(getByTestId('skeleton-list')).toBeTruthy();
+    historyStore.setState({ hasHydrated: true });
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     historyStore.setState({ history: [], hasHydrated: true });

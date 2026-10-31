@@ -1,16 +1,9 @@
 import { FormattedHistoryItem } from '../../models';
 import React from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { useListeningHistoryViewModel } from './ListeningHistoryViewModel';
 import { styles } from './ListeningHistory.styles';
-import { COLORS } from '../../constants';
-import { CardHistoryItem } from '../../components';
+import { CardHistoryItem, SkeletonList } from '../../components';
 import { ListeningHistoryViewProps } from './ListeningHistory.types';
 
 export const ListeningHistoryView = ({
@@ -20,8 +13,8 @@ export const ListeningHistoryView = ({
 
   if (viewModel.isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size='large' color={COLORS.primary} />
+      <View style={styles.container}>
+        <SkeletonList count={6} cardHeight={72} />
       </View>
     );
   }

@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import {
   restoreLastEpisode,
@@ -782,6 +783,70 @@ describe('usePlaybackController', () => {
 
       expect(AudioPlayerService.loadEpisode).toHaveBeenCalledTimes(1);
       expect(AudioPlayerService.play).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Playback error messages', () => {
+    const failedLoad = { success: false, error: 'offline' };
+    let alertSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      alertSpy = jest.spyOn(Alert, 'alert').mockImplementation();
+      jest.spyOn(console, 'error').mockImplementation();
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('shows an alert when an episode fails to load', async () => {
+      (AudioPlayerService.loadEpisode as jest.Mock).mockResolvedValue(
+        failedLoad,
+      );
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.playEpisode(mockEpisode, mockPodcast);
+      });
+
+      expect(alertSpy).toHaveBeenCalledWith(
+        'Playback Error',
+        "This episode couldn't be played. Check your connection and try again.",
+      );
+      expect(playerStore.getState().isPlaying).toBe(false);
+    });
+
+    it('shows an alert when audio fails during playback', () => {
+      let onError: ((error: string) => void) | null = null;
+      (AudioPlayerService.setOnError as jest.Mock).mockImplementation(
+        (callback) => {
+          onError = callback;
+        },
+      );
+      renderHook(() => usePlaybackEvents());
+
+      act(() => {
+        onError?.('stream failed');
+      });
+
+      expect(alertSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('retries the load on the next play tap', async () => {
+      (AudioPlayerService.loadEpisode as jest.Mock).mockResolvedValueOnce(
+        failedLoad,
+      );
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.playEpisode(mockEpisode, mockPodcast);
+      });
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledTimes(2);
+      expect(playerStore.getState().isPlaying).toBe(true);
     });
   });
 

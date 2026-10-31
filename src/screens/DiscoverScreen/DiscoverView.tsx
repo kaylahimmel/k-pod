@@ -7,7 +7,7 @@ import {
   DiscoveryPodcastCard,
   SearchBar,
   StateEmpty,
-  StateLoading,
+  SkeletonList,
   StateError,
   StateNoResults,
   Toast,
@@ -59,7 +59,7 @@ export const DiscoverView = ({ onPodcastPress }: DiscoverViewProps) => {
             onChangeText={viewModel.handleSearchQueryChange}
             onSubmit={viewModel.handleSearch}
           />
-          <StateLoading message='Searching...' />
+          <SkeletonList count={6} cardHeight={88} />
         </View>
         <Toast
           message={viewModel.toast.message}
@@ -83,7 +83,7 @@ export const DiscoverView = ({ onPodcastPress }: DiscoverViewProps) => {
               onChangeText={viewModel.handleSearchQueryChange}
               onSubmit={viewModel.handleSearch}
             />
-            <StateLoading message='Searching...' />
+            <SkeletonList count={6} cardHeight={88} />
           </View>
           <Toast
             message={viewModel.toast.message}

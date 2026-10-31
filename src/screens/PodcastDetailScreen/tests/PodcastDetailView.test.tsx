@@ -49,9 +49,9 @@ describe('PodcastDetailView', () => {
     it('should display loading state when loading with no podcast', () => {
       podcastStore.setState({ loading: true, podcasts: [] });
 
-      const { getByText } = renderPodcastDetailView();
+      const { getByTestId } = renderPodcastDetailView();
 
-      expect(getByText('Loading podcast...')).toBeTruthy();
+      expect(getByTestId('skeleton-list')).toBeTruthy();
     });
   });
 

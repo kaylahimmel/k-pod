@@ -1,19 +1,13 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useSettingsViewModel } from './SettingsViewModel';
 import { SettingsViewProps } from './Settings.types';
 import { styles } from './Settings.styles';
-import { COLORS } from '../../constants';
 import {
   SettingToggleRow,
   SettingOptionSelector,
   SettingLinkRow,
+  SkeletonList,
   Toast,
 } from '../../components';
 
@@ -22,8 +16,8 @@ export const SettingsView = ({ onNotificationsPress }: SettingsViewProps) => {
 
   if (viewModel.isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size='large' color={COLORS.primary} />
+      <View style={styles.container}>
+        <SkeletonList count={5} cardHeight={72} />
       </View>
     );
   }
