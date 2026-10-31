@@ -1,14 +1,15 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useFullPlayerViewModel } from '../FullPlayerViewModel';
 import { playerStore, queueStore, settingsStore } from '../../../stores';
+import { AudioPlayerService } from '../../../services';
 import {
   createMockEpisode,
   createMockPodcast,
   createMockQueueItems,
 } from '../../../__mocks__';
 
-// TO-DO: Update these tests to work with the new PlaybackController architecture
-// For now, testing basic functionality. Detailed playback control tests are in usePlaybackController.test.ts
+// Detailed playback control tests are in usePlaybackController.test.ts. These
+// only check that the ViewModel's handlers reach the audio service.
 
 describe('useFullPlayerViewModel', () => {
   const mockOnDismiss = jest.fn();
@@ -112,6 +113,57 @@ describe('useFullPlayerViewModel', () => {
       const queue = queueStore.getState().queue;
       expect(queue.length).toBe(1);
       expect(queue[0].episode.id).toBe(mockEpisode.id);
+    });
+  });
+
+  describe('playback handlers', () => {
+    const renderOpenPlayer = async () => {
+      const view = renderHook(() =>
+        useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),
+      );
+      await act(async () => {});
+      return view;
+    };
+
+    it('should pause through the audio service when playing', async () => {
+      const { result } = await renderOpenPlayer();
+      act(() => playerStore.getState().setIsPlaying(true));
+
+      await act(async () => result.current.handlePlayPause());
+
+      expect(AudioPlayerService.pause).toHaveBeenCalled();
+    });
+
+    it('should skip forward through the audio service', async () => {
+      const { result } = await renderOpenPlayer();
+
+      await act(async () => result.current.handleSkipForward());
+
+      expect(AudioPlayerService.skipForward).toHaveBeenCalled();
+    });
+
+    it('should skip backward through the audio service', async () => {
+      const { result } = await renderOpenPlayer();
+
+      await act(async () => result.current.handleSkipBackward());
+
+      expect(AudioPlayerService.skipBackward).toHaveBeenCalled();
+    });
+
+    it('should seek through the audio service', async () => {
+      const { result } = await renderOpenPlayer();
+
+      await act(async () => result.current.handleSeek(120));
+
+      expect(AudioPlayerService.seek).toHaveBeenCalledWith(120);
+    });
+
+    it('should change speed through the audio service', async () => {
+      const { result } = await renderOpenPlayer();
+
+      await act(async () => result.current.handleSpeedChange(1.5));
+
+      expect(AudioPlayerService.setPlaybackSpeed).toHaveBeenCalledWith(1.5);
     });
   });
 
