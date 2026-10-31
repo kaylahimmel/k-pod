@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { SettingToggleRow } from '../SettingToggleRow';
+import { COLORS } from '../../../constants';
 
 describe('SettingToggleRow', () => {
   const mockOnValueChange = jest.fn();
@@ -33,6 +34,32 @@ describe('SettingToggleRow', () => {
     const switchComponent = getByTestId('setting-toggle-switch');
     fireEvent(switchComponent, 'onValueChange', true);
     expect(mockOnValueChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('labels the switch for screen readers', () => {
+    const { getByLabelText } = render(
+      <SettingToggleRow
+        label='Slow Burn'
+        value={true}
+        onValueChange={mockOnValueChange}
+      />,
+    );
+
+    expect(getByLabelText('Slow Burn')).toBeTruthy();
+  });
+
+  it('uses the same thumb and track colors on every platform', () => {
+    const { getByTestId } = render(
+      <SettingToggleRow
+        label='Slow Burn'
+        value={true}
+        onValueChange={mockOnValueChange}
+      />,
+    );
+
+    const { props } = getByTestId('setting-toggle-switch');
+    expect(props.thumbTintColor).toBe(COLORS.cardBackground);
+    expect(props.onTintColor).toBe(COLORS.primary);
   });
 
   it('renders without last item styling by default', () => {

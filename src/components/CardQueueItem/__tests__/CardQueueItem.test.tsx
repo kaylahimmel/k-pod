@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
+import { TouchableOpacity } from 'react-native';
 import { CardQueueItem } from '../CardQueueItem';
 import { createMockFormattedQueueItem } from '../../../__mocks__';
 
@@ -26,6 +27,32 @@ describe('CardQueueItem', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('press feedback', () => {
+    const getCard = (isCurrentlyPlaying: boolean) => {
+      const { UNSAFE_getAllByType } = render(
+        <CardQueueItem
+          item={createMockFormattedQueueItem({ isCurrentlyPlaying })}
+          drag={mockDrag}
+          isActive={false}
+          onRemove={mockOnRemove}
+          onPlay={mockOnPlay}
+          onPress={mockOnPress}
+        />,
+      );
+      return UNSAFE_getAllByType(TouchableOpacity).find(
+        (touchable) => touchable.props.onPress === mockOnPress,
+      );
+    };
+
+    it('does not fade the currently playing card when pressed', () => {
+      expect(getCard(true)?.props.activeOpacity).toBe(1);
+    });
+
+    it('keeps the default fade on other cards', () => {
+      expect(getCard(false)?.props.activeOpacity).toBeUndefined();
+    });
   });
 
   it('renders queue item information correctly', () => {

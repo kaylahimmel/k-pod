@@ -131,13 +131,69 @@ describe('useToast', () => {
         result.current.showToast('Test message');
       });
 
+      act(() => {
+        jest.advanceTimersByTime(1999);
+      });
+
       expect(result.current.visible).toBe(true);
 
       act(() => {
-        jest.advanceTimersByTime(3000);
+        jest.advanceTimersByTime(1);
       });
 
       expect(result.current.visible).toBe(false);
+    });
+
+    it('should restart the 2 second timer when a new toast replaces one', () => {
+      const { result } = renderHook(() => useToast());
+
+      act(() => {
+        result.current.showToast('First');
+      });
+      act(() => {
+        jest.advanceTimersByTime(1500);
+      });
+      act(() => {
+        result.current.showToast('Second');
+      });
+      act(() => {
+        jest.advanceTimersByTime(1500);
+      });
+
+      expect(result.current.visible).toBe(true);
+      expect(result.current.message).toBe('Second');
+    });
+
+    it('should keep a new toast when the old hide animation gets interrupted', () => {
+      const { result } = renderHook(() => useToast());
+      let finishHide: ((result: { finished: boolean }) => void) | undefined;
+
+      act(() => {
+        result.current.showToast('First');
+      });
+
+      // Hold the hide animation open, the way a real one runs for 300ms
+      (Animated.parallel as jest.Mock).mockImplementationOnce(() => ({
+        start: (callback: (result: { finished: boolean }) => void) => {
+          finishHide = callback;
+        },
+        stop: jest.fn(),
+        reset: jest.fn(),
+      }));
+      act(() => {
+        result.current.dismissToast();
+      });
+      act(() => {
+        result.current.showToast('Second');
+      });
+
+      // Starting the new toast's animation interrupts the hide
+      act(() => {
+        finishHide?.({ finished: false });
+      });
+
+      expect(result.current.visible).toBe(true);
+      expect(result.current.message).toBe('Second');
     });
 
     it('should auto-dismiss after custom duration', () => {

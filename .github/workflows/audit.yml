@@ -12,7 +12,7 @@ on:
       - 'package.json'
       - 'yarn.lock'
   schedule:
-    - cron: '0 16 * * 0'  # Every Saturday at 8am UTC
+    - cron: '0 16 * * 0'  # Every Sunday at 16:00 UTC (8am PST / 9am PDT)
 
 jobs:
   audit:

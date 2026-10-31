@@ -1,3 +1,4 @@
+import { UseToastReturn } from '../../hooks';
 import { PlaybackSpeed } from '../../models';
 
 export interface SpeedOption {
@@ -21,6 +22,10 @@ export interface FormattedSettings {
   skipBackwardLabel: string;
 }
 
+export interface SettingsViewProps {
+  onNotificationsPress: () => void;
+}
+
 export interface SettingsViewModelReturn {
   settings: FormattedSettings;
   isLoading: boolean;
@@ -28,6 +33,7 @@ export interface SettingsViewModelReturn {
   skipForwardOptions: SkipOption[];
   skipBackwardOptions: SkipOption[];
   appVersion: string;
+  toast: UseToastReturn;
   handleToggleAutoPlayNext: () => void;
   handleSpeedChange: (speed: PlaybackSpeed) => void;
   handleToggleDownloadOnWiFi: () => void;

@@ -1,12 +1,21 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useSettingsViewModel } from '../SettingsViewModel';
 import { settingsStore } from '../../../stores';
+import { unregisterBackgroundRefresh } from '../../../services';
 import { Alert, Linking } from 'react-native';
 
 // Mock the stores
 jest.mock('../../../stores', () => ({
   settingsStore: jest.fn(),
+  podcastStore: jest.fn(),
 }));
+
+// Mock the background service the ViewModel calls
+jest.mock('../../../services', () => ({
+  unregisterBackgroundRefresh: jest.fn(),
+}));
+
+const mockUnregister = unregisterBackgroundRefresh as jest.Mock;
 
 // Mock Alert and Linking
 jest.spyOn(Alert, 'alert');
@@ -22,16 +31,25 @@ describe('useSettingsViewModel', () => {
     downloadOnWiFi: true,
     skipForwardSeconds: 30,
     skipBackwardSeconds: 15,
+    newEpisodeNotifications: false,
+    mutedNotificationPodcastIds: [] as string[],
   };
 
-  beforeEach(() => {
-    jest.clearAllMocks();
+  const mockSettingsState = (
+    overrides: Partial<typeof defaultSettings> = {},
+  ) => {
     (settingsStore as unknown as jest.Mock).mockReturnValue({
-      settings: defaultSettings,
+      settings: { ...defaultSettings, ...overrides },
       loading: false,
       updateSetting: mockUpdateSetting,
       resetSettings: mockResetSettings,
     });
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSettingsState();
+    mockUnregister.mockResolvedValue({ success: true, data: undefined });
   });
 
   it('should return formatted settings', () => {
@@ -176,6 +194,39 @@ describe('useSettingsViewModel', () => {
       });
 
       expect(mockResetSettings).toHaveBeenCalled();
+      // Defaults turn notifications off, so the background task goes too
+      expect(mockUnregister).toHaveBeenCalled();
+    });
+
+    it('should show a toast once reset is confirmed', () => {
+      const { result } = renderHook(() => useSettingsViewModel());
+
+      act(() => {
+        result.current.handleResetSettings();
+      });
+
+      const alertCall = (Alert.alert as jest.Mock).mock.calls[0];
+      const resetButton = alertCall[2].find(
+        (btn: { text: string }) => btn.text === 'Reset',
+      );
+
+      act(() => {
+        resetButton.onPress();
+      });
+
+      expect(result.current.toast.showToast).toHaveBeenCalledWith(
+        'Settings reset to defaults',
+      );
+    });
+
+    it('should not show a toast before reset is confirmed', () => {
+      const { result } = renderHook(() => useSettingsViewModel());
+
+      act(() => {
+        result.current.handleResetSettings();
+      });
+
+      expect(result.current.toast.showToast).not.toHaveBeenCalled();
     });
   });
 

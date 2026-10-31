@@ -64,6 +64,8 @@ export const CardQueueItem = ({
         onPress={onPress}
         onLongPress={item.isCurrentlyPlaying ? undefined : drag}
         delayLongPress={150}
+        // This card can't be dragged, so it shouldn't react as if it could
+        activeOpacity={item.isCurrentlyPlaying ? 1 : undefined}
       >
         <View style={styles.queueItemContent}>
           <TouchableOpacity

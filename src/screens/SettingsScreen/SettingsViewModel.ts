@@ -1,7 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { Alert, Linking } from 'react-native';
 import { PlaybackSpeed } from '../../models';
-import { useSettingsStore } from '../../hooks';
+import { useSettingsStore, useToast } from '../../hooks';
+import { unregisterBackgroundRefresh } from '../../services';
 import {
   formatSettings,
   getAppVersion,
@@ -23,6 +24,7 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
   // Store access
   const { settings, loading, updateSetting, resetSettings } =
     useSettingsStore();
+  const toast = useToast();
 
   // Formatted settings from presenter
   const formattedSettings = useMemo(() => formatSettings(settings), [settings]);
@@ -88,11 +90,15 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
           style: 'destructive',
           onPress: () => {
             resetSettings();
+            // Defaults turn notifications off, so stop the background task
+            // too instead of leaving the OS waking the app for nothing
+            unregisterBackgroundRefresh().catch(() => {});
+            toast.showToast('Settings reset to defaults');
           },
         },
       ],
     );
-  }, [resetSettings]);
+  }, [resetSettings, toast]);
 
   /**
    * Opens the privacy policy in the device browser
@@ -125,6 +131,7 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
     skipForwardOptions: SKIP_FORWARD_OPTIONS,
     skipBackwardOptions: SKIP_BACKWARD_OPTIONS,
     appVersion,
+    toast,
     handleToggleAutoPlayNext,
     handleSpeedChange,
     handleToggleDownloadOnWiFi,

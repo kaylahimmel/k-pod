@@ -2,14 +2,15 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ActivityIndicator, Alert, Linking } from 'react-native';
 import { SettingsView } from '../SettingsView';
-import { settingsStore } from '../../../stores';
-import { createMockAppSettings } from '../../../__mocks__';
+import { podcastStore, settingsStore } from '../../../stores';
+import { createMockAppSettings, createMockPodcast } from '../../../__mocks__';
 
 jest.spyOn(Alert, 'alert');
 jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
 
 describe('SettingsView', () => {
   const defaultSettings = createMockAppSettings();
+  const mockOnNotificationsPress = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -18,9 +19,11 @@ describe('SettingsView', () => {
       loading: false,
       error: null,
     });
+    podcastStore.setState({ podcasts: [] });
   });
 
-  const renderSettingsView = () => render(<SettingsView />);
+  const renderSettingsView = () =>
+    render(<SettingsView onNotificationsPress={mockOnNotificationsPress} />);
 
   describe('Loading State', () => {
     it('should display loading indicator when loading', () => {
@@ -104,6 +107,33 @@ describe('SettingsView', () => {
       // Just verify the toggle displays - testing the actual toggle is complex
       // due to how React Native Switch components work
       expect(getByText('Download on WiFi only')).toBeTruthy();
+    });
+  });
+
+  describe('Notifications Section', () => {
+    it('should display the section header and link', () => {
+      const { getByText } = renderSettingsView();
+
+      expect(getByText('Notifications')).toBeTruthy();
+      expect(getByText('New episode alerts')).toBeTruthy();
+    });
+
+    it('should open the notifications modal when pressed', () => {
+      const { getByText } = renderSettingsView();
+
+      fireEvent.press(getByText('New episode alerts'));
+
+      expect(mockOnNotificationsPress).toHaveBeenCalled();
+    });
+
+    it('should not list podcasts on this screen', () => {
+      podcastStore.setState({
+        podcasts: [createMockPodcast({ id: 'p1', title: 'Podcast One' })],
+      });
+
+      const { queryByText } = renderSettingsView();
+
+      expect(queryByText('Podcast One')).toBeNull();
     });
   });
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { Animated } from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
 import { Toast } from '../Toast';
 
 describe('Toast', () => {
@@ -81,5 +81,28 @@ describe('Toast', () => {
     );
 
     expect(toJSON()).toBeTruthy();
+  });
+
+  const getContainerBottom = (bottomOffset?: number) => {
+    const { getByTestId } = render(
+      <Toast
+        message='Added to queue'
+        visible={true}
+        translateY={translateY}
+        opacity={opacity}
+        onDismiss={mockOnDismiss}
+        bottomOffset={bottomOffset}
+      />,
+    );
+    return StyleSheet.flatten(getByTestId('toast-container').props.style)
+      .bottom;
+  };
+
+  it('sits 8px above the bottom of the screen area by default', () => {
+    expect(getContainerBottom()).toBe(8);
+  });
+
+  it('uses bottomOffset on screens without a mini player', () => {
+    expect(getContainerBottom(42)).toBe(42);
   });
 });

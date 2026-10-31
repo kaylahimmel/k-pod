@@ -1,10 +1,11 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import { SettingsScreen } from '../SettingsScreen';
 import { settingsStore } from '../../../stores';
 import { createMockNavigation, createMockRoute } from '../../../__mocks__';
 
-const mockNavigation = createMockNavigation() as Parameters<
+const mockNavigationFns = createMockNavigation();
+const mockNavigation = mockNavigationFns as unknown as Parameters<
   typeof SettingsScreen
 >[0]['navigation'];
 
@@ -22,6 +23,8 @@ describe('SettingsScreen', () => {
         downloadOnWiFi: true,
         skipForwardSeconds: 30,
         skipBackwardSeconds: 15,
+        newEpisodeNotifications: false,
+        mutedNotificationPodcastIds: [],
       },
       loading: false,
       error: null,
@@ -57,6 +60,18 @@ describe('SettingsScreen', () => {
       const { getByText } = renderSettingsScreen();
 
       expect(getByText('Reset All Settings')).toBeTruthy();
+    });
+  });
+
+  describe('Navigation', () => {
+    it('should open the notifications modal', () => {
+      const { getByText } = renderSettingsScreen();
+
+      fireEvent.press(getByText('New episode alerts'));
+
+      expect(mockNavigationFns.navigate).toHaveBeenCalledWith(
+        'NotificationSettings',
+      );
     });
   });
 });

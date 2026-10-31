@@ -3,6 +3,7 @@ import { persist, PersistStorage, StorageValue } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { HistoryStore, ListeningHistory } from '../models';
 import { STORAGE_KEYS } from '../constants';
+import { withoutEpisodes } from '../utils/podcastUtils';
 
 /**
  * Shape written to storage. Only the history array is persisted.
@@ -98,7 +99,14 @@ export const historyStore = create<HistoryStore>()(
       // still has to exist: zustand discards any state whose version differs
       // from the configured one when no migrate is provided.
       migrate: (persistedState) => persistedState as PersistedHistory,
-      partialize: (state) => ({ history: state.history }),
+      // Each entry embeds its podcast for display, so leave out the episode
+      // list or every finished episode stores another full copy of it
+      partialize: (state) => ({
+        history: state.history.map((item) => ({
+          ...item,
+          podcast: withoutEpisodes(item.podcast),
+        })),
+      }),
       // Screens read hasHydrated to show a loading state, so it must flip
       // even when hydration fails - otherwise the UI spins forever. The
       // callback runs after the store is assigned, so referencing

@@ -2,6 +2,7 @@ import { historyStore } from '../historyStore';
 import { createMockEpisode, createMockPodcast } from '../../__mocks__';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '../../constants';
+import { ListeningHistory } from '../../models';
 
 describe('historyStore', () => {
   beforeEach(() => {
@@ -252,5 +253,30 @@ describe('historyStore', () => {
       expect(ids).toContain('existing-episode');
       expect(ids).toContain('new-episode');
     });
+  });
+});
+
+describe('historyStore persistence', () => {
+  it('should not save the embedded podcast episode list', () => {
+    // Every finished episode would otherwise store another full copy of its
+    // podcast, which fills Android's 6 MB AsyncStorage cap
+    const entry = {
+      podcast: createMockPodcast({
+        id: 'podcast-1',
+        episodes: [createMockEpisode({ id: 'episode-1' })],
+      }),
+      episode: createMockEpisode({ id: 'episode-1' }),
+      completedAt: '2026-10-31T12:00:00.000Z',
+      completionPercentage: 100,
+    };
+
+    const saved = historyStore.persist.getOptions().partialize?.({
+      ...historyStore.getState(),
+      history: [entry],
+    }) as { history: ListeningHistory[] };
+
+    expect(saved.history[0].podcast.episodes).toEqual([]);
+    expect(saved.history[0].podcast.title).toBe(entry.podcast.title);
+    expect(saved.history[0].episode).toEqual(entry.episode);
   });
 });

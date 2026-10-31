@@ -57,65 +57,63 @@ export const QueueView = ({ onEpisodePress, onPlayItem }: QueueViewProps) => {
 
       {viewModel.hasItems && (
         <View style={styles.queueListContainer}>
-          {/* Currently Playing Episode - Fixed at top, not draggable */}
-          {currentlyPlayingItem && (
-            <View>
-              <CardQueueItem
-                item={currentlyPlayingItem}
-                drag={() => {}}
-                isActive={false}
-                onRemove={() =>
-                  viewModel.handleRemoveFromQueue(currentlyPlayingItem.id)
-                }
-                onPlay={() => viewModel.handlePlayItem(currentlyPlayingItem)}
-                onPress={() =>
-                  viewModel.handleEpisodePress(currentlyPlayingItem)
-                }
-                isDraggable={false}
-              />
-            </View>
-          )}
+          {/* The currently playing episode is the list's header, not one of
+              its items: it scrolls with the list, but stays out of `data`
+              so it can't be dragged */}
+          <DraggableFlatList
+            data={otherItems}
+            ListHeaderComponent={
+              currentlyPlayingItem ? (
+                <CardQueueItem
+                  item={currentlyPlayingItem}
+                  drag={() => {}}
+                  isActive={false}
+                  onRemove={() =>
+                    viewModel.handleRemoveFromQueue(currentlyPlayingItem.id)
+                  }
+                  onPlay={() => viewModel.handlePlayItem(currentlyPlayingItem)}
+                  onPress={() =>
+                    viewModel.handleEpisodePress(currentlyPlayingItem)
+                  }
+                  isDraggable={false}
+                />
+              ) : undefined
+            }
+            onDragEnd={({ from, to }) => {
+              // Map draggable list indices to actual queue indices
+              const fromItem = otherItems[from];
+              const toItem = otherItems[to];
 
-          {/* All Other Episodes - Draggable */}
-          {otherItems.length > 0 && (
-            <DraggableFlatList
-              data={otherItems}
-              onDragEnd={({ from, to }) => {
-                // Map draggable list indices to actual queue indices
-                const fromItem = otherItems[from];
-                const toItem = otherItems[to];
+              // Safety check: ensure items exist before proceeding
+              if (!fromItem || !toItem) {
+                return;
+              }
 
-                // Safety check: ensure items exist before proceeding
-                if (!fromItem || !toItem) {
-                  return;
-                }
+              const actualFromIndex = viewModel.displayQueue.findIndex(
+                (item) => item && item.id === fromItem.id,
+              );
+              const actualToIndex = viewModel.displayQueue.findIndex(
+                (item) => item && item.id === toItem.id,
+              );
 
-                const actualFromIndex = viewModel.displayQueue.findIndex(
-                  (item) => item && item.id === fromItem.id,
-                );
-                const actualToIndex = viewModel.displayQueue.findIndex(
-                  (item) => item && item.id === toItem.id,
-                );
+              // Ensure valid indices before reordering
+              if (actualFromIndex === -1 || actualToIndex === -1) {
+                return;
+              }
 
-                // Ensure valid indices before reordering
-                if (actualFromIndex === -1 || actualToIndex === -1) {
-                  return;
-                }
-
-                viewModel.handleReorder(actualFromIndex, actualToIndex);
-              }}
-              keyExtractor={(item) => item.id}
-              renderItem={renderItem}
-              contentContainerStyle={styles.listContent}
-              activationDistance={10}
-              animationConfig={{
-                damping: 20,
-                stiffness: 120,
-                mass: 0.3,
-                overshootClamping: true,
-              }}
-            />
-          )}
+              viewModel.handleReorder(actualFromIndex, actualToIndex);
+            }}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={styles.listContent}
+            activationDistance={10}
+            animationConfig={{
+              damping: 20,
+              stiffness: 120,
+              mass: 0.3,
+              overshootClamping: true,
+            }}
+          />
         </View>
       )}
     </GestureHandlerRootView>

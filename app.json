@@ -21,7 +21,8 @@
           "audio"
         ]
       },
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.kpod"
     },
     "name": "k-pod",
     "orientation": "portrait",
@@ -33,9 +34,14 @@
     },
     "plugins": [
       "expo-audio",
+      "expo-background-task",
+      "expo-notifications",
+      "expo-task-manager",
       "expo-font",
       "expo-asset",
       "expo-status-bar",
+      "./plugins/withAndroidAsyncStorageSize",
+      "./plugins/withAndroidAccentColor",
       [
         "expo-build-properties",
         {

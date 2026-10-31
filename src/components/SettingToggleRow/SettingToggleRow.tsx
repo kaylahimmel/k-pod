@@ -20,7 +20,12 @@ export const SettingToggleRow = ({
     <Switch
       value={value}
       onValueChange={onValueChange}
-      trackColor={{ false: COLORS.border, true: COLORS.primary }}
+      accessibilityLabel={label}
+      trackColor={{ false: COLORS.switchTrackOff, true: COLORS.primary }}
+      // Without an explicit thumb color, Android tints it from the system
+      // theme, which put a green thumb on the blue track
+      thumbColor={COLORS.cardBackground}
+      ios_backgroundColor={COLORS.switchTrackOff}
       testID='setting-toggle-switch'
     />
   </View>

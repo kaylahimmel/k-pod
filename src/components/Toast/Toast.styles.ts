@@ -4,7 +4,9 @@ import { COLORS } from '../../constants';
 export const styles = StyleSheet.create({
   toastContainer: {
     position: 'absolute',
-    bottom: 100,
+    // Tab screens end at the top of the mini player, so this is the gap
+    // above it on every device size and orientation
+    bottom: 8,
     left: 16,
     right: 16,
     zIndex: 9999,
