@@ -55,188 +55,201 @@ export const FullPlayerView = ({
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={[styles.content, { paddingTop: topPadding }]}
-      testID='full-player-scroll'
-    >
-      <View style={styles.header}>
-        <HeaderBackButton onPress={viewModel.handleBack} />
-        <HeaderCloseButton
-          onPress={viewModel.handleDismiss}
-          accessibilityLabel='Close player'
-        />
-      </View>
-      <View style={styles.artworkContainer}>
-        <Image
-          source={{ uri: viewModel.podcast.artworkUrl }}
-          style={styles.artwork}
-          resizeMode='cover'
-        />
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.episodeTitle} numberOfLines={2}>
-          {viewModel.episode.title}
-        </Text>
-        <Text style={styles.podcastTitle} numberOfLines={1}>
-          {viewModel.podcast.title}
-        </Text>
-      </View>
-      {viewModel.episode.description && (
-        <View style={styles.descriptionContainer}>
-          {descriptionExpanded ? (
-            <RichText
-              blocks={viewModel.descriptionBlocks}
-              onLinkPress={viewModel.handleLinkPress}
-            />
-          ) : (
-            // Collapsed uses flat segments: numberOfLines cannot clamp across
-            // the separate Views that block layout produces
-            <LinkedText
-              segments={viewModel.descriptionSegments}
-              onLinkPress={viewModel.handleLinkPress}
-              style={styles.descriptionText}
-              numberOfLines={2}
-            />
-          )}
+    <>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[styles.content, { paddingTop: topPadding }]}
+        testID='full-player-scroll'
+      >
+        <View style={styles.header}>
+          <HeaderBackButton onPress={viewModel.handleBack} />
+          <HeaderCloseButton
+            onPress={viewModel.handleDismiss}
+            accessibilityLabel='Close player'
+          />
+        </View>
+        <View style={styles.artworkContainer}>
+          <Image
+            source={{ uri: viewModel.podcast.artworkUrl }}
+            style={styles.artwork}
+            resizeMode='cover'
+          />
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.episodeTitle} numberOfLines={2}>
+            {viewModel.episode.title}
+          </Text>
+          <Text style={styles.podcastTitle} numberOfLines={1}>
+            {viewModel.podcast.title}
+          </Text>
+        </View>
+        {viewModel.episode.description && (
+          <View style={styles.descriptionContainer}>
+            {descriptionExpanded ? (
+              <RichText
+                blocks={viewModel.descriptionBlocks}
+                onLinkPress={viewModel.handleLinkPress}
+              />
+            ) : (
+              // Collapsed uses flat segments: numberOfLines cannot clamp across
+              // the separate Views that block layout produces
+              <LinkedText
+                segments={viewModel.descriptionSegments}
+                onLinkPress={viewModel.handleLinkPress}
+                style={styles.descriptionText}
+                numberOfLines={2}
+              />
+            )}
+            <TouchableOpacity
+              style={styles.seeMoreButton}
+              onPress={() => setDescriptionExpanded(!descriptionExpanded)}
+            >
+              <Text style={styles.seeMoreText}>
+                {descriptionExpanded ? 'See less' : 'See more'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        <View style={styles.progressContainer}>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={viewModel.duration || 1}
+            value={viewModel.position}
+            onSlidingComplete={viewModel.handleSeek}
+            minimumTrackTintColor={COLORS.primary}
+            maximumTrackTintColor={COLORS.progressTrack}
+            thumbTintColor={COLORS.primary}
+          />
+          <View style={styles.timeContainer}>
+            <Text style={styles.timeText}>
+              {viewModel.playbackTime.current}
+            </Text>
+            <Text style={styles.timeText}>
+              {viewModel.playbackTime.remaining}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.controlsContainer}>
           <TouchableOpacity
-            style={styles.seeMoreButton}
-            onPress={() => setDescriptionExpanded(!descriptionExpanded)}
+            style={styles.skipButton}
+            onPress={viewModel.handleSkipBackward}
+            accessibilityLabel={`Skip backward ${settings.skipBackwardSeconds} seconds`}
           >
-            <Text style={styles.seeMoreText}>
-              {descriptionExpanded ? 'See less' : 'See more'}
+            <Ionicons name='play-back' size={32} color={COLORS.textPrimary} />
+            <Text style={styles.skipLabel}>
+              {settings.skipBackwardSeconds}s
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.playPauseButton}
+            onPress={viewModel.handlePlayPause}
+            accessibilityLabel={viewModel.isPlaying ? 'Pause' : 'Play'}
+          >
+            <Ionicons
+              name={viewModel.isPlaying ? 'pause' : 'play'}
+              size={36}
+              color={COLORS.cardBackground}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.skipButton}
+            onPress={viewModel.handleSkipForward}
+            accessibilityLabel={`Skip forward ${settings.skipForwardSeconds} seconds`}
+          >
+            <Ionicons
+              name='play-forward'
+              size={32}
+              color={COLORS.textPrimary}
+            />
+            <Text style={styles.skipLabel}>{settings.skipForwardSeconds}s</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.speedContainer}>
+          <TouchableOpacity
+            style={styles.speedButton}
+            onPress={() => setSpeedPickerVisible(true)}
+            accessibilityLabel={`Playback speed ${viewModel.speedDisplay.label}`}
+          >
+            <Text style={styles.speedButtonText}>
+              {viewModel.speedDisplay.label}
             </Text>
           </TouchableOpacity>
         </View>
-      )}
-      <View style={styles.progressContainer}>
-        <Slider
-          style={styles.slider}
-          minimumValue={0}
-          maximumValue={viewModel.duration || 1}
-          value={viewModel.position}
-          onSlidingComplete={viewModel.handleSeek}
-          minimumTrackTintColor={COLORS.primary}
-          maximumTrackTintColor={COLORS.progressTrack}
-          thumbTintColor={COLORS.primary}
-        />
-        <View style={styles.timeContainer}>
-          <Text style={styles.timeText}>{viewModel.playbackTime.current}</Text>
-          <Text style={styles.timeText}>
-            {viewModel.playbackTime.remaining}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.controlsContainer}>
-        <TouchableOpacity
-          style={styles.skipButton}
-          onPress={viewModel.handleSkipBackward}
-          accessibilityLabel={`Skip backward ${settings.skipBackwardSeconds} seconds`}
-        >
-          <Ionicons name='play-back' size={32} color={COLORS.textPrimary} />
-          <Text style={styles.skipLabel}>{settings.skipBackwardSeconds}s</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.playPauseButton}
-          onPress={viewModel.handlePlayPause}
-          accessibilityLabel={viewModel.isPlaying ? 'Pause' : 'Play'}
-        >
-          <Ionicons
-            name={viewModel.isPlaying ? 'pause' : 'play'}
-            size={36}
-            color={COLORS.cardBackground}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.skipButton}
-          onPress={viewModel.handleSkipForward}
-          accessibilityLabel={`Skip forward ${settings.skipForwardSeconds} seconds`}
-        >
-          <Ionicons name='play-forward' size={32} color={COLORS.textPrimary} />
-          <Text style={styles.skipLabel}>{settings.skipForwardSeconds}s</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.speedContainer}>
-        <TouchableOpacity
-          style={styles.speedButton}
-          onPress={() => setSpeedPickerVisible(true)}
-          accessibilityLabel={`Playback speed ${viewModel.speedDisplay.label}`}
-        >
-          <Text style={styles.speedButtonText}>
-            {viewModel.speedDisplay.label}
-          </Text>
-        </TouchableOpacity>
-      </View>
 
-      {!viewModel.isEpisodeInQueue && (
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={handleAddToQueue}
-            accessibilityLabel='Add to queue'
-          >
-            <Ionicons
-              name='list-outline'
-              size={20}
-              color={COLORS.textPrimary}
-            />
-            <Text style={styles.actionButtonText}>Add to Queue</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-      <Modal
-        visible={speedPickerVisible}
-        transparent
-        animationType='slide'
-        onRequestClose={() => setSpeedPickerVisible(false)}
-      >
-        <Pressable
-          style={styles.speedPickerOverlay}
-          onPress={() => setSpeedPickerVisible(false)}
-        >
-          <View
-            style={styles.speedPickerContainer}
-            onStartShouldSetResponder={() => true}
-          >
-            <View style={styles.speedPickerHeader}>
-              <Text style={styles.speedPickerTitle}>Playback Speed</Text>
-              <TouchableOpacity onPress={() => setSpeedPickerVisible(false)}>
-                <Text style={styles.speedPickerDone}>Done</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.speedPickerOptions}>
-              {PLAYBACK_SPEEDS.map((speed) => (
-                <TouchableOpacity
-                  key={speed}
-                  style={[
-                    styles.speedOption,
-                    viewModel.speed === speed && styles.speedOptionSelected,
-                  ]}
-                  onPress={() => handleSpeedSelect(speed)}
-                >
-                  <Text
-                    style={[
-                      styles.speedOptionText,
-                      viewModel.speed === speed &&
-                        styles.speedOptionTextSelected,
-                    ]}
-                  >
-                    {speed}x
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+        {!viewModel.isEpisodeInQueue && (
+          <View style={styles.actionsContainer}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={handleAddToQueue}
+              accessibilityLabel='Add to queue'
+            >
+              <Ionicons
+                name='list-outline'
+                size={20}
+                color={COLORS.textPrimary}
+              />
+              <Text style={styles.actionButtonText}>Add to Queue</Text>
+            </TouchableOpacity>
           </View>
-        </Pressable>
-      </Modal>
+        )}
+        <Modal
+          visible={speedPickerVisible}
+          transparent
+          animationType='slide'
+          onRequestClose={() => setSpeedPickerVisible(false)}
+        >
+          <Pressable
+            style={styles.speedPickerOverlay}
+            onPress={() => setSpeedPickerVisible(false)}
+          >
+            <View
+              style={styles.speedPickerContainer}
+              onStartShouldSetResponder={() => true}
+            >
+              <View style={styles.speedPickerHeader}>
+                <Text style={styles.speedPickerTitle}>Playback Speed</Text>
+                <TouchableOpacity onPress={() => setSpeedPickerVisible(false)}>
+                  <Text style={styles.speedPickerDone}>Done</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.speedPickerOptions}>
+                {PLAYBACK_SPEEDS.map((speed) => (
+                  <TouchableOpacity
+                    key={speed}
+                    style={[
+                      styles.speedOption,
+                      viewModel.speed === speed && styles.speedOptionSelected,
+                    ]}
+                    onPress={() => handleSpeedSelect(speed)}
+                  >
+                    <Text
+                      style={[
+                        styles.speedOptionText,
+                        viewModel.speed === speed &&
+                          styles.speedOptionTextSelected,
+                      ]}
+                    >
+                      {speed}x
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </Pressable>
+        </Modal>
+      </ScrollView>
+      {/* Outside the ScrollView so it stays at the screen's bottom edge
+          instead of scrolling with the content */}
       <Toast
         message={toast.message}
         visible={toast.visible}
         translateY={toast.translateY}
         opacity={toast.opacity}
         onDismiss={toast.dismissToast}
+        bottomOffset={insets.bottom + 8}
       />
-    </ScrollView>
+    </>
   );
 };
 

@@ -59,8 +59,16 @@ export const useEpisodeDetailViewModel = (
     [storePodcast, episodeId],
   );
 
+  // Queue items keep their own episode and podcast, so an episode from an
+  // unsubscribed podcast can still be shown (route params don't survive a
+  // restart, and the podcast store only holds subscriptions)
+  const queueItem = useMemo(
+    () => queue.find((item) => item.episode.id === episodeId),
+    [queue, episodeId],
+  );
+
   // Use prop data if provided, otherwise fall back to store lookup
-  const episode = propEpisode || storeEpisode;
+  const episode = propEpisode || storeEpisode || queueItem?.episode;
 
   // Create a podcast object from discovery data if needed
   const podcast = useMemo(() => {
@@ -68,8 +76,8 @@ export const useEpisodeDetailViewModel = (
     if (propDiscoveryPodcast && propEpisode) {
       return createPodcastFromDiscovery(propDiscoveryPodcast, propEpisode);
     }
-    return undefined;
-  }, [storePodcast, propDiscoveryPodcast, propEpisode]);
+    return queueItem?.podcast;
+  }, [storePodcast, propDiscoveryPodcast, propEpisode, queueItem]);
 
   // Format episode for display using presenter
   const formattedEpisode = useMemo(() => {

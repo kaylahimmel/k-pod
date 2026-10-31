@@ -469,7 +469,6 @@ Note: EpisodeDetailScreen is now tracked separately in section 6.7
 
 - [x] Add a notification section to the existing SettingsScreen, with an option to toggle on/off all podcasts at once, or just toggle notifications on/off for each podcast
 - [x] Setup local notifications (background refresh) for new episodes for each of the podcasts
-- [ ] Optional: move new-episode detection to a Firebase backend (Firestore + scheduled Cloud Functions + FCM) for timely push
 
 ## Phase 9: Authentication (If Required)
 
@@ -515,8 +514,9 @@ Note: EpisodeDetailScreen is now tracked separately in section 6.7
 - [ ] Add haptics to dragging and dropping episodes in the QueueScreen
 - [ ] Add confetti animation after a podcast is subscribed to
 - [ ] Dial in the Toast that appears when an episode is added to the queue, reducing the time the Toast displays, and overwriting a Toast with a new Toast if a new episode is added to the queue before the first Toast disappears
-- [ ] Add a Toast that displays for 2 seconds that says all episodes of the podcast that was just unsubscribed from have been removed from the queue
+- [x] Add a Toast that displays for 2 seconds that says all episodes of the podcast that was just unsubscribed from have been removed from the queue
 - [ ] Add haptics to the toggles in the SettingsScreen
+- [ ] Move the episode cache out of AsyncStorage before TestFlight (Android 2 MB read limit)
 
 ### 10.3 Performance Optimization
 
@@ -553,6 +553,24 @@ Note: EpisodeDetailScreen is now tracked separately in section 6.7
 - [ ] Update Claude.md
 
 ## Phase 11: Testing
+
+### MVP for Testflight releases
+
+- [ ] add and configure an eas.json
+- [ ] add Firebase keys to EAS
+- [ ] get a paid Apple Development account with Bespoke Bits using the <kayla@bespokebits.dev> email
+- [ ] get a real bundle ID and update the package.json (will likely be `dev.bespokebits.kpod`)
+- [ ] add Maestro automation testing
+- [ ] create CI workflow to run tests in the pipeline
+- [ ] create code review workflow that runs on every opened PR
+- [ ] move .env to GitHub Secrets
+
+### MVP for App Store release
+
+- [ ] swap Google Firebase auth for AWS Cognito auth
+- [ ] add AWS DynamoDB for cloud-hosted storage, rather than fully on-device storage
+- [ ] add in-app account deletion
+- [ ] add a real privacy policy URL
 
 ### 11.1 Functional Testing
 

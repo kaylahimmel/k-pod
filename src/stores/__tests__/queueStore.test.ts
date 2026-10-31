@@ -1,5 +1,6 @@
 import { queueStore } from '../../stores';
 import { QueueItem, Episode, Podcast } from '../../models';
+import { createMockEpisode, createMockPodcast } from '../../__mocks__';
 
 describe('queueStore', () => {
   beforeEach(() => {
@@ -346,5 +347,49 @@ describe('queueStore', () => {
       expect(state.queue[1].id).toBe('3');
       expect(state.queue[2].id).toBe('1');
     });
+  });
+});
+
+describe('queueStore persistence', () => {
+  it('should not save the embedded podcast episode list', () => {
+    // A long-running show's full episode list overflowed Android's 6 MB
+    // AsyncStorage cap (SQLITE_FULL) from a single queue item
+    const item = {
+      id: 'item-1',
+      episode: createMockEpisode({ id: 'episode-1' }),
+      podcast: createMockPodcast({
+        id: 'podcast-1',
+        episodes: [createMockEpisode({ id: 'episode-1' })],
+      }),
+      position: 0,
+    };
+
+    const saved = queueStore.persist.getOptions().partialize?.({
+      ...queueStore.getState(),
+      queue: [item],
+    }) as { queue: QueueItem[] };
+
+    expect(saved.queue[0].podcast.episodes).toEqual([]);
+    expect(saved.queue[0].podcast.title).toBe(item.podcast.title);
+    expect(saved.queue[0].episode).toEqual(item.episode);
+  });
+
+  it('should leave the in-memory queue untouched', () => {
+    const podcast = createMockPodcast({
+      episodes: [createMockEpisode({ id: 'episode-1' })],
+    });
+    const item = {
+      id: 'item-1',
+      episode: createMockEpisode(),
+      podcast,
+      position: 0,
+    };
+
+    queueStore.persist.getOptions().partialize?.({
+      ...queueStore.getState(),
+      queue: [item],
+    });
+
+    expect(podcast.episodes).toHaveLength(1);
   });
 });

@@ -10,6 +10,7 @@ import {
   StateLoading,
   StateError,
   StateNoResults,
+  Toast,
 } from '../../components';
 import { styles } from './Library.styles';
 
@@ -92,6 +93,13 @@ export const LibraryView = ({
           />
         }
         showsVerticalScrollIndicator={false}
+      />
+      <Toast
+        message={viewModel.toast.message}
+        visible={viewModel.toast.visible}
+        translateY={viewModel.toast.translateY}
+        opacity={viewModel.toast.opacity}
+        onDismiss={viewModel.toast.dismissToast}
       />
     </View>
   );

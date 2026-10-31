@@ -60,6 +60,7 @@ export const useLibraryViewModel = (
   }, [onAddPodcastPress]);
 
   return {
+    toast,
     searchQuery,
     refreshing,
     loading,

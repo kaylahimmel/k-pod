@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QueueStore } from '../models';
 import { STORAGE_KEYS } from '../constants';
+import { withoutEpisodes } from '../utils/podcastUtils';
 
 export const queueStore = create<QueueStore>()(
   persist(
@@ -53,7 +54,12 @@ export const queueStore = create<QueueStore>()(
       name: STORAGE_KEYS.QUEUE,
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
-        queue: state.queue,
+        // Saving the full episode list here overflowed Android's 6 MB
+        // AsyncStorage cap (SQLITE_FULL) from a single queue item
+        queue: state.queue.map((item) => ({
+          ...item,
+          podcast: withoutEpisodes(item.podcast),
+        })),
         currentIndex: state.currentIndex,
       }),
     },

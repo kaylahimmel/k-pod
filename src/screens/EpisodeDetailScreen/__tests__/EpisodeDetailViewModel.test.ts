@@ -1,6 +1,10 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useEpisodeDetailViewModel } from '../EpisodeDetailViewModel';
-import { createMockEpisode, createMockPodcast } from '../../../__mocks__';
+import {
+  createMockEpisode,
+  createMockPodcast,
+  createMockQueueItem,
+} from '../../../__mocks__';
 
 // Mock variables must be prefixed with 'mock'
 const mockShowToast = jest.fn();
@@ -56,6 +60,80 @@ describe('useEpisodeDetailViewModel', () => {
     });
     mockUsePlayerStore.mockReturnValue({
       currentEpisode: null,
+    });
+  });
+
+  describe('queued episode from an unsubscribed podcast', () => {
+    const queuedEpisode = createMockEpisode({
+      id: 'queued-episode',
+      title: 'Queued Episode',
+    });
+    // Saved queue items have an empty episode list, as they do after restart
+    const queuedPodcast = createMockPodcast({
+      id: 'unsubscribed-podcast',
+      title: 'Unsubscribed Podcast',
+      episodes: [],
+    });
+
+    beforeEach(() => {
+      mockUseQueueStore.mockReturnValue({
+        queue: [
+          createMockQueueItem({
+            episode: queuedEpisode,
+            podcast: queuedPodcast,
+          }),
+        ],
+        addToQueue: mockAddToQueue,
+      });
+    });
+
+    it('should fall back to the queue item for episode details', () => {
+      const { result } = renderHook(() =>
+        useEpisodeDetailViewModel(
+          'queued-episode',
+          'unsubscribed-podcast',
+          mockOnPlayEpisode,
+          mockOnGoBack,
+        ),
+      );
+
+      expect(result.current.formattedEpisode?.title).toBe('Queued Episode');
+      expect(result.current.formattedEpisode?.podcastTitle).toBe(
+        'Unsubscribed Podcast',
+      );
+    });
+
+    it('should play using the queue item', () => {
+      const { result } = renderHook(() =>
+        useEpisodeDetailViewModel(
+          'queued-episode',
+          'unsubscribed-podcast',
+          mockOnPlayEpisode,
+          mockOnGoBack,
+        ),
+      );
+
+      act(() => {
+        result.current.handlePlay();
+      });
+
+      expect(mockOnPlayEpisode).toHaveBeenCalledWith(
+        queuedEpisode,
+        queuedPodcast,
+      );
+    });
+
+    it('should still report not found when nothing matches', () => {
+      const { result } = renderHook(() =>
+        useEpisodeDetailViewModel(
+          'unknown-episode',
+          'unknown-podcast',
+          mockOnPlayEpisode,
+          mockOnGoBack,
+        ),
+      );
+
+      expect(result.current.formattedEpisode).toBeNull();
     });
   });
 

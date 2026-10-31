@@ -40,6 +40,8 @@
       "expo-font",
       "expo-asset",
       "expo-status-bar",
+      "./plugins/withAndroidAsyncStorageSize",
+      "./plugins/withAndroidAccentColor",
       [
         "expo-build-properties",
         {

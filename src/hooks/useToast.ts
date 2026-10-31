@@ -10,7 +10,7 @@ export interface UseToastReturn {
   dismissToast: () => void;
 }
 
-export const useToast = (duration: number = 3000): UseToastReturn => {
+export const useToast = (duration: number = 2000): UseToastReturn => {
   const [message, setMessage] = useState('');
   const [visible, setVisible] = useState(false);
   // useState (not useRef(...).current) so render never reads a ref, which the
@@ -51,17 +51,23 @@ export const useToast = (duration: number = 3000): UseToastReturn => {
         duration: 300,
         useNativeDriver: true,
       }),
-    ]).start(() => {
-      setVisible(false);
-      setMessage('');
+    ]).start(({ finished }) => {
+      // A new toast starting mid-hide interrupts this animation, and the
+      // callback still runs. Clearing state then would erase the new toast
+      if (finished) {
+        setVisible(false);
+        setMessage('');
+      }
     });
   }, [translateY, opacity]);
 
   const showToast = useCallback(
     (newMessage: string) => {
-      // If already showing, dismiss first
-      if (visible) {
-        dismissToast();
+      // Replacing a visible toast: cancel its auto-dismiss so this one gets
+      // the full duration
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
       }
 
       setMessage(newMessage);
@@ -86,7 +92,7 @@ export const useToast = (duration: number = 3000): UseToastReturn => {
         dismissToast();
       }, duration);
     },
-    [visible, translateY, opacity, duration, dismissToast],
+    [translateY, opacity, duration, dismissToast],
   );
 
   return {

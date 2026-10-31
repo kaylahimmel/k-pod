@@ -10,6 +10,7 @@ interface ToastProps {
   translateY: Animated.Value;
   opacity: Animated.Value;
   onDismiss: () => void;
+  bottomOffset?: number; // For screens without a mini player below them
 }
 
 export const Toast = ({
@@ -18,6 +19,7 @@ export const Toast = ({
   translateY,
   opacity,
   onDismiss,
+  bottomOffset,
 }: ToastProps) => {
   if (!visible) return null;
 
@@ -25,11 +27,13 @@ export const Toast = ({
     <Animated.View
       style={[
         styles.toastContainer,
+        bottomOffset !== undefined && { bottom: bottomOffset },
         {
           transform: [{ translateY }],
           opacity,
         },
       ]}
+      testID='toast-container'
     >
       <View style={styles.toastContent}>
         <Ionicons

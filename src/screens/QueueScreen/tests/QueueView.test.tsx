@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react-native';
-import { Alert } from 'react-native';
+import { Alert, Image } from 'react-native';
 import { QueueView } from '../QueueView';
 import { queueStore, playerStore } from '../../../stores';
 import {
@@ -327,7 +327,7 @@ describe('QueueView', () => {
   });
 
   // The draggable list only holds the upcoming items (the currently playing
-  // item is pinned above it), so onDragEnd's from/to are list indices that
+  // item is the list's header), so onDragEnd's from/to are list indices that
   // QueueView must translate into real queue indices. jest.setup.ts mocks the
   // library as a plain FlatList, so these tests call onDragEnd the way the
   // library would after a drop. They can't catch native gesture/animation
@@ -349,6 +349,34 @@ describe('QueueView', () => {
     };
 
     const queueIds = () => queueStore.getState().queue.map((item) => item.id);
+
+    it('should render the currently playing item inside the scrolling list', () => {
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({ id: 'q1' }),
+          createMockQueueItem({ id: 'q2' }),
+        ],
+        currentIndex: 0,
+      });
+
+      const view = renderQueueView();
+      const list = view.UNSAFE_getByType(DraggableFlatList);
+
+      expect(list.props.ListHeaderComponent).toBeTruthy();
+    });
+
+    it('should keep the list when only the currently playing item is left', () => {
+      queueStore.setState({
+        queue: [createMockQueueItem({ id: 'q1' })],
+        currentIndex: 0,
+      });
+
+      const view = renderQueueView();
+      const list = view.UNSAFE_getByType(DraggableFlatList);
+
+      expect(list.props.data).toEqual([]);
+      expect(view.getByText('Now Playing')).toBeTruthy();
+    });
 
     it('should only make the upcoming items draggable', () => {
       queueStore.setState({
@@ -449,12 +477,11 @@ describe('QueueView', () => {
         currentIndex: 0,
       });
 
-      // The Image component should be rendered with the artwork URL
-      // This is a basic rendering test
-      const { toJSON } = renderQueueView();
-      const tree = JSON.stringify(toJSON());
+      const { UNSAFE_getByType } = renderQueueView();
 
-      expect(tree).toContain('https://example.com/artwork.jpg');
+      expect(UNSAFE_getByType(Image).props.source).toEqual({
+        uri: 'https://example.com/artwork.jpg',
+      });
     });
   });
 
