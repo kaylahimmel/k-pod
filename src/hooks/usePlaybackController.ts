@@ -12,6 +12,7 @@ import {
   settingsStore,
   podcastStore,
 } from '../stores';
+import { ensureHydrated } from '../utils';
 
 // ============================================
 // SHARED PLAYBACK BOOKKEEPING
@@ -25,6 +26,49 @@ let isLoadingEpisode = false;
 
 // Last position written to storage, to throttle saves to every ~10 seconds
 let lastSavedPosition = 0;
+
+/**
+ * The episode shown after a restart, before any audio has loaded for it.
+ * Compared against the player store so it stops applying by itself as soon
+ * as a different episode becomes current.
+ */
+let restoredEpisodeId: string | null = null;
+
+const isAwaitingLoad = () =>
+  restoredEpisodeId !== null &&
+  playerStore.getState().currentEpisode?.id === restoredEpisodeId;
+
+/**
+ * Loads an episode into the audio service and resumes its saved position,
+ * without starting playback. Returns whether the episode loaded.
+ */
+async function loadAtSavedPosition(
+  episode: Episode,
+  podcast: Podcast,
+): Promise<boolean> {
+  const { setPosition } = playerStore.getState();
+
+  // Note: loadEpisode handles unloading the previous player
+  // The podcast is passed for lock screen / Control Center metadata
+  const loadResult = await AudioPlayerService.loadEpisode(episode, podcast);
+  if (!loadResult.success) {
+    console.error('Failed to load episode:', loadResult.error);
+    return false;
+  }
+  restoredEpisodeId = null;
+
+  // Check for saved playback position and resume from there
+  const savedPosition = await StorageService.loadPlaybackPosition(episode.id);
+  if (savedPosition > 0) {
+    await AudioPlayerService.seek(savedPosition);
+    setPosition(savedPosition);
+    lastSavedPosition = savedPosition;
+  }
+
+  // Set playback speed (fresh read - it may have changed since load began)
+  await AudioPlayerService.setPlaybackSpeed(playerStore.getState().speed);
+  return true;
+}
 
 /**
  * Shared load-and-start path used by every way an episode can begin playing
@@ -48,31 +92,68 @@ async function loadAndPlay(episode: Episode, podcast: Podcast): Promise<void> {
   setDuration(0);
   setIsPlaying(false); // false while the episode loads
 
-  // Load the episode (this may take several seconds)
-  // Note: loadEpisode handles unloading the previous player
-  // The podcast is passed for lock screen / Control Center metadata
-  const loadResult = await AudioPlayerService.loadEpisode(episode, podcast);
-  if (!loadResult.success) {
-    console.error('Failed to load episode:', loadResult.error);
-    return;
-  }
-
-  // Check for saved playback position and resume from there
-  const savedPosition = await StorageService.loadPlaybackPosition(episode.id);
-  if (savedPosition > 0) {
-    await AudioPlayerService.seek(savedPosition);
-    setPosition(savedPosition);
-    lastSavedPosition = savedPosition;
-  }
-
-  // Set playback speed (fresh read - it may have changed since load began)
-  await AudioPlayerService.setPlaybackSpeed(playerStore.getState().speed);
+  // This may take several seconds
+  const loaded = await loadAtSavedPosition(episode, podcast);
+  if (!loaded) return;
 
   // Start playback
   const playResult = await AudioPlayerService.play();
   if (playResult.success) {
     setIsPlaying(true);
   }
+}
+
+/**
+ * Loads a restored episode so seek, skip and speed have a player to act on.
+ * Does nothing for an episode that already loaded.
+ */
+async function ensureEpisodeLoaded(): Promise<void> {
+  const { currentEpisode, currentPodcast } = playerStore.getState();
+  if (!isAwaitingLoad() || isLoadingEpisode) return;
+  if (!currentEpisode || !currentPodcast) return;
+
+  isLoadingEpisode = true;
+  try {
+    await loadAtSavedPosition(currentEpisode, currentPodcast);
+  } finally {
+    isLoadingEpisode = false;
+  }
+}
+
+/**
+ * Shows the queue's current episode in the player after a restart, paused at
+ * its saved position. The queue is persisted but the player isn't, so without
+ * this the queue says "Now Playing" while the mini player is empty.
+ * No audio loads here: that waits for the user's first tap.
+ */
+export async function restoreLastEpisode(): Promise<void> {
+  await Promise.all([
+    ensureHydrated(queueStore.persist),
+    ensureHydrated(podcastStore.persist),
+  ]);
+
+  const { queue, currentIndex } = queueStore.getState();
+  const item = queue[currentIndex];
+  if (!item || playerStore.getState().currentEpisode) return;
+
+  // Queue items are saved without their episode list, so prefer the
+  // subscribed podcast, which has it
+  const podcast =
+    podcastStore.getState().podcasts.find((p) => p.id === item.podcast.id) ??
+    item.podcast;
+  const savedPosition = await StorageService.loadPlaybackPosition(
+    item.episode.id,
+  );
+
+  // The user may have started an episode during the await above
+  const player = playerStore.getState();
+  if (player.currentEpisode) return;
+
+  restoredEpisodeId = item.episode.id;
+  player.setCurrentEpisode(item.episode);
+  player.setCurrentPodcast(podcast);
+  player.setPosition(savedPosition);
+  player.setDuration(item.episode.duration);
 }
 
 /**
@@ -215,6 +296,13 @@ export const usePlaybackEvents = () => {
       return undefined;
     }
     return settingsStore.persist.onFinishHydration(applyDefaultSpeed);
+  }, []);
+
+  /**
+   * Match the mini player to the persisted queue, once per app launch
+   */
+  useEffect(() => {
+    restoreLastEpisode();
   }, []);
 
   /**
@@ -368,6 +456,18 @@ export const usePlaybackController = () => {
 
     if (!freshEpisode) return;
 
+    // First play after a restart: there's no audio loaded to resume yet
+    if (isAwaitingLoad() && freshPodcast) {
+      if (isLoadingEpisode) return;
+      isLoadingEpisode = true;
+      try {
+        await loadAndPlay(freshEpisode, freshPodcast);
+      } finally {
+        isLoadingEpisode = false;
+      }
+      return;
+    }
+
     if (freshIsPlaying) {
       const result = await AudioPlayerService.pause();
       if (result.success) {
@@ -412,6 +512,7 @@ export const usePlaybackController = () => {
    */
   const seek = useCallback(
     async (positionSeconds: number) => {
+      await ensureEpisodeLoaded();
       const result = await AudioPlayerService.seek(positionSeconds);
       if (result.success) {
         setPosition(positionSeconds);
@@ -426,6 +527,7 @@ export const usePlaybackController = () => {
    * service's status event stream once the seek lands (single writer)
    */
   const skipForward = useCallback(async () => {
+    await ensureEpisodeLoaded();
     await AudioPlayerService.skipForward(settings.skipForwardSeconds);
   }, [settings.skipForwardSeconds]);
 
@@ -435,6 +537,7 @@ export const usePlaybackController = () => {
    * service's status event stream once the seek lands (single writer)
    */
   const skipBackward = useCallback(async () => {
+    await ensureEpisodeLoaded();
     await AudioPlayerService.skipBackward(settings.skipBackwardSeconds);
   }, [settings.skipBackwardSeconds]);
 
@@ -443,6 +546,7 @@ export const usePlaybackController = () => {
    */
   const changeSpeed = useCallback(
     async (newSpeed: PlaybackSpeed) => {
+      await ensureEpisodeLoaded();
       const result = await AudioPlayerService.setPlaybackSpeed(newSpeed);
       if (result.success) {
         setSpeed(newSpeed);

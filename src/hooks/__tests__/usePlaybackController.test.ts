@@ -1,5 +1,6 @@
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import {
+  restoreLastEpisode,
   usePlaybackController,
   usePlaybackEvents,
 } from '../usePlaybackController';
@@ -14,6 +15,8 @@ import {
   createMockPodcast,
   createMockQueueItem,
 } from '../../__mocks__';
+
+type PlaybackActions = ReturnType<typeof usePlaybackController>;
 
 describe('usePlaybackController', () => {
   const mockEpisode = createMockEpisode({
@@ -641,6 +644,144 @@ describe('usePlaybackController', () => {
 
       expect(playerStore.getState().position).toBe(45);
       expect(playerStore.getState().duration).toBe(180);
+    });
+  });
+
+  describe('Restoring the last episode after a restart', () => {
+    const restoredEpisode = createMockEpisode({
+      id: 'restored-episode',
+      duration: 1800,
+    });
+    const savedPodcast = createMockPodcast({ id: 'podcast-1', episodes: [] });
+
+    const restore = async (position = 95) => {
+      jest
+        .spyOn(StorageService, 'loadPlaybackPosition')
+        .mockResolvedValue(position);
+      act(() => {
+        queueStore.setState({
+          queue: [
+            createMockQueueItem({
+              id: 'item-1',
+              episode: restoredEpisode,
+              podcast: savedPodcast,
+            }),
+          ],
+          currentIndex: 0,
+        });
+      });
+      await act(async () => {
+        await restoreLastEpisode();
+      });
+    };
+
+    it('shows the current queue item paused at its saved position', async () => {
+      await restore();
+
+      const player = playerStore.getState();
+      expect(player.currentEpisode?.id).toBe('restored-episode');
+      expect(player.isPlaying).toBe(false);
+      expect(player.position).toBe(95);
+      expect(player.duration).toBe(1800);
+      expect(AudioPlayerService.loadEpisode).not.toHaveBeenCalled();
+    });
+
+    it('leaves the player empty when the queue is empty', async () => {
+      await act(async () => {
+        await restoreLastEpisode();
+      });
+
+      expect(playerStore.getState().currentEpisode).toBeNull();
+    });
+
+    it('leaves the player empty when currentIndex is past the queue', async () => {
+      act(() => {
+        queueStore.setState({
+          queue: [createMockQueueItem({ episode: restoredEpisode })],
+          currentIndex: 4,
+        });
+      });
+
+      await act(async () => {
+        await restoreLastEpisode();
+      });
+
+      expect(playerStore.getState().currentEpisode).toBeNull();
+    });
+
+    it('prefers the subscribed podcast, since queue items save no episodes', async () => {
+      const subscribed = createMockPodcast({
+        id: 'podcast-1',
+        episodes: [restoredEpisode],
+      });
+      act(() => {
+        podcastStore.setState({ podcasts: [subscribed] });
+      });
+
+      await restore();
+
+      expect(playerStore.getState().currentPodcast).toBe(subscribed);
+      act(() => {
+        podcastStore.setState({ podcasts: [] });
+      });
+    });
+
+    it('does not replace an episode that is already loaded', async () => {
+      act(() => {
+        playerStore.getState().setCurrentEpisode(mockEpisode);
+      });
+
+      await restore();
+
+      expect(playerStore.getState().currentEpisode?.id).toBe('episode-1');
+    });
+
+    it('loads and plays on the first play tap', async () => {
+      await restore();
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
+        restoredEpisode,
+        savedPodcast,
+      );
+      expect(AudioPlayerService.seek).toHaveBeenCalledWith(95);
+      expect(AudioPlayerService.play).toHaveBeenCalledTimes(1);
+      expect(playerStore.getState().isPlaying).toBe(true);
+    });
+
+    it('only loads once across two play taps', async () => {
+      await restore();
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([
+      ['seek', (c: PlaybackActions) => c.seek(300)],
+      ['skipForward', (c: PlaybackActions) => c.skipForward()],
+      ['skipBackward', (c: PlaybackActions) => c.skipBackward()],
+      ['changeSpeed', (c: PlaybackActions) => c.changeSpeed(1.5)],
+    ])('loads without playing before %s', async (_name, action) => {
+      await restore();
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await action(result.current);
+      });
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledTimes(1);
+      expect(AudioPlayerService.play).not.toHaveBeenCalled();
     });
   });
 
