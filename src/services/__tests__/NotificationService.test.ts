@@ -252,4 +252,28 @@ describe('NotificationService', () => {
       }
     });
   });
+
+  describe('getPermissionStatus', () => {
+    it('should report the current permission without prompting', async () => {
+      const getPermissions = Notifications.getPermissionsAsync as jest.Mock;
+      getPermissions.mockResolvedValueOnce({ granted: true });
+
+      const result = await NotificationService.getPermissionStatus();
+
+      expect(result).toEqual({ success: true, data: true });
+      expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
+    });
+
+    it('should return an error result when the check fails', async () => {
+      const getPermissions = Notifications.getPermissionsAsync as jest.Mock;
+      getPermissions.mockRejectedValueOnce(new Error('boom'));
+
+      const result = await NotificationService.getPermissionStatus();
+
+      expect(result).toEqual({
+        success: false,
+        error: 'Failed to read notification permission: boom',
+      });
+    });
+  });
 });

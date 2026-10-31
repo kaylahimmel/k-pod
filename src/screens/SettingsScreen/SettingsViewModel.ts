@@ -1,14 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { Alert, Linking } from 'react-native';
 import { PlaybackSpeed } from '../../models';
-import { usePodcastStore, useSettingsStore } from '../../hooks';
+import { useSettingsStore, useToast } from '../../hooks';
+import { unregisterBackgroundRefresh } from '../../services';
 import {
-  NotificationService,
-  registerBackgroundRefresh,
-  unregisterBackgroundRefresh,
-} from '../../services';
-import {
-  formatNotificationPodcasts,
   formatSettings,
   getAppVersion,
   SPEED_OPTIONS,
@@ -29,23 +24,13 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
   // Store access
   const { settings, loading, updateSetting, resetSettings } =
     useSettingsStore();
-  const { podcasts } = usePodcastStore();
+  const toast = useToast();
 
   // Formatted settings from presenter
   const formattedSettings = useMemo(() => formatSettings(settings), [settings]);
 
   // App version from presenter
   const appVersion = useMemo(() => getAppVersion(), []);
-
-  // One notification row per subscribed podcast, enabled unless muted
-  const notificationPodcasts = useMemo(
-    () =>
-      formatNotificationPodcasts(
-        podcasts,
-        settings.mutedNotificationPodcastIds,
-      ),
-    [podcasts, settings.mutedNotificationPodcastIds],
-  );
 
   /**
    * Toggles the auto-play next episode setting
@@ -92,80 +77,6 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
   );
 
   /**
-   * Turns new-episode alerts on or off (the master toggle).
-   *
-   * Turning ON asks for notification permission here, at the moment the user
-   * shows intent, rather than at app launch: iOS only ever shows the system
-   * prompt once, and a prompt with no context is usually denied. The setting
-   * only flips to true after permission is granted AND the background task
-   * is registered, so the switch never shows "on" for alerts that can't fire.
-   *
-   * Turning OFF saves the setting first (instant UI feedback), then stops
-   * the background task so the OS no longer wakes the app for it.
-   */
-  const handleToggleNotifications = useCallback(async () => {
-    if (settings.newEpisodeNotifications) {
-      updateSetting('newEpisodeNotifications', false);
-      const result = await unregisterBackgroundRefresh();
-      if (!result.success) {
-        // The task bails when the setting is off, so this is harmless
-        console.error(result.error);
-      }
-      return;
-    }
-
-    const permission = await NotificationService.requestPermission();
-    if (!permission.success) {
-      Alert.alert('Error', permission.error);
-      return;
-    }
-
-    // Denied: the OS won't prompt again, so the only way forward is the
-    // system Settings app. The toggle stays off.
-    if (!permission.data) {
-      Alert.alert(
-        'Notifications Are Off',
-        'To get new episode alerts, allow notifications for K-Pod in your device settings.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Open Settings',
-            onPress: () => {
-              Linking.openSettings().catch(() => {
-                Alert.alert('Error', 'Unable to open device settings.');
-              });
-            },
-          },
-        ],
-      );
-      return;
-    }
-
-    const registration = await registerBackgroundRefresh();
-    if (!registration.success) {
-      Alert.alert('Error', registration.error);
-      return;
-    }
-
-    updateSetting('newEpisodeNotifications', true);
-  }, [settings.newEpisodeNotifications, updateSetting]);
-
-  /**
-   * Mutes or unmutes alerts for one podcast by adding/removing its id
-   * from the muted list (keyed by podcast.id)
-   */
-  const handleTogglePodcastNotifications = useCallback(
-    (podcastId: string) => {
-      const muted = settings.mutedNotificationPodcastIds;
-      const nextMuted = muted.includes(podcastId)
-        ? muted.filter((id) => id !== podcastId)
-        : [...muted, podcastId];
-      updateSetting('mutedNotificationPodcastIds', nextMuted);
-    },
-    [settings.mutedNotificationPodcastIds, updateSetting],
-  );
-
-  /**
    * Resets all settings to defaults with confirmation
    */
   const handleResetSettings = useCallback(() => {
@@ -182,11 +93,12 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
             // Defaults turn notifications off, so stop the background task
             // too instead of leaving the OS waking the app for nothing
             unregisterBackgroundRefresh().catch(() => {});
+            toast.showToast('Settings reset to defaults');
           },
         },
       ],
     );
-  }, [resetSettings]);
+  }, [resetSettings, toast]);
 
   /**
    * Opens the privacy policy in the device browser
@@ -219,14 +131,12 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
     skipForwardOptions: SKIP_FORWARD_OPTIONS,
     skipBackwardOptions: SKIP_BACKWARD_OPTIONS,
     appVersion,
-    notificationPodcasts,
+    toast,
     handleToggleAutoPlayNext,
     handleSpeedChange,
     handleToggleDownloadOnWiFi,
     handleSkipForwardChange,
     handleSkipBackwardChange,
-    handleToggleNotifications,
-    handleTogglePodcastNotifications,
     handleResetSettings,
     handlePrivacyPolicyPress,
     handleTermsOfServicePress,

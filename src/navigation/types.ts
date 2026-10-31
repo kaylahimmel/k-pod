@@ -58,6 +58,7 @@ export type RootStackParamList = {
   Main: NavigatorScreenParams<BottomTabParamList>;
   FullPlayer: { episode: Episode; podcast: Podcast };
   AddPodcastModal: undefined;
+  NotificationSettings: undefined;
 };
 
 export type LibraryScreenProps = CompositeScreenProps<
@@ -172,6 +173,11 @@ export type FullPlayerScreenProps = NativeStackScreenProps<
 export type AddPodcastModalScreenProps = NativeStackScreenProps<
   RootStackParamList,
   'AddPodcastModal'
+>;
+
+export type NotificationSettingsScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  'NotificationSettings'
 >;
 
 export type LoginScreenProps = NativeStackScreenProps<

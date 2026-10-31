@@ -7,15 +7,17 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useSettingsViewModel } from './SettingsViewModel';
+import { SettingsViewProps } from './Settings.types';
 import { styles } from './Settings.styles';
 import { COLORS } from '../../constants';
 import {
   SettingToggleRow,
   SettingOptionSelector,
   SettingLinkRow,
+  Toast,
 } from '../../components';
 
-export const SettingsView = () => {
+export const SettingsView = ({ onNotificationsPress }: SettingsViewProps) => {
   const viewModel = useSettingsViewModel();
 
   if (viewModel.isLoading) {
@@ -27,126 +29,113 @@ export const SettingsView = () => {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.scrollContent}
-    >
-      {/* Playback Settings */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Playback</Text>
-      </View>
-      <View style={styles.settingsSection}>
-        <SettingToggleRow
-          label='Auto-play next episode'
-          value={viewModel.settings.autoPlayNext}
-          onValueChange={viewModel.handleToggleAutoPlayNext}
-        />
-        <SettingOptionSelector
-          label='Default playback speed'
-          currentValueLabel={viewModel.settings.defaultSpeedLabel}
-          options={viewModel.speedOptions}
-          selectedValue={viewModel.settings.defaultSpeed}
-          onSelect={viewModel.handleSpeedChange}
-        />
-      </View>
-
-      {/* Skip Controls */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Skip Controls</Text>
-      </View>
-      <View style={styles.settingsSection}>
-        <SettingOptionSelector
-          label='Skip forward'
-          currentValueLabel={viewModel.settings.skipForwardLabel}
-          options={viewModel.skipForwardOptions}
-          selectedValue={viewModel.settings.skipForwardSeconds}
-          onSelect={viewModel.handleSkipForwardChange}
-        />
-        <SettingOptionSelector
-          label='Skip backward'
-          currentValueLabel={viewModel.settings.skipBackwardLabel}
-          options={viewModel.skipBackwardOptions}
-          selectedValue={viewModel.settings.skipBackwardSeconds}
-          onSelect={viewModel.handleSkipBackwardChange}
-        />
-      </View>
-
-      {/* Download Settings */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Downloads</Text>
-      </View>
-      <View style={styles.settingsSection}>
-        <SettingToggleRow
-          label='Download on WiFi only'
-          value={viewModel.settings.downloadOnWiFi}
-          onValueChange={viewModel.handleToggleDownloadOnWiFi}
-          isLast
-        />
-      </View>
-
-      {/* Notifications */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Notifications</Text>
-      </View>
-      <View style={styles.settingsSection}>
-        <SettingToggleRow
-          label='New episode alerts'
-          value={viewModel.settings.newEpisodeNotifications}
-          onValueChange={viewModel.handleToggleNotifications}
-          isLast={
-            !viewModel.settings.newEpisodeNotifications ||
-            viewModel.notificationPodcasts.length === 0
-          }
-        />
-        {viewModel.settings.newEpisodeNotifications &&
-          viewModel.notificationPodcasts.map((podcast, index) => (
-            <SettingToggleRow
-              key={podcast.id}
-              label={podcast.title}
-              value={podcast.enabled}
-              onValueChange={() =>
-                viewModel.handleTogglePodcastNotifications(podcast.id)
-              }
-              isLast={index === viewModel.notificationPodcasts.length - 1}
-            />
-          ))}
-      </View>
-      {viewModel.settings.newEpisodeNotifications &&
-        viewModel.notificationPodcasts.length === 0 && (
-          <Text style={styles.sectionHint}>
-            Subscribe to a podcast to choose which shows send alerts.
-          </Text>
-        )}
-
-      {/* Legal */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Legal</Text>
-      </View>
-      <View style={styles.settingsSection}>
-        <SettingLinkRow
-          label='Privacy Policy'
-          onPress={viewModel.handlePrivacyPolicyPress}
-        />
-        <SettingLinkRow
-          label='Terms of Service'
-          onPress={viewModel.handleTermsOfServicePress}
-          isLast
-        />
-      </View>
-
-      {/* App Info */}
-      <View style={styles.appInfoSection}>
-        <Text style={styles.appName}>K-Pod</Text>
-        <Text style={styles.appVersion}>Version {viewModel.appVersion}</Text>
-      </View>
-
-      {/* Reset Settings Button */}
-      <TouchableOpacity
-        style={styles.resetButton}
-        onPress={viewModel.handleResetSettings}
+    <>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollContent}
       >
-        <Text style={styles.resetButtonText}>Reset All Settings</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        {/* Playback Settings */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Playback</Text>
+        </View>
+        <View style={styles.settingsSection}>
+          <SettingToggleRow
+            label='Auto-play next episode'
+            value={viewModel.settings.autoPlayNext}
+            onValueChange={viewModel.handleToggleAutoPlayNext}
+          />
+          <SettingOptionSelector
+            label='Default playback speed'
+            currentValueLabel={viewModel.settings.defaultSpeedLabel}
+            options={viewModel.speedOptions}
+            selectedValue={viewModel.settings.defaultSpeed}
+            onSelect={viewModel.handleSpeedChange}
+          />
+        </View>
+
+        {/* Skip Controls */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Skip Controls</Text>
+        </View>
+        <View style={styles.settingsSection}>
+          <SettingOptionSelector
+            label='Skip forward'
+            currentValueLabel={viewModel.settings.skipForwardLabel}
+            options={viewModel.skipForwardOptions}
+            selectedValue={viewModel.settings.skipForwardSeconds}
+            onSelect={viewModel.handleSkipForwardChange}
+          />
+          <SettingOptionSelector
+            label='Skip backward'
+            currentValueLabel={viewModel.settings.skipBackwardLabel}
+            options={viewModel.skipBackwardOptions}
+            selectedValue={viewModel.settings.skipBackwardSeconds}
+            onSelect={viewModel.handleSkipBackwardChange}
+          />
+        </View>
+
+        {/* Download Settings */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Downloads</Text>
+        </View>
+        <View style={styles.settingsSection}>
+          <SettingToggleRow
+            label='Download on WiFi only'
+            value={viewModel.settings.downloadOnWiFi}
+            onValueChange={viewModel.handleToggleDownloadOnWiFi}
+            isLast
+          />
+        </View>
+
+        {/* Notifications */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Notifications</Text>
+        </View>
+        <View style={styles.settingsSection}>
+          <SettingLinkRow
+            label='New episode alerts'
+            onPress={onNotificationsPress}
+            isLast
+          />
+        </View>
+
+        {/* Legal */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Legal</Text>
+        </View>
+        <View style={styles.settingsSection}>
+          <SettingLinkRow
+            label='Privacy Policy'
+            onPress={viewModel.handlePrivacyPolicyPress}
+          />
+          <SettingLinkRow
+            label='Terms of Service'
+            onPress={viewModel.handleTermsOfServicePress}
+            isLast
+          />
+        </View>
+
+        {/* App Info */}
+        <View style={styles.appInfoSection}>
+          <Text style={styles.appName}>K-Pod</Text>
+          <Text style={styles.appVersion}>Version {viewModel.appVersion}</Text>
+        </View>
+
+        {/* Reset Settings Button */}
+        <TouchableOpacity
+          style={styles.resetButton}
+          onPress={viewModel.handleResetSettings}
+        >
+          <Text style={styles.resetButtonText}>Reset All Settings</Text>
+        </TouchableOpacity>
+      </ScrollView>
+      <Toast
+        message={viewModel.toast.message}
+        visible={viewModel.toast.visible}
+        translateY={viewModel.toast.translateY}
+        opacity={viewModel.toast.opacity}
+        onDismiss={viewModel.toast.dismissToast}
+      />
+    </>
   );
 };

@@ -80,6 +80,23 @@ async function requestPermission(): Promise<ServiceResult<boolean>> {
 }
 
 /**
+ * Reads the current permission without prompting. Users can revoke it in
+ * device settings at any time, so the saved setting alone can't say whether
+ * notifications will actually be delivered.
+ */
+async function getPermissionStatus(): Promise<ServiceResult<boolean>> {
+  try {
+    const { granted } = await Notifications.getPermissionsAsync();
+    return { success: true, data: granted };
+  } catch (error) {
+    return {
+      success: false,
+      error: `Failed to read notification permission: ${getErrorMessage(error)}`,
+    };
+  }
+}
+
+/**
  * Pure function: turns refresh results into notification text.
  *
  * - Returns nothing when the master toggle is off
@@ -158,6 +175,7 @@ async function notifyNewEpisodes(
 
 export const NotificationService = {
   requestPermission,
+  getPermissionStatus,
   buildNewEpisodeNotifications,
   notifyNewEpisodes,
 };

@@ -5,7 +5,11 @@ import { RootStackParamList } from './types';
 import { TabNavigator } from './TabNavigator';
 import { AuthStackNavigator } from './AuthStackNavigator/AuthStackNavigator';
 import { modalScreenOptions } from './screenOptions';
-import { FullPlayerScreen, AddPodcastModal } from '../screens';
+import {
+  FullPlayerScreen,
+  AddPodcastModal,
+  NotificationSettingsScreen,
+} from '../screens';
 import { AuthService } from '../services';
 import { authStore } from '../stores/authStore';
 import { usePlaybackEvents } from '../hooks';
@@ -57,6 +61,15 @@ export const RootNavigator = () => {
           name='AddPodcastModal'
           component={AddPodcastModal}
           options={{ title: 'Add Podcast' }}
+        />
+        <Stack.Screen
+          name='NotificationSettings'
+          component={NotificationSettingsScreen}
+          options={{
+            title: 'Notifications',
+            presentation: 'fullScreenModal',
+            headerShown: true,
+          }}
         />
       </Stack.Group>
     </Stack.Navigator>

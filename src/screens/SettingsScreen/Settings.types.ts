@@ -1,3 +1,4 @@
+import { UseToastReturn } from '../../hooks';
 import { PlaybackSpeed } from '../../models';
 
 export interface SpeedOption {
@@ -19,14 +20,10 @@ export interface FormattedSettings {
   skipForwardLabel: string;
   skipBackwardSeconds: number;
   skipBackwardLabel: string;
-  newEpisodeNotifications: boolean;
 }
 
-/** One row in the per-podcast notification list */
-export interface NotificationPodcast {
-  id: string;
-  title: string;
-  enabled: boolean; // false when the podcast is in mutedNotificationPodcastIds
+export interface SettingsViewProps {
+  onNotificationsPress: () => void;
 }
 
 export interface SettingsViewModelReturn {
@@ -36,14 +33,12 @@ export interface SettingsViewModelReturn {
   skipForwardOptions: SkipOption[];
   skipBackwardOptions: SkipOption[];
   appVersion: string;
-  notificationPodcasts: NotificationPodcast[];
+  toast: UseToastReturn;
   handleToggleAutoPlayNext: () => void;
   handleSpeedChange: (speed: PlaybackSpeed) => void;
   handleToggleDownloadOnWiFi: () => void;
   handleSkipForwardChange: (seconds: number) => void;
   handleSkipBackwardChange: (seconds: number) => void;
-  handleToggleNotifications: () => Promise<void>;
-  handleTogglePodcastNotifications: (podcastId: string) => void;
   handleResetSettings: () => void;
   handlePrivacyPolicyPress: () => void;
   handleTermsOfServicePress: () => void;
