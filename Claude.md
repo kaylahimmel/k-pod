@@ -237,7 +237,9 @@ RootNavigator
 - **Playback + History Controller**: `src/hooks/usePlaybackController.ts` — two hooks: `usePlaybackEvents` (registers the AudioPlayerService progress/end/error callbacks; mounted exactly ONCE in RootNavigator — never mount it from a screen, its unmount clears the callbacks for the whole app) and `usePlaybackController` (playback state + actions; safe to mount from any number of screens). Cross-instance bookkeeping (load guard, save throttle) is module-level, matching the singleton service
   - **After a restart**, `queueStore` is persisted but `playerStore` isn't, so `restoreLastEpisode()` shows the queue's current episode paused at its saved position. No audio loads until the first tap. `restoredEpisodeId` marks an episode shown without loaded audio: `togglePlayPause` loads and plays it, and seek, skip and speed load it first. A failed load sets it too, so the next play tap retries
   - **Removing the current episode goes through the controller.** Use `removeQueueItem()` / `clearQueueAndStop()`, not the store's actions, or the old audio keeps playing while the queue shows the next item as Now Playing. Moves to the next item, playing only if audio was already playing. Use `clearPlayer()` rather than `playerStore.reset()` here, because `reset()` also puts speed back to 1x
-  - Playback failures show an `Alert`, from `loadAtSavedPosition` and from `handleError` in `usePlaybackEvents`
+  - Playback failures show an `Alert`, from `loadAtSavedPosition` and from `handleError` in `usePlaybackEvents`. **A bad connection doesn't fail `loadEpisode`**: creating a player succeeds, and the failure arrives later as a status event with an `error` key that `AudioStatus` doesn't type, handled at the top of `handlePlaybackStatusUpdate`
+  - Use `AudioPlayerService.unload()`, not `stop()`, when an episode goes away. `stop()` keeps the player on the lock screen and it still sends a late position-0 event, which erases saved positions
+  - `loadGeneration` lets an in-flight load notice it was replaced or removed after each `await`, so a removed episode can't start playing afterward
 
 ## Testing
 

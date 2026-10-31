@@ -50,9 +50,10 @@ export const useFullPlayerViewModel = (
     [storeCurrentPodcast, initialPodcast],
   );
 
-  // Load and play the episode when the screen opens
+  // Load and play the episode when the screen opens. Opening from the mini
+  // player after a restart must not start audio, hence the false
   useEffect(() => {
-    playbackController.playEpisode(initialEpisode, initialPodcast);
+    playbackController.playEpisode(initialEpisode, initialPodcast, false);
     // Only re-run when the initial episode ID changes (indicating a different episode was passed in)
     // We use initialEpisode.id instead of episode/podcast/playbackController because:
     // - `playbackController` is recreated on every render and would cause infinite loops

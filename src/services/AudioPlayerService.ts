@@ -79,14 +79,22 @@ async function configureAudioMode(): Promise<ServiceResult<void>> {
   }
 }
 
+type StatusWithError = AudioStatus & { error?: string };
+
 /**
  * Handle playback status updates from expo-audio
  * Routes updates to appropriate callbacks
  *
- * Note: expo-audio's AudioStatus has no error field (unlike expo-av), so
- * playback errors surface through the load/command ServiceResults instead
+ * Note: expo-audio's AudioStatus type has no error field, but native sends one
+ * when a stream fails. Creating a player never fails for a bad connection, so
+ * this event is the only sign of it
  */
-function handlePlaybackStatusUpdate(status: AudioStatus): void {
+function handlePlaybackStatusUpdate(status: StatusWithError): void {
+  if (status.error) {
+    onErrorCallback?.(status.error);
+    return;
+  }
+
   if (!status.isLoaded) {
     return;
   }
@@ -452,6 +460,7 @@ export const AudioPlayerService = {
   play,
   pause,
   stop,
+  unload: unloadCurrentPlayer,
   seek,
   setPlaybackSpeed,
   skipForward,

@@ -295,6 +295,36 @@ describe('AudioPlayerService', () => {
   // -----------------------------------------
   // Seek Progress Settling Tests
   // -----------------------------------------
+  describe('native errors', () => {
+    it('reports an error that arrives on the status event', async () => {
+      const onError = jest.fn();
+      AudioPlayerService.setOnError(onError);
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      const listener = mockPlayerInstance.addListener.mock.calls.at(
+        -1,
+      )?.[1] as unknown as (status: { error: string }) => void;
+
+      listener({ error: 'Network unreachable' });
+
+      expect(onError).toHaveBeenCalledWith('Network unreachable');
+      AudioPlayerService.setOnError(null);
+    });
+  });
+
+  describe('unload', () => {
+    it('releases the player so nothing can play or report later', async () => {
+      await AudioPlayerService.loadEpisode(mockEpisode);
+
+      AudioPlayerService.unload();
+
+      expect(
+        mockPlayerInstance.setActiveForLockScreen,
+      ).toHaveBeenLastCalledWith(false);
+      expect(mockPlayerInstance.release).toHaveBeenCalled();
+      expect(AudioPlayerService.getCurrentEpisodeId()).toBeNull();
+    });
+  });
+
   // expo-audio keeps emitting playbackStatusUpdate events with the pre-seek
   // currentTime while a seek is in flight (and they can arrive after the
   // seekTo promise resolves). The service must drop those stale progress

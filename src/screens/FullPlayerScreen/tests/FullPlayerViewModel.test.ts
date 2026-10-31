@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useFullPlayerViewModel } from '../FullPlayerViewModel';
+import { restoreLastEpisode } from '../../../hooks/usePlaybackController';
 import { playerStore, queueStore, settingsStore } from '../../../stores';
 import { AudioPlayerService } from '../../../services';
 import {
@@ -83,6 +84,27 @@ describe('useFullPlayerViewModel', () => {
     const queue = queueStore.getState().queue;
     expect(queue.length).toBe(1);
     expect(queue[0].episode.id).toBe(mockEpisode.id);
+  });
+
+  it('should not start audio when opened on an episode restored after a restart', async () => {
+    const restoredItem = createMockQueueItems(1)[0];
+    act(() => {
+      queueStore.setState({ queue: [restoredItem], currentIndex: 0 });
+    });
+    await act(async () => {
+      await restoreLastEpisode();
+    });
+
+    renderHook(() =>
+      useFullPlayerViewModel(
+        restoredItem.episode,
+        restoredItem.podcast,
+        mockOnDismiss,
+      ),
+    );
+    await act(async () => {});
+
+    expect(AudioPlayerService.play).not.toHaveBeenCalled();
   });
 
   describe('playback handlers', () => {

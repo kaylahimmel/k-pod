@@ -28,6 +28,10 @@ let isLoadingEpisode = false;
 // Last position written to storage, to throttle saves to every ~10 seconds
 let lastSavedPosition = 0;
 
+// Bumped whenever a new load starts or the current one stops being wanted, so
+// a load still awaiting something can tell it has been replaced
+let loadGeneration = 0;
+
 const PLAYBACK_ERROR_MESSAGE =
   "This episode couldn't be played. Check your connection and try again.";
 
@@ -51,10 +55,20 @@ async function loadAtSavedPosition(
   podcast: Podcast,
 ): Promise<boolean> {
   const { setPosition } = playerStore.getState();
+  const generation = ++loadGeneration;
+  const wasReplaced = () => generation !== loadGeneration;
 
   // Note: loadEpisode handles unloading the previous player
   // The podcast is passed for lock screen / Control Center metadata
   const loadResult = await AudioPlayerService.loadEpisode(episode, podcast);
+  if (wasReplaced()) {
+    // A removal can finish while the player is being created. Nothing else
+    // would release this one, so its audio would be left active
+    if (AudioPlayerService.getCurrentEpisodeId() === episode.id) {
+      AudioPlayerService.unload();
+    }
+    return false;
+  }
   if (!loadResult.success) {
     console.error('Failed to load episode:', loadResult.error);
     Alert.alert('Playback Error', PLAYBACK_ERROR_MESSAGE);
@@ -66,15 +80,17 @@ async function loadAtSavedPosition(
 
   // Check for saved playback position and resume from there
   const savedPosition = await StorageService.loadPlaybackPosition(episode.id);
+  if (wasReplaced()) return false;
   if (savedPosition > 0) {
     await AudioPlayerService.seek(savedPosition);
+    if (wasReplaced()) return false;
     setPosition(savedPosition);
     lastSavedPosition = savedPosition;
   }
 
   // Set playback speed (fresh read - it may have changed since load began)
   await AudioPlayerService.setPlaybackSpeed(playerStore.getState().speed);
-  return true;
+  return !wasReplaced();
 }
 
 /**
@@ -108,6 +124,32 @@ async function loadAndPlay(episode: Episode, podcast: Podcast): Promise<void> {
   if (playResult.success) {
     setIsPlaying(true);
   }
+}
+
+/**
+ * Loads and plays the current episode when it has no audio loaded. Shared by
+ * every play control, so they all recover from a restart or a failed load.
+ */
+async function startAwaitingEpisode(
+  episode: Episode,
+  podcast: Podcast,
+): Promise<void> {
+  if (isLoadingEpisode) return;
+  isLoadingEpisode = true;
+  try {
+    await loadAndPlay(episode, podcast);
+  } finally {
+    isLoadingEpisode = false;
+  }
+}
+
+/**
+ * Tells any in-flight load it's no longer wanted, and returns the generation
+ * to compare against after the caller's own awaits
+ */
+function cancelInFlightLoad(): number {
+  isLoadingEpisode = false;
+  return ++loadGeneration;
 }
 
 /**
@@ -190,16 +232,18 @@ function clearPlayer(): void {
 }
 
 /**
- * Saves the current episode's position, then stops its audio. Used when the
- * episode leaves the queue, so it can resume from there if it's added back.
+ * Releases the current episode's audio, then saves its position so it can
+ * resume if it's added back. Unloading comes first and uses unload(), not
+ * stop(): a stopped player stays on the lock screen and still sends a late
+ * position-0 event, which would overwrite the saved position.
  */
 async function saveAndStopCurrent(): Promise<void> {
   const { currentEpisode, position } = playerStore.getState();
+  AudioPlayerService.unload();
   if (currentEpisode && position > 0) {
     await StorageService.savePlaybackPosition(currentEpisode.id, position);
     lastSavedPosition = position;
   }
-  await AudioPlayerService.stop();
 }
 
 /**
@@ -322,6 +366,8 @@ export const usePlaybackEvents = () => {
       console.error('Playback error:', error);
       Alert.alert('Playback Error', PLAYBACK_ERROR_MESSAGE);
       setIsPlaying(false);
+      // The player is dead, so the next play tap has to load it again
+      restoredEpisodeId = playerStore.getState().currentEpisode?.id ?? null;
     },
     [setIsPlaying],
   );
@@ -409,7 +455,7 @@ export const usePlaybackController = () => {
    * Reads fresh queue state to avoid stale closure issues
    */
   const playEpisode = useCallback(
-    async (episode: Episode, podcast: Podcast) => {
+    async (episode: Episode, podcast: Podcast, startIfUnloaded = true) => {
       if (isLoadingEpisode) return;
 
       // Get fresh state to avoid stale closure issues
@@ -440,6 +486,9 @@ export const usePlaybackController = () => {
           // Insert at the beginning of the queue using fresh queue
           setQueue([newQueueItem, ...freshQueue]);
           setCurrentIndex(0);
+        }
+        if (startIfUnloaded && isAwaitingLoad()) {
+          await startAwaitingEpisode(episode, podcast);
         }
         return; // Don't reload the same episode
       }
@@ -510,13 +559,7 @@ export const usePlaybackController = () => {
 
     // First play after a restart: there's no audio loaded to resume yet
     if (isAwaitingLoad() && freshPodcast) {
-      if (isLoadingEpisode) return;
-      isLoadingEpisode = true;
-      try {
-        await loadAndPlay(freshEpisode, freshPodcast);
-      } finally {
-        isLoadingEpisode = false;
-      }
+      await startAwaitingEpisode(freshEpisode, freshPodcast);
       return;
     }
 
@@ -673,6 +716,9 @@ export const usePlaybackController = () => {
           setCurrentIndex(0);
         }
         setCurrentPodcast(queueItem.podcast);
+        if (isAwaitingLoad()) {
+          await startAwaitingEpisode(queueItem.episode, queueItem.podcast);
+        }
         return;
       }
 
@@ -724,7 +770,9 @@ export const usePlaybackController = () => {
       removeFromQueue(itemId);
       if (!removedItem || !isCurrent) return;
 
+      const generation = cancelInFlightLoad();
       await saveAndStopCurrent();
+      if (generation !== loadGeneration) return; // The user started something else
 
       // removeFromQueue already pointed currentIndex at the next item
       const { queue: nextQueue, currentIndex: nextIndex } =
@@ -736,16 +784,12 @@ export const usePlaybackController = () => {
       }
 
       if (wasPlaying) {
-        isLoadingEpisode = true;
-        try {
-          await loadAndPlay(nextItem.episode, nextItem.podcast);
-        } finally {
-          isLoadingEpisode = false;
-        }
+        await startAwaitingEpisode(nextItem.episode, nextItem.podcast);
       } else {
         const savedPosition = await StorageService.loadPlaybackPosition(
           nextItem.episode.id,
         );
+        if (generation !== loadGeneration) return;
         showPaused(nextItem.episode, nextItem.podcast, savedPosition);
       }
     },
@@ -756,6 +800,7 @@ export const usePlaybackController = () => {
    * Empty the queue and stop whatever was playing from it
    */
   const clearQueueAndStop = useCallback(async () => {
+    cancelInFlightLoad();
     clearQueue();
     await saveAndStopCurrent();
     clearPlayer();
@@ -770,7 +815,7 @@ export const usePlaybackController = () => {
    */
   const stopCurrentAndPlayNext = useCallback(async () => {
     // Stop current playback
-    await AudioPlayerService.stop();
+    AudioPlayerService.unload();
 
     // Get fresh queue state (not from closure) since removeFromQueue was just called
     const { queue: currentQueue, currentIndex: currentIdx } =

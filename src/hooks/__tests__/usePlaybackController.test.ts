@@ -754,6 +754,39 @@ describe('usePlaybackController', () => {
       expect(playerStore.getState().isPlaying).toBe(true);
     });
 
+    it('loads and plays when a card plays the restored episode', async () => {
+      await restore();
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.playEpisode(restoredEpisode, savedPodcast);
+      });
+
+      expect(AudioPlayerService.play).toHaveBeenCalledTimes(1);
+    });
+
+    it('loads and plays when the queue card plays the restored episode', async () => {
+      await restore();
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.playQueueItem(queueStore.getState().queue[0]);
+      });
+
+      expect(AudioPlayerService.play).toHaveBeenCalledTimes(1);
+    });
+
+    it('stays paused when asked not to start an unloaded episode', async () => {
+      await restore();
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.playEpisode(restoredEpisode, savedPodcast, false);
+      });
+
+      expect(AudioPlayerService.loadEpisode).not.toHaveBeenCalled();
+    });
+
     it('only loads once across two play taps', async () => {
       await restore();
       const { result } = renderHook(() => usePlaybackController());
@@ -817,6 +850,81 @@ describe('usePlaybackController', () => {
       jest.spyOn(StorageService, 'loadPlaybackPosition').mockResolvedValue(0);
     });
 
+    const deferred = <T>() => {
+      let resolve: (value: T) => void = () => {};
+      const promise = new Promise<T>((r) => {
+        resolve = r;
+      });
+      return { promise, resolve };
+    };
+
+    // Starts episode-2 and leaves it mid-load, waiting on its saved-position seek
+    const startLoadStuckOnSeek = async () => {
+      const seek = deferred<{ success: boolean }>();
+      (StorageService.loadPlaybackPosition as jest.Mock).mockResolvedValue(50);
+      (AudioPlayerService.seek as jest.Mock).mockReturnValueOnce(seek.promise);
+      startWith(false);
+      const { result } = renderHook(() => usePlaybackController());
+      let load: Promise<void> = Promise.resolve();
+      await act(async () => {
+        load = result.current.playEpisode(mockEpisode2, mockPodcast);
+      });
+      return { result, seek, load };
+    };
+
+    it('does not start a load that was removed while in flight', async () => {
+      const { result, seek, load } = await startLoadStuckOnSeek();
+
+      await act(async () => {
+        await result.current.removeQueueItem('item-2');
+        seek.resolve({ success: true });
+        await load;
+      });
+
+      expect(AudioPlayerService.play).not.toHaveBeenCalled();
+      expect(playerStore.getState().isPlaying).toBe(false);
+    });
+
+    it('does not start a load after the queue is cleared', async () => {
+      const { result, seek, load } = await startLoadStuckOnSeek();
+
+      await act(async () => {
+        await result.current.clearQueueAndStop();
+        seek.resolve({ success: true });
+        await load;
+      });
+
+      expect(AudioPlayerService.play).not.toHaveBeenCalled();
+      expect(playerStore.getState().currentEpisode).toBeNull();
+    });
+
+    it('unloads a player that finishes creating after its removal', async () => {
+      const loadEpisode = deferred<{ success: boolean }>();
+      (AudioPlayerService.loadEpisode as jest.Mock).mockReturnValueOnce(
+        loadEpisode.promise,
+      );
+      startWith(false);
+      const { result } = renderHook(() => usePlaybackController());
+      let load: Promise<void> = Promise.resolve();
+      await act(async () => {
+        load = result.current.playEpisode(mockEpisode2, mockPodcast);
+      });
+
+      await act(async () => {
+        await result.current.clearQueueAndStop();
+      });
+      (AudioPlayerService.unload as jest.Mock).mockClear();
+      (AudioPlayerService.getCurrentEpisodeId as jest.Mock).mockReturnValueOnce(
+        'episode-2',
+      );
+      await act(async () => {
+        loadEpisode.resolve({ success: true });
+        await load;
+      });
+
+      expect(AudioPlayerService.unload).toHaveBeenCalled();
+    });
+
     it('stops a playing episode and plays the next one', async () => {
       startWith(true);
       const { result } = renderHook(() => usePlaybackController());
@@ -829,7 +937,7 @@ describe('usePlaybackController', () => {
         'episode-1',
         120,
       );
-      expect(AudioPlayerService.stop).toHaveBeenCalled();
+      expect(AudioPlayerService.unload).toHaveBeenCalled();
       expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
         mockEpisode2,
         mockPodcast,
@@ -846,7 +954,7 @@ describe('usePlaybackController', () => {
         await result.current.removeQueueItem('item-1');
       });
 
-      expect(AudioPlayerService.stop).toHaveBeenCalled();
+      expect(AudioPlayerService.unload).toHaveBeenCalled();
       expect(AudioPlayerService.loadEpisode).not.toHaveBeenCalled();
       expect(playerStore.getState().currentEpisode?.id).toBe('episode-2');
       expect(playerStore.getState().isPlaying).toBe(false);
@@ -869,7 +977,7 @@ describe('usePlaybackController', () => {
         await result.current.removeQueueItem('item-1');
       });
 
-      expect(AudioPlayerService.stop).toHaveBeenCalled();
+      expect(AudioPlayerService.unload).toHaveBeenCalled();
       expect(playerStore.getState().currentEpisode).toBeNull();
       expect(playerStore.getState().isPlaying).toBe(false);
     });
@@ -882,7 +990,7 @@ describe('usePlaybackController', () => {
         await result.current.removeQueueItem('item-2');
       });
 
-      expect(AudioPlayerService.stop).not.toHaveBeenCalled();
+      expect(AudioPlayerService.unload).not.toHaveBeenCalled();
       expect(queueStore.getState().queue).toEqual([firstItem]);
       expect(playerStore.getState().currentEpisode?.id).toBe('episode-1');
     });
@@ -899,7 +1007,7 @@ describe('usePlaybackController', () => {
         'episode-1',
         120,
       );
-      expect(AudioPlayerService.stop).toHaveBeenCalled();
+      expect(AudioPlayerService.unload).toHaveBeenCalled();
       expect(queueStore.getState().queue).toEqual([]);
       expect(playerStore.getState().currentEpisode).toBeNull();
     });
@@ -949,6 +1057,32 @@ describe('usePlaybackController', () => {
       });
 
       expect(alertSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('retries on the next play tap after audio fails during playback', async () => {
+      let onError: ((error: string) => void) | null = null;
+      (AudioPlayerService.setOnError as jest.Mock).mockImplementation(
+        (callback) => {
+          onError = callback;
+        },
+      );
+      renderHook(() => usePlaybackEvents());
+      const { result } = renderHook(() => usePlaybackController());
+      await act(async () => {
+        await result.current.playEpisode(mockEpisode, mockPodcast);
+      });
+      (AudioPlayerService.loadEpisode as jest.Mock).mockClear();
+
+      act(() => {
+        onError?.('stream failed');
+      });
+      expect(playerStore.getState().isPlaying).toBe(false);
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledTimes(1);
+      expect(playerStore.getState().isPlaying).toBe(true);
     });
 
     it('retries the load on the next play tap', async () => {
