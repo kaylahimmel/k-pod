@@ -469,6 +469,11 @@ Note: EpisodeDetailScreen is now tracked separately in section 6.7
 
 - [x] Add a notification section to the existing SettingsScreen, with an option to toggle on/off all podcasts at once, or just toggle notifications on/off for each podcast
 - [x] Setup local notifications (background refresh) for new episodes for each of the podcasts
+- [x] Move notification toggles to a full-screen modal opened from Settings
+- [x] Re-check notification permission on open and when the app returns to the foreground
+- [x] Fix toggle contrast and screen reader labels in SettingToggleRow
+- [x] Verify notification delivery on Android (Pixel Fold API 36 emulator)
+- [ ] Decide if new episode alerts need a server for timely delivery
 
 ## Phase 9: Authentication (If Required)
 
@@ -500,23 +505,26 @@ Note: EpisodeDetailScreen is now tracked separately in section 6.7
 ### 10.1 UI/UX Improvements
 
 - [ ] Reference the `/Claude.md` file before starting on these steps
-- [ ] Address and remove any `// TO-DO` comments in the files — **2 left**, both the Settings legal URLs (`SettingsViewModel.ts:101,113`), tracked in 13.3
+- [ ] Address and remove any `// TO-DO` comments in the files — **2 left**, both the Settings legal URLs (`SettingsViewModel.ts:107,119`), tracked in 13.3
 - [ ] Add loading states for all async operations, including skeletons for loading UI
 - [ ] Add error states and error messages
 - [ ] Add empty states for lists
 - [ ] Add pull-to-refresh on appropriate screens
 - [ ] Add dark mode and ensure the app observes the user's preferences in the device settings
 - [ ] Ensure responsive design for different screen sizes
+- [ ] Remove or repurpose the FullPlayer "Add to Queue" button (it never shows, because playing an episode always adds it to the queue)
+- [ ] After a restart, the queue shows "Now Playing" while the mini player says "No episode playing" — decide how these should match
+- [ ] Fix the navigation require cycle: import stack navigators directly in TabNavigator.tsx
+- [ ] Update the 6 Expo packages that are a patch version behind
 
 ### 10.2 Add Animations
 
 - [ ] Customize transitions from login to landing screens (DiscoverScreen)
 - [ ] Add haptics to dragging and dropping episodes in the QueueScreen
 - [ ] Add confetti animation after a podcast is subscribed to
-- [ ] Dial in the Toast that appears when an episode is added to the queue, reducing the time the Toast displays, and overwriting a Toast with a new Toast if a new episode is added to the queue before the first Toast disappears
-- [x] Add a Toast that displays for 2 seconds that says all episodes of the podcast that was just unsubscribed from have been removed from the queue
+- [x] Dial in the Toast that appears when an episode is added to the queue, reducing the time the Toast displays, and overwriting a Toast with a new Toast if a new episode is added to the queue before the first Toast disappears
+- [ ] Add a Toast that displays for 2 seconds that says all episodes of the podcast that was just unsubscribed from have been removed from the queue
 - [ ] Add haptics to the toggles in the SettingsScreen
-- [ ] Move the episode cache out of AsyncStorage before TestFlight (Android 2 MB read limit)
 
 ### 10.3 Performance Optimization
 
@@ -556,10 +564,12 @@ Note: EpisodeDetailScreen is now tracked separately in section 6.7
 
 ### MVP for Testflight releases
 
+- [ ] Move the episode cache out of AsyncStorage before TestFlight (Android 2 MB read limit)
 - [ ] add and configure an eas.json
 - [ ] add Firebase keys to EAS
 - [ ] get a paid Apple Development account with Bespoke Bits using the <kayla@bespokebits.dev> email
-- [ ] get a real bundle ID and update the package.json (will likely be `dev.bespokebits.kpod`)
+- [ ] get a real bundle ID and update the app.json (will likely be `dev.bespokebits.kpod`)
+- [ ] test notifications on physical iPhone once I have a paid Apple Developer account with Bespoke Bits
 - [ ] add Maestro automation testing
 - [ ] create CI workflow to run tests in the pipeline
 - [ ] create code review workflow that runs on every opened PR
@@ -584,8 +594,8 @@ Note: EpisodeDetailScreen is now tracked separately in section 6.7
 ### 11.2 Screen/View Component Tests (Deferred)
 
 - [ ] Reference the `/Claude.md` file before starting on these steps
-- [ ] Add/update Jest tests for Screen components — **12 of 16 screens covered**; missing: LoginScreen, SignUpScreen, ForgotPasswordScreen, ChangePasswordScreen
-- [ ] Add/update Jest tests for View components — **12 of 16**; the same four auth views are the gap
+- [ ] Add/update Jest tests for Screen components — **13 of 17 screens covered**; missing: LoginScreen, SignUpScreen, ForgotPasswordScreen, ChangePasswordScreen
+- [ ] Add/update Jest tests for View components — **13 of 17**; the same four auth views are the gap
 - [ ] Address and remove any `// TO-DO` comments in the test files — **1 left**: `FullPlayerViewModel.test.ts:10` (update for the PlaybackController architecture)
 
 ### 11.3 Edge Cases
@@ -658,12 +668,12 @@ Secrets posture verified clean: `.env` holds only client-side Firebase config, i
 - [x] ~~App version~~ — `getAppVersion()` now reads `expo-constants`
 - [ ] Settings legal URLs still point at `example.com` placeholders. **Required before App Store submission** (a reachable privacy policy URL is mandatory)
 
-### 13.4 Architecture Follow-ups (2026-09)
+### 13.4 Architecture Follow-ups (2026-10)
 
 Carried over from the subagent architecture review. Both are structural, not cleanup — worth their own branches.
 
 - [ ] **Zustand selectors**: the six `use*Store` hooks return the whole store, so the 1 Hz position tick re-renders `MiniPlayer` (always mounted), `QueueViewModel`, and every screen using `usePlaybackController` — once per second during playback. QueueScreen's `DraggableFlatList` re-renders on that tick. If this ever shows as jank it will look like a Reanimated or drag-and-drop bug, not a state bug. Fix: give each hook a selector overload and migrate the hot consumers (`QueueViewModel` only needs `isPlaying`) plus `useShallow` in `usePlaybackController`
-- [ ] **Denormalized `Podcast` in `QueueItem` and `ListeningHistory`**: both embed the full `Podcast`, and `Podcast.episodes` is the entire feed. A 500-episode show is ~500KB per entry, and both are persisted. Android's AsyncStorage `CursorWindow` caps a row at 2MB, so a large queue **silently fails to persist** — silently, because `StorageService.saveData` logs and returns `void`. The embedded copies are also stale snapshots: refreshing a feed never updates them. Fix: store ids plus a minimal `{ id, title, artworkUrl }` snapshot (needed for history of unsubscribed shows), resolve through `podcastStore` at read time in the presenters, and add a `persist` migration
+- [ ] **Denormalized `Podcast` in `QueueItem` and `ListeningHistory`**: both embed the full `Podcast`, and `Podcast.episodes` is the entire feed. A 500-episode show is ~500KB per entry, and both are persisted. Android's AsyncStorage `CursorWindow` caps a row at 2MB, so a large queue **silently fails to persist** — silently, because `StorageService.saveData` logs and returns `void`. The saved queue and history items no longer include episode lists, but the in-memory copies still do, and they can go stale after a refresh. Fix: store ids plus a minimal `{ id, title, artworkUrl }` snapshot (needed for history of unsubscribed shows), resolve through `podcastStore` at read time in the presenters, and add a `persist` migration
   - **Do this before offline downloads.** Download state (`downloadStatus`, `localUri`, `fileSize`) landing on `Episode` while `Episode` is duplicated across queue, history and `Podcast.episodes` means four divergent copies and no single source of truth for "is this downloaded"
 
 ### 13.5 Known Gaps (not yet scheduled)

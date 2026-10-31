@@ -71,6 +71,7 @@ When updating dependencies or adding yarn resolutions, verify the exact syntax w
 ### Folder Structure
 
 ```bash
+plugins/            # Local Expo config plugins (applied by `expo prebuild`)
 src/
 ├── __mocks__/      # Reusable mocks for UI component, view, and screen tests
 ├── components/     # Reusable UI components
@@ -190,7 +191,7 @@ RootNavigator
 - **Shared formatting**: every cross-screen formatter lives in `src/utils/`, never in a presenter. Presenters are private to their screen — importing one from another screen breaks the layering rule, and the repo is currently at **zero** such imports. Keep it that way:
   - `formatUtils.ts` — `formatEpisodeCount`, `formatDuration`, `formatDurationLong`, `formatCompletionPercentage`
   - `dateUtils.ts` — `formatRelativeDate`, `formatPublishDate`
-  - `podcastUtils.ts` — `isSubscribed` · `historyUtils.ts` — `formatHistoryItemForList`
+  - `podcastUtils.ts` — `isSubscribed`, `withoutEpisodes` · `historyUtils.ts` — `formatHistoryItemForList`
   - Check the invariant before merging: this must return nothing.
 
     ```bash
@@ -230,6 +231,8 @@ RootNavigator
   - `expo-background-task`'s `minimumInterval` is in **minutes** (15 is the floor; the old `expo-background-fetch` used seconds). Timing is OS-controlled: alerts can be hours late, iOS favors overnight/charging windows, and iOS stops running the task after the user force-quits the app. Timely alerts would need a server (TO-DO 8.5 follow-up)
   - On Android the notification posts to a `new-episodes` channel (created before the permission request, which Android 13+ requires), so the trigger is `{ channelId }` there and `null` on iOS
   - Requires a native build (`npx expo run:ios` / `run:android`) — background tasks and local notifications can't be tested in Expo Go or in Jest (native modules are mocked in `jest.setup.ts`)
+  - **Where it can be tested:** the iOS simulator can't run background tasks, so turning alerts on there correctly shows "Background refresh is not available on this device" and the toggle stays off. A physical iPhone needs a paid Apple Developer account (`npx expo run:ios --device` fails with "No code signing certificates are available to use"). Android emulators work end to end, which is how delivery was verified. iOS delivery is still unverified (Phase 11 in TO-DO)
+  - To test delivery, use a frequently updated feed like NPR News Now (`https://feeds.npr.org/500005/podcast.xml`), then leave the app backgrounded. Reopening it can trigger a foreground refresh, which saves the new episode without notifying
 - **Playback + History Controller**: `src/hooks/usePlaybackController.ts` — two hooks: `usePlaybackEvents` (registers the AudioPlayerService progress/end/error callbacks; mounted exactly ONCE in RootNavigator — never mount it from a screen, its unmount clears the callbacks for the whole app) and `usePlaybackController` (playback state + actions; safe to mount from any number of screens). Cross-instance bookkeeping (load guard, save throttle) is module-level, matching the singleton service
 
 ## Testing
