@@ -62,9 +62,10 @@ async function configureAudioMode(): Promise<ServiceResult<void>> {
     await setAudioModeAsync({
       shouldPlayInBackground: true,
       playsInSilentMode: true,
-      // Lower other apps' audio instead of pausing it (matches the previous
-      // expo-av shouldDuckAndroid behavior; applies to both platforms now)
-      interruptionMode: 'duckOthers',
+      // A podcast is speech, so it takes over audio instead of playing over
+      // lowered music. On Android, a brief sound like a notification pauses
+      // the episode until audio focus returns, rather than lowering its volume
+      interruptionMode: 'doNotMix',
       shouldRouteThroughEarpiece: false,
     });
     isAudioModeConfigured = true;
@@ -240,10 +241,6 @@ async function play(): Promise<ServiceResult<void>> {
       await seek(0);
     }
 
-    // Reset any volume left lowered by expo-audio's Android duck handling,
-    // which can permanently ratchet volume down after back-to-back duck
-    // events (it saves an already-halved volume as the restore value)
-    playerInstance.volume = 1;
     playerInstance.play();
     return { success: true, data: undefined };
   } catch (error) {

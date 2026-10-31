@@ -85,7 +85,7 @@ describe('AudioPlayerService', () => {
       expect(setAudioModeAsync).toHaveBeenCalledWith({
         shouldPlayInBackground: true,
         playsInSilentMode: true,
-        interruptionMode: 'duckOthers',
+        interruptionMode: 'doNotMix',
         shouldRouteThroughEarpiece: false,
       });
     });
@@ -219,18 +219,6 @@ describe('AudioPlayerService', () => {
       await AudioPlayerService.play();
 
       expect(mockPlayerInstance.seekTo).not.toHaveBeenCalled();
-    });
-
-    it('should reset volume to full when starting playback', async () => {
-      // expo-audio's Android duck handling can permanently ratchet the
-      // player volume down (duck saves an already-halved volume as the
-      // restore value); resetting on play bounds the damage to one session
-      await AudioPlayerService.loadEpisode(mockEpisode);
-      mockPlayerInstance.volume = 0.25; // simulate a ratcheted duck
-
-      await AudioPlayerService.play();
-
-      expect(mockPlayerInstance.volume).toBe(1);
     });
   });
 
