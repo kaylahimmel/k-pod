@@ -7,13 +7,11 @@ import {
 } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabParamList } from './types';
-import {
-  LibraryStackNavigator,
-  DiscoverStackNavigator,
-  SettingsStackNavigator,
-  ProfileStackNavigator,
-  QueueStackNavigator,
-} from './';
+import { LibraryStackNavigator } from './LibraryStackNavigator/LibraryStackNavigator';
+import { DiscoverStackNavigator } from './DiscoverStackNavigator/DiscoverStackNavigator';
+import { SettingsStackNavigator } from './SettingsStackNavigator/SettingsStackNavigator';
+import { ProfileStackNavigator } from './ProfileStackNavigator/ProfileStackNavigator';
+import { QueueStackNavigator } from './QueueStackNavigator/QueueStackNavigator';
 import { MiniPlayer } from '../components';
 import { COLORS } from '../constants';
 import { styles } from './TabNavigator.styles';
