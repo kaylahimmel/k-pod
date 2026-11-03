@@ -15,6 +15,7 @@ interface CardQueueItemProps {
   onPlay: () => void;
   onPress: () => void;
   isDraggable?: boolean;
+  isPlaying?: boolean;
 }
 
 export const CardQueueItem = ({
@@ -25,6 +26,7 @@ export const CardQueueItem = ({
   onPlay,
   onPress,
   isDraggable = true,
+  isPlaying = false,
 }: CardQueueItemProps) => {
   const renderRightActions = (
     _progress: Animated.AnimatedInterpolation<number>,
@@ -124,7 +126,11 @@ export const CardQueueItem = ({
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               testID='queue-item-play-button'
             >
-              <Ionicons name='play-circle' size={32} color={COLORS.primary} />
+              <Ionicons
+                name={isPlaying ? 'pause-circle' : 'play-circle'}
+                size={32}
+                color={COLORS.primary}
+              />
             </TouchableOpacity>
           </View>
         </View>

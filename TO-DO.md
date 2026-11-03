@@ -120,7 +120,22 @@
 - [x] Guard against expo-audio's Android duck-volume ratchet: with `interruptionMode: 'duckOthers'`, back-to-back duck events (e.g. two notifications during playback) save an already-halved volume as the restore value, permanently lowering playback volume for the session. `play()` now resets `player.volume = 1` on every start. Context: Android emulator being quieter than the iOS simulator is otherwise expected (separate media-stream volume vs Mac system volume) and doesn't affect real users
 - [ ] Report the Android duck-volume ratchet upstream to expo/expo (`AudioModule.kt` audio-focus listener: `AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK` overwrites `previousVolume` with the ducked value on consecutive ducks)
 - [x] ~~Check whether expo-audio split `interruptionMode` into separate iOS/Android settings~~ — **investigated 2026-09: the premise is backwards.** `interruptionModeAndroid` is already marked `@deprecated` in the installed expo-audio, in favour of a unified `interruptionMode` that works on both platforms. So switching Android to `doNotMix` means either changing it for both platforms or branching on `Platform.OS` at the `setAudioModeAsync` call in `AudioPlayerService`
-- [ ] Decide during the SDK 55 hop whether to branch on `Platform.OS` for `doNotMix`
+- [x] Decided 2026-10: use `doNotMix` on both platforms with no `Platform.OS` branch. The app is speech, and this makes the duck-volume ratchet unreachable, so the `volume = 1` guard was removed
+- [x] Decided 2026-11: Android goes back to `duckOthers` so notifications play over the episode, and the `volume = 1` guard is restored. iOS keeps `doNotMix`. Android only needs to reach MVP, since a SwiftUI rewrite is planned
+- [ ] Android bug: an episode shows as playing with no sound (seen on the emulator). Pause and play don't recover it, but loading a different episode does. Undiagnosed, and accepted for the Android MVP. Temporary logging showed the player still reporting `playing=true` when the emulator's audio driver failed, but didn't catch the case where the player itself stopped sending audio
+- [x] Queue: the blue card's play button showed a play icon and did nothing while its episode was current. It now matches the mini player and toggles play and pause
+- [ ] Android: confirm by ear on a real phone that a notification only dips the episode's volume for about a second
+- [ ] `usePlaybackEvents` still subscribes to the whole player store, so `RootNavigator` re-renders every second during playback. Harmless for now because screens are shielded, but it's wasted work
+- [ ] Check whether one trailer in two podcasts' feeds counts as a single episode: the mini player once listed "Introducing: Curse of Miss America" under Betrayal Season 6 while the queue listed it under American Homicide. Not confirmed
+- [ ] EpisodeDetail's Play button on a paused episode with no audio loaded opens FullPlayer paused, so it takes a second tap. FullPlayer always passes `startIfUnloaded = false`, which is meant for the mini player. The caller or route should say whether to start
+- [ ] `handleEnd` finds the finished item by `currentIndex` rather than by episode. If an episode ends just after the user taps another one, the tapped item gets removed and the finished one stays queued, and auto-advance is skipped too. Find it by `freshEpisode.id`
+- [ ] Share the restore logic: `restoreLastEpisode`, `showQueueCurrentPaused` and `removeQueueItem`'s paused branch repeat load-position-then-`showPaused`, and only `restoreLastEpisode` prefers the subscribed `podcastStore` copy, so the other two can put a podcast with no episodes in the player
+- [ ] Android volume workaround reads `player.volume` on every status event, a synchronous native call about once a second. The two resets also live in different places. A proper fix would patch expo-audio's `previousVolume` handling with patch-package
+- [ ] Retry gaps: `removeQueueItem` and `stopCurrentAndPlayNext` don't reset `playbackRetryCount`, so the next episode can get fewer retries. Removing an episode during the 1-second retry wait also shows the next one paused, because `isPlaying` is false during the wait
+- [ ] Occasional `-1003` alerts can still get past the retries. Wait and see how often they show up on a real iPhone before spending more on this. Spacing the retries out further is the simplest next step
+- [x] Retry native playback errors before alerting: some of Triton's numbered audio servers can't be found, which showed up as random `-1003` errors. `main` ignored `status.error`, so these failures were silent there
+- [ ] Restored episode: the first skip can do nothing while audio loads. Minor, accepted for now
+- [ ] Android: K-Pod can give up audio focus while still playing, then never take it back until the next `play()`. It may be expo-audio releasing focus during a stall (not confirmed)
 - [x] ~~Consider refactor to one persistent player with `player.replace(source)`~~ Evaluated and decided against (2026-07-05): destroy-and-recreate tears down the status subscription on episode switch, which is what prevents stale events from the old episode leaking into the new one — `replace()` would reintroduce that bug class across episode boundaries. Also, `replace()` is fire-and-forget natively (no load success/error result) and auto-resumes playback, fighting the controller's explicit sequencing. Per-switch player creation cost is negligible for a podcast app. Revisit only if profiling shows player churn as a real cost
 
 ### 4.4 Discovery Service (Optional for MVP)
@@ -504,18 +519,20 @@ Note: EpisodeDetailScreen is now tracked separately in section 6.7
 
 ### 10.1 UI/UX Improvements
 
-- [ ] Reference the `/Claude.md` file before starting on these steps
-- [ ] Address and remove any `// TO-DO` comments in the files — **2 left**, both the Settings legal URLs (`SettingsViewModel.ts:107,119`), tracked in 13.3
-- [ ] Add loading states for all async operations, including skeletons for loading UI
-- [ ] Add error states and error messages
-- [ ] Add empty states for lists
-- [ ] Add pull-to-refresh on appropriate screens
-- [ ] Add dark mode and ensure the app observes the user's preferences in the device settings
-- [ ] Ensure responsive design for different screen sizes
-- [ ] Remove or repurpose the FullPlayer "Add to Queue" button (it never shows, because playing an episode always adds it to the queue)
-- [ ] After a restart, the queue shows "Now Playing" while the mini player says "No episode playing" — decide how these should match
-- [ ] Fix the navigation require cycle: import stack navigators directly in TabNavigator.tsx
-- [ ] Update the 6 Expo packages that are a patch version behind
+- [x] Reference the `/Claude.md` file before starting on these steps
+- [ ] Address and remove any `// TO-DO` comments in the files — **2 left on purpose**, both the Settings legal URLs (`SettingsViewModel.ts:107,119`), tracked in 13.3 until real URLs exist
+- [x] Add loading states for all async operations, including skeletons for loading UI
+- [x] Add error states and error messages
+- [x] Add empty states for lists
+- [x] Add pull-to-refresh on appropriate screens
+- [ ] Add dark mode and ensure the app observes the user's preferences in the device settings — **separate PR**, about 100 files
+- [ ] Ensure responsive design for different screen sizes — **separate PR**, needs manual clipping checks
+- [ ] Add device testing to automate the manual checks (wants to learn Playwright; check first, since Playwright drives web browsers, not native React Native apps)
+- [x] Remove the FullPlayer "Add to Queue" button
+- [x] After a restart, the queue shows "Now Playing" while the mini player says "No episode playing" — the mini player now restores the queue's current episode, paused
+- [x] Stop the audio when the playing episode is swiped away or the queue is cleared
+- [x] Fix the navigation require cycle: import stack navigators directly in TabNavigator.tsx (`yarn check:cycles` now checks this)
+- [x] Update the 6 Expo packages that are a patch version behind
 
 ### 10.2 Add Animations
 

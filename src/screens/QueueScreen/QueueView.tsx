@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import DraggableFlatList, {
   RenderItemParams,
@@ -19,19 +19,21 @@ export const QueueView = ({ onEpisodePress, onPlayItem }: QueueViewProps) => {
     [viewModel.displayQueue],
   );
 
-  const renderItem = ({
-    item,
-    drag,
-    isActive,
-  }: RenderItemParams<FormattedQueueItem>) => (
-    <CardQueueItem
-      item={item}
-      drag={drag}
-      isActive={isActive}
-      onRemove={() => viewModel.handleRemoveFromQueue(item.id)}
-      onPlay={() => viewModel.handlePlayItem(item)}
-      onPress={() => viewModel.handleEpisodePress(item)}
-    />
+  const { handleRemoveFromQueue, handlePlayItem, handleEpisodePress } =
+    viewModel;
+
+  const renderItem = useCallback(
+    ({ item, drag, isActive }: RenderItemParams<FormattedQueueItem>) => (
+      <CardQueueItem
+        item={item}
+        drag={drag}
+        isActive={isActive}
+        onRemove={() => handleRemoveFromQueue(item.id)}
+        onPlay={() => handlePlayItem(item)}
+        onPress={() => handleEpisodePress(item)}
+      />
+    ),
+    [handleRemoveFromQueue, handlePlayItem, handleEpisodePress],
   );
 
   if (viewModel.isEmpty) {
@@ -64,18 +66,24 @@ export const QueueView = ({ onEpisodePress, onPlayItem }: QueueViewProps) => {
             data={otherItems}
             ListHeaderComponent={
               currentlyPlayingItem ? (
+                // Keyed so a new episode here starts with its trash button
+                // closed, rather than inheriting the swipe of the last one
                 <CardQueueItem
+                  key={currentlyPlayingItem.id}
                   item={currentlyPlayingItem}
                   drag={() => {}}
                   isActive={false}
                   onRemove={() =>
                     viewModel.handleRemoveFromQueue(currentlyPlayingItem.id)
                   }
-                  onPlay={() => viewModel.handlePlayItem(currentlyPlayingItem)}
+                  onPlay={() =>
+                    viewModel.handlePlayCurrentItem(currentlyPlayingItem)
+                  }
                   onPress={() =>
                     viewModel.handleEpisodePress(currentlyPlayingItem)
                   }
                   isDraggable={false}
+                  isPlaying={viewModel.isCurrentItemPlaying}
                 />
               ) : undefined
             }

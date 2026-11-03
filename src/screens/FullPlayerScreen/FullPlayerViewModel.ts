@@ -1,8 +1,7 @@
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   usePlaybackController,
   useQueueStore,
-  useToast,
   usePlayerStore,
   useExternalLink,
 } from '../../hooks';
@@ -27,8 +26,7 @@ export const useFullPlayerViewModel = (
 ): FullPlayerViewModel => {
   // Playback controller for actions
   const playbackController = usePlaybackController();
-  const { queue, currentIndex, addToQueue } = useQueueStore();
-  const toast = useToast();
+  const { queue, currentIndex } = useQueueStore();
   // Get stable references from playerStore for proper re-renders
   const {
     currentEpisode: storeCurrentEpisode,
@@ -52,9 +50,22 @@ export const useFullPlayerViewModel = (
     [storeCurrentPodcast, initialPodcast],
   );
 
-  // Load and play the episode when the screen opens
+  // The queue can run out while this screen is open. Without an episode every
+  // control here is dead, so close. The player starts empty when this screen
+  // opens from an episode page, so that only counts once it has held something
+  const hasHeldEpisode = useRef(false);
   useEffect(() => {
-    playbackController.playEpisode(initialEpisode, initialPodcast);
+    if (storeCurrentEpisode) {
+      hasHeldEpisode.current = true;
+    } else if (hasHeldEpisode.current) {
+      onDismiss();
+    }
+  }, [storeCurrentEpisode, onDismiss]);
+
+  // Load and play the episode when the screen opens. Opening from the mini
+  // player after a restart must not start audio, hence the false
+  useEffect(() => {
+    playbackController.playEpisode(initialEpisode, initialPodcast, false);
     // Only re-run when the initial episode ID changes (indicating a different episode was passed in)
     // We use initialEpisode.id instead of episode/podcast/playbackController because:
     // - `playbackController` is recreated on every render and would cause infinite loops
@@ -104,11 +115,6 @@ export const useFullPlayerViewModel = (
 
   const hasUpNext = upNextItem !== null;
 
-  // Check if current episode is already in the queue
-  const isEpisodeInQueue = useMemo(() => {
-    return queue.some((item) => item.episode.id === episode.id);
-  }, [queue, episode.id]);
-
   // Playback control handlers - delegate to PlaybackController
   const handlePlayPause = useCallback(() => {
     playbackController.togglePlayPause();
@@ -136,18 +142,6 @@ export const useFullPlayerViewModel = (
     [playbackController],
   );
 
-  // Add current episode to queue (at end)
-  const handleAddToQueue = useCallback(() => {
-    const queueItem = {
-      id: `${episode.id}-${Date.now()}`,
-      episode,
-      podcast,
-      position: queue.length,
-    };
-    addToQueue(queueItem);
-    toast.showToast(`"${episode.title}" added to queue`);
-  }, [episode, podcast, queue.length, addToQueue, toast]);
-
   const handleDismiss = useCallback(() => {
     onDismiss();
   }, [onDismiss]);
@@ -166,7 +160,6 @@ export const useFullPlayerViewModel = (
     speedDisplay,
     upNextItem,
     hasUpNext,
-    isEpisodeInQueue,
     isPlaying: storeIsPlaying,
     position: storePosition,
     duration: storeDuration,
@@ -176,7 +169,6 @@ export const useFullPlayerViewModel = (
     handleSkipBackward,
     handleSeek,
     handleSpeedChange,
-    handleAddToQueue,
     handleDismiss,
     handleBack,
     handleLinkPress: openUrl,

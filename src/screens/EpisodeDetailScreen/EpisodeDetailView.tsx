@@ -5,7 +5,7 @@ import { EpisodeDetailViewProps } from './EpisodeDetail.types';
 import { useEpisodeDetailViewModel } from './EpisodeDetailViewModel';
 import { styles } from './EpisodeDetail.styles';
 import {
-  StateLoading,
+  SkeletonList,
   EpisodeNotFoundState,
   Toast,
   RichText,
@@ -24,7 +24,7 @@ export const EpisodeDetailView = (props: EpisodeDetailViewProps) => {
 
   // Loading state
   if (viewModel.loading && !viewModel.podcast) {
-    return <StateLoading message='Loading episode...' />;
+    return <SkeletonList count={3} cardHeight={120} />;
   }
 
   // Episode not found

@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { DiscoverView } from '../DiscoverView';
 import { podcastStore } from '../../../stores';
 import { DiscoveryService, RSSService } from '../../../services';
@@ -230,6 +231,57 @@ describe('DiscoverView', () => {
     });
   });
 
+  describe('Trending errors and refresh', () => {
+    const failedFetch = { success: false, error: 'Network down' };
+    const refreshList = async (
+      getByTestId: ReturnType<typeof render>['getByTestId'],
+    ) => {
+      const list = getByTestId('discover-list');
+      await act(async () => {
+        await list.props.refreshControl.props.onRefresh();
+      });
+    };
+
+    it('should show an error with retry when trending fails to load', async () => {
+      (DiscoveryService.getTrendingPodcasts as jest.Mock).mockResolvedValueOnce(
+        failedFetch,
+      );
+
+      const { findByText, getByText } = renderDiscoverView();
+
+      expect(await findByText('Network down')).toBeTruthy();
+      await act(async () => {
+        fireEvent.press(getByText('Try Again'));
+      });
+      expect(DiscoveryService.getTrendingPodcasts).toHaveBeenCalledTimes(2);
+    });
+
+    it('should keep the list and alert when a refresh fails', async () => {
+      const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation();
+      const { findByTestId, getByTestId, queryByText } = renderDiscoverView();
+      await findByTestId('discover-list');
+
+      (DiscoveryService.getTrendingPodcasts as jest.Mock).mockResolvedValueOnce(
+        failedFetch,
+      );
+      await refreshList(getByTestId);
+
+      expect(getByTestId('discover-list')).toBeTruthy();
+      expect(queryByText('Network down')).toBeNull();
+      expect(alertSpy).toHaveBeenCalledWith('Refresh Failed', 'Network down');
+      alertSpy.mockRestore();
+    });
+
+    it('should fetch trending again on refresh', async () => {
+      const { findByTestId, getByTestId } = renderDiscoverView();
+      await findByTestId('discover-list');
+
+      await refreshList(getByTestId);
+
+      expect(DiscoveryService.getTrendingPodcasts).toHaveBeenCalledTimes(2);
+    });
+  });
+
   describe('Loading State', () => {
     it('should display loading state while fetching trending', async () => {
       // Make getTrendingPodcasts hang
@@ -237,9 +289,9 @@ describe('DiscoverView', () => {
         () => new Promise(() => {}),
       );
 
-      const { getByText } = renderDiscoverView();
+      const { getByTestId } = renderDiscoverView();
 
-      expect(getByText('Searching...')).toBeTruthy();
+      expect(getByTestId('skeleton-list')).toBeTruthy();
     });
   });
 });

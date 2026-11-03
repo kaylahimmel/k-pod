@@ -120,9 +120,4 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.danger,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
 });

@@ -55,7 +55,6 @@ export interface FullPlayerViewModel {
   speedDisplay: FormattedSpeed;
   upNextItem: FormattedUpNextItem | null;
   hasUpNext: boolean;
-  isEpisodeInQueue: boolean;
   descriptionSegments: TextSegment[]; // Flat, for the collapsed 2-line state
   descriptionBlocks: RichTextBlock[]; // Styled blocks, for the expanded state
 
@@ -71,7 +70,6 @@ export interface FullPlayerViewModel {
   handleSkipBackward: () => void;
   handleSeek: (position: number) => void;
   handleSpeedChange: (speed: PlaybackSpeed) => void;
-  handleAddToQueue: () => void;
   handleDismiss: () => void;
   handleBack: () => void;
   handleLinkPress: (url: string) => void;

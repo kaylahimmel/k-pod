@@ -3,6 +3,7 @@ import { AudioPlayerService } from '../AudioPlayerService';
 
 // Import expo-audio after mocking
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
+import { Platform } from 'react-native';
 
 jest.unmock('../AudioPlayerService');
 
@@ -85,9 +86,21 @@ describe('AudioPlayerService', () => {
       expect(setAudioModeAsync).toHaveBeenCalledWith({
         shouldPlayInBackground: true,
         playsInSilentMode: true,
-        interruptionMode: 'duckOthers',
+        interruptionMode: 'doNotMix',
         shouldRouteThroughEarpiece: false,
       });
+    });
+
+    it('should keep playing through interruptions on Android', async () => {
+      const originalOS = Platform.OS;
+      Platform.OS = 'android';
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+
+      Platform.OS = originalOS;
+      expect(setAudioModeAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ interruptionMode: 'duckOthers' }),
+      );
     });
 
     it('should only configure audio mode once', async () => {
@@ -191,6 +204,15 @@ describe('AudioPlayerService', () => {
       }
     });
 
+    it('should restore volume left lowered by Android ducking', async () => {
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      mockPlayerInstance.volume = 0.25;
+
+      await AudioPlayerService.play();
+
+      expect(mockPlayerInstance.volume).toBe(1);
+    });
+
     it('should successfully play loaded episode', async () => {
       await AudioPlayerService.loadEpisode(mockEpisode);
       const result = await AudioPlayerService.play();
@@ -219,18 +241,6 @@ describe('AudioPlayerService', () => {
       await AudioPlayerService.play();
 
       expect(mockPlayerInstance.seekTo).not.toHaveBeenCalled();
-    });
-
-    it('should reset volume to full when starting playback', async () => {
-      // expo-audio's Android duck handling can permanently ratchet the
-      // player volume down (duck saves an already-halved volume as the
-      // restore value); resetting on play bounds the damage to one session
-      await AudioPlayerService.loadEpisode(mockEpisode);
-      mockPlayerInstance.volume = 0.25; // simulate a ratcheted duck
-
-      await AudioPlayerService.play();
-
-      expect(mockPlayerInstance.volume).toBe(1);
     });
   });
 
@@ -307,6 +317,36 @@ describe('AudioPlayerService', () => {
   // -----------------------------------------
   // Seek Progress Settling Tests
   // -----------------------------------------
+  describe('native errors', () => {
+    it('reports an error that arrives on the status event', async () => {
+      const onError = jest.fn();
+      AudioPlayerService.setOnError(onError);
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      const listener = mockPlayerInstance.addListener.mock.calls.at(
+        -1,
+      )?.[1] as unknown as (status: { error: string }) => void;
+
+      listener({ error: 'Network unreachable' });
+
+      expect(onError).toHaveBeenCalledWith('Network unreachable');
+      AudioPlayerService.setOnError(null);
+    });
+  });
+
+  describe('unload', () => {
+    it('releases the player so nothing can play or report later', async () => {
+      await AudioPlayerService.loadEpisode(mockEpisode);
+
+      AudioPlayerService.unload();
+
+      expect(
+        mockPlayerInstance.setActiveForLockScreen,
+      ).toHaveBeenLastCalledWith(false);
+      expect(mockPlayerInstance.release).toHaveBeenCalled();
+      expect(AudioPlayerService.getCurrentEpisodeId()).toBeNull();
+    });
+  });
+
   // expo-audio keeps emitting playbackStatusUpdate events with the pre-seek
   // currentTime while a seek is in flight (and they can arrive after the
   // seekTo promise resolves). The service must drop those stale progress
@@ -699,6 +739,17 @@ describe('AudioPlayerService', () => {
       });
 
       expect(progressCallback).toHaveBeenCalledWith(30, 3600);
+    });
+
+    it('should undo a lowered volume on Android', () => {
+      const originalOS = Platform.OS;
+      Platform.OS = 'android';
+      mockPlayerInstance.volume = 0.5;
+
+      statusCallback({ isLoaded: true, currentTime: 30, duration: 3600 });
+
+      Platform.OS = originalOS;
+      expect(mockPlayerInstance.volume).toBe(1);
     });
 
     it('should call end callback when playback finishes', () => {

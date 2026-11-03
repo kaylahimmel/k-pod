@@ -55,6 +55,29 @@ describe('CardQueueItem', () => {
     });
   });
 
+  describe('play button icon', () => {
+    const renderCard = (isPlaying?: boolean) =>
+      render(
+        <CardQueueItem
+          item={mockQueueItem}
+          drag={mockDrag}
+          isActive={false}
+          onRemove={mockOnRemove}
+          onPlay={mockOnPlay}
+          onPress={mockOnPress}
+          isPlaying={isPlaying}
+        />,
+      );
+
+    it('shows pause while its episode is playing', () => {
+      expect(renderCard(true).getByText('pause-circle')).toBeTruthy();
+    });
+
+    it('shows play otherwise', () => {
+      expect(renderCard().getByText('play-circle')).toBeTruthy();
+    });
+  });
+
   it('renders queue item information correctly', () => {
     const { getByText } = render(
       <CardQueueItem

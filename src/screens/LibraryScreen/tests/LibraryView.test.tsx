@@ -55,9 +55,9 @@ describe('LibraryView', () => {
     it('should display loading state when loading with no podcasts', () => {
       podcastStore.setState({ loading: true, podcasts: [] });
 
-      const { getByText } = renderLibraryView();
+      const { getByTestId } = renderLibraryView();
 
-      expect(getByText('Loading podcasts...')).toBeTruthy();
+      expect(getByTestId('skeleton-list')).toBeTruthy();
     });
 
     it('should not show loading state if podcasts already exist', () => {
@@ -66,9 +66,9 @@ describe('LibraryView', () => {
         podcasts: [createMockPodcast()],
       });
 
-      const { queryByText } = renderLibraryView();
+      const { queryByTestId } = renderLibraryView();
 
-      expect(queryByText('Loading podcasts...')).toBeNull();
+      expect(queryByTestId('skeleton-list')).toBeNull();
     });
   });
 

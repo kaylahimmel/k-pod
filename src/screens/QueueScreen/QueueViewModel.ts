@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { useQueueStore, usePlayerStore } from '../../hooks';
-import { queueStore } from '../../stores';
+import { useQueueStore, usePlaybackActions } from '../../hooks';
+import { playerStore, queueStore } from '../../stores';
 import { QueueItem } from '../../models';
 import {
   formatQueueItems,
@@ -20,16 +20,17 @@ export const useQueueViewModel = (
   ) => void,
   onPlayItem?: (item: QueueItem) => void,
 ) => {
-  const {
-    queue,
-    currentIndex,
-    removeFromQueue,
-    reorderQueue,
-    clearQueue,
-    setCurrentIndex,
-  } = useQueueStore();
+  const { queue, currentIndex, reorderQueue, setCurrentIndex } =
+    useQueueStore();
 
-  const { isPlaying } = usePlayerStore();
+  // These also stop the audio when the playing episode leaves the queue
+  const { removeQueueItem, clearQueueAndStop, togglePlayPause } =
+    usePlaybackActions();
+
+  // Selects one value: subscribing to the whole store would re-render this
+  // screen on every position update, which interrupts drag and drop
+  const isPlaying = playerStore((state) => state.isPlaying);
+  const playerEpisodeId = playerStore((state) => state.currentEpisode?.id);
 
   // Formatted data for the view
   const formattedQueue = useMemo(
@@ -67,9 +68,9 @@ export const useQueueViewModel = (
   // Actions
   const handleRemoveFromQueue = useCallback(
     (itemId: string) => {
-      removeFromQueue(itemId);
+      removeQueueItem(itemId);
     },
-    [removeFromQueue],
+    [removeQueueItem],
   );
 
   const handleReorder = useCallback(
@@ -117,22 +118,41 @@ export const useQueueViewModel = (
         {
           text: 'Clear',
           style: 'destructive',
-          onPress: () => clearQueue(),
+          onPress: () => clearQueueAndStop(),
         },
       ],
     );
-  }, [clearQueue]);
+  }, [clearQueueAndStop]);
+
+  // The player can hold a different episode from the card, or none, such as
+  // after the queue is cleared or an episode ends with auto-play off
+  const isCurrentItemLoaded =
+    queue[currentIndex]?.episode.id === playerEpisodeId;
+  const isCurrentItemPlaying = isCurrentItemLoaded && isPlaying;
 
   const handlePlayItem = useCallback(
     (item: FormattedQueueItem) => {
       // Find the actual queue item
       const queueItem = queue.find((q) => q.id === item.id);
       if (queueItem && onPlayItem) {
-        // Call the play handler from usePlaybackController
+        // Call the play handler from usePlaybackActions
         onPlayItem(queueItem);
       }
     },
     [queue, onPlayItem],
+  );
+
+  // The button on the current card: pauses and resumes the player when it
+  // holds this episode, and otherwise starts the episode the card shows
+  const handlePlayCurrentItem = useCallback(
+    (item: FormattedQueueItem) => {
+      if (isCurrentItemLoaded) {
+        togglePlayPause();
+      } else {
+        handlePlayItem(item);
+      }
+    },
+    [isCurrentItemLoaded, togglePlayPause, handlePlayItem],
   );
 
   const handleEpisodePress = useCallback(
@@ -162,6 +182,7 @@ export const useQueueViewModel = (
     queueStats,
     currentIndex,
     isPlaying,
+    isCurrentItemPlaying,
     isEmpty,
     hasUpcoming,
     hasCurrentlyPlaying,
@@ -170,6 +191,7 @@ export const useQueueViewModel = (
     handleReorder,
     handleClearQueue,
     handlePlayItem,
+    handlePlayCurrentItem,
     handleEpisodePress,
     getOriginalQueueItem,
   };

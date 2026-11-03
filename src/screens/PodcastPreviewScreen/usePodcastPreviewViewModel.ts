@@ -38,10 +38,12 @@ export const usePodcastPreviewViewModel = (
   const [episodeError, setEpisodeError] = useState<string | null>(null);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { podcasts, addPodcast } = usePodcastStore();
   const { queue, addToQueue } = useQueueStore();
   const toast = useToast();
+  const { showToast } = toast;
   const subscribedFeedUrls = podcasts.map((p) => p.rssUrl);
 
   // Format podcast for display using presenter
@@ -122,6 +124,38 @@ export const usePodcastPreviewViewModel = (
 
     setIsLoadingEpisodes(false);
   }, [podcast.feedUrl]);
+
+  // Pull-to-refresh: a failure keeps any episodes already on screen
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    const result = await RSSService.transformPodcastFromRSS(podcast.feedUrl);
+    setIsRefreshing(false);
+
+    if (result.success) {
+      const knownIds = new Set(episodes.map((episode) => episode.id));
+      const newEpisodeCount = result.data.episodes.filter(
+        (episode) => !knownIds.has(episode.id),
+      ).length;
+      setEpisodes(result.data.episodes);
+      setEpisodeError(null);
+      // With no earlier list, every episode would count as new
+      if (episodes.length > 0) {
+        showToast(
+          newEpisodeCount > 0
+            ? `Found ${newEpisodeCount} new episode${newEpisodeCount === 1 ? '' : 's'}`
+            : 'No new episodes',
+        );
+      }
+      return;
+    }
+
+    const message = result.error || 'Failed to load episodes';
+    if (episodes.length > 0) {
+      Alert.alert('Refresh Failed', message);
+    } else {
+      setEpisodeError(message);
+    }
+  }, [podcast.feedUrl, episodes, showToast]);
 
   // Subscribe to the podcast
   const handleSubscribe = useCallback(async () => {
@@ -242,6 +276,8 @@ export const usePodcastPreviewViewModel = (
     subscribeButtonState,
     toast,
     handleRetryEpisodes,
+    handleRefresh,
+    isRefreshing,
     handleSubscribe,
     toggleDescription,
     handleEpisodePress,

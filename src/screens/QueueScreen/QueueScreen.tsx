@@ -1,12 +1,13 @@
 import React, { useCallback } from 'react';
 import { QueueScreenProps } from '../../navigation/types';
 import { QueueView } from './QueueView';
-import { usePlaybackController, usePlayerStore } from '../../hooks';
+import { usePlaybackActions } from '../../hooks';
+import { playerStore } from '../../stores';
 import { QueueItem } from '../../models';
 
 export const QueueScreen = ({ navigation }: QueueScreenProps) => {
-  const { playQueueItem } = usePlaybackController();
-  const { currentEpisode } = usePlayerStore();
+  const { playQueueItem } = usePlaybackActions();
+  const currentEpisode = playerStore((state) => state.currentEpisode);
 
   // Navigation handler: Navigate to episode detail or full player
   const handleEpisodePressNav = useCallback(

@@ -2,6 +2,7 @@ import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 import { podcastStore, settingsStore } from '../stores';
 import { ServiceResult } from '../models';
+import { ensureHydrated } from '../utils';
 import { RefreshService } from './RefreshService';
 import { NotificationService } from './NotificationService';
 
@@ -12,28 +13,8 @@ export const BACKGROUND_REFRESH_TASK = 'k-pod-background-refresh';
 // not a schedule.
 const MINIMUM_INTERVAL_MINUTES = 15;
 
-/** The slice of zustand's persist API this file needs */
-interface PersistApi {
-  hasHydrated: () => boolean;
-  rehydrate: () => Promise<void> | void;
-}
-
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Unknown error';
-}
-
-/**
- * Waits for a persisted store to load from AsyncStorage.
- *
- * When the OS launches the app headlessly for a background task, no screen
- * mounts, and the stores may still be empty when the task starts. Refreshing
- * then would see zero podcasts, and any store write would overwrite the
- * user's saved data with that empty state (the same bug historyStore once
- * had). `rehydrate()` resolves once loading finishes, including on failure.
- */
-async function ensureHydrated(persist: PersistApi): Promise<void> {
-  if (persist.hasHydrated()) return;
-  await persist.rehydrate();
 }
 
 /**
@@ -42,6 +23,8 @@ async function ensureHydrated(persist: PersistApi): Promise<void> {
  */
 export async function runBackgroundRefresh(): Promise<BackgroundTask.BackgroundTaskResult> {
   try {
+    // The OS can launch the app headlessly for this task, so no screen has
+    // mounted and the stores may still be empty
     await Promise.all([
       ensureHydrated(podcastStore.persist),
       ensureHydrated(settingsStore.persist),

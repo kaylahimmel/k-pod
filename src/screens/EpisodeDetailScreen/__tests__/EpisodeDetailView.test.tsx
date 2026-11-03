@@ -70,9 +70,9 @@ describe('EpisodeDetailView', () => {
     it('should display loading state when loading', () => {
       podcastStore.setState({ loading: true, podcasts: [] });
 
-      const { getByText } = renderEpisodeDetailView();
+      const { getByTestId } = renderEpisodeDetailView();
 
-      expect(getByText('Loading episode...')).toBeTruthy();
+      expect(getByTestId('skeleton-list')).toBeTruthy();
     });
   });
 

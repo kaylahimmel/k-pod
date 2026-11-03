@@ -265,29 +265,15 @@ describe('FullPlayerView', () => {
     });
   });
 
-  describe('Add to Queue', () => {
+  describe('Queue membership', () => {
     it('should automatically add episode to queue when FullPlayer opens', async () => {
-      const { queryByText } = await renderView();
-
-      // Episode should be auto-added to queue, so button should be hidden
-      expect(queryByText('Add to Queue')).toBeNull();
+      await renderView();
 
       // Verify episode was automatically added
       const queue = queueStore.getState().queue;
       expect(queue).toHaveLength(1);
       expect(queue[0].episode.id).toBe('player-episode-1');
       expect(queue[0].podcast.id).toBe('player-podcast-1');
-    });
-
-    it('should not show Add to Queue button since episode is auto-added', async () => {
-      const { queryByText } = await renderView();
-
-      // Button should not be visible because episode is auto-added
-      expect(queryByText('Add to Queue')).toBeNull();
-
-      // Verify episode is in queue
-      const queue = queueStore.getState().queue;
-      expect(queue).toHaveLength(1);
     });
 
     it('should keep episode in queue when already there', async () => {
@@ -300,34 +286,23 @@ describe('FullPlayerView', () => {
       };
       queueStore.setState({ queue: [existingQueueItem], currentIndex: 0 });
 
-      const { queryByText } = await renderView();
-
-      // Button should not be visible because episode is already in queue
-      expect(queryByText('Add to Queue')).toBeNull();
+      await renderView();
 
       // Verify queue still has the episode (not duplicated)
       const queue = queueStore.getState().queue;
       expect(queue).toHaveLength(1);
       expect(queue[0].episode.id).toBe('player-episode-1');
     });
+  });
 
-    it('should not show Add to Queue button when episode is already in queue', async () => {
-      // Pre-add the episode to the queue
-      queueStore.setState({
-        queue: [
-          {
-            id: 'existing-queue-item',
-            episode: MOCK_PLAYER_EPISODE,
-            podcast: MOCK_PLAYER_PODCAST,
-            position: 0,
-          },
-        ],
-        currentIndex: 0,
-      });
-
+  describe('Removed episode', () => {
+    it('should not offer Add to Queue after the episode leaves the queue', async () => {
       const { queryByText } = await renderView();
 
-      // Button should not be visible when episode is already in queue
+      await act(async () => {
+        queueStore.getState().clearQueue();
+      });
+
       expect(queryByText('Add to Queue')).toBeNull();
     });
   });

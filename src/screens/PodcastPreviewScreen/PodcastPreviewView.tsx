@@ -3,6 +3,7 @@ import {
   View,
   Text,
   ScrollView,
+  RefreshControl,
   Image,
   TouchableOpacity,
   ActivityIndicator,
@@ -15,7 +16,7 @@ import {
 import { usePodcastPreviewViewModel } from './usePodcastPreviewViewModel';
 import {
   Toast,
-  StateLoading,
+  SkeletonList,
   StateError,
   StateEmpty,
   CardEpisode,
@@ -68,7 +69,7 @@ export const PodcastPreviewView = ({
 
   const renderEpisodesContent = () => {
     if (viewModel.isLoadingEpisodes) {
-      return <StateLoading message='Loading episodes...' />;
+      return <SkeletonList count={4} cardHeight={100} />;
     }
 
     if (viewModel.hasEpisodeError) {
@@ -110,6 +111,14 @@ export const PodcastPreviewView = ({
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        testID='podcast-preview-scroll'
+        refreshControl={
+          <RefreshControl
+            refreshing={viewModel.isRefreshing}
+            onRefresh={viewModel.handleRefresh}
+            tintColor={COLORS.primary}
+          />
+        }
       >
         {/* Header with artwork and info */}
         <View style={styles.header}>

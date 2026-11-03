@@ -1,6 +1,6 @@
 import React, { act } from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { ActivityIndicator, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import { ListeningHistoryView } from '../ListeningHistoryView';
 import { createMockListeningHistoryItems } from '../../../__mocks__';
 import { historyStore } from '../../../stores';
@@ -31,9 +31,9 @@ describe('ListeningHistoryView', () => {
     it('should show loading indicator until the history store hydrates', async () => {
       historyStore.setState({ history: [], hasHydrated: false });
 
-      const { UNSAFE_queryByType } = await renderView();
+      const { getByTestId } = await renderView();
 
-      expect(UNSAFE_queryByType(ActivityIndicator)).toBeTruthy();
+      expect(getByTestId('skeleton-list')).toBeTruthy();
     });
   });
 

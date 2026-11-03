@@ -1,12 +1,17 @@
 import { FormattedHistoryItem } from '../../models';
 import React from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 
 import { CompletedEpisodesViewProps } from './CompletedEpisodes.types';
 import { useCompletedEpisodesViewModel } from './CompletedEpisodesViewModel';
 import { styles } from './CompletedEpisodes.styles';
-import { CardHistoryItem, EpisodeActionsMenu, Toast } from '../../components';
-import { COLORS } from '../../constants';
+import {
+  CardHistoryItem,
+  EpisodeActionsMenu,
+  SkeletonList,
+  StateEmpty,
+  Toast,
+} from '../../components';
 
 export const CompletedEpisodesView = ({
   podcastId,
@@ -16,19 +21,18 @@ export const CompletedEpisodesView = ({
   if (viewModel.isLoading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size='large' color={COLORS.primary} />
+        <SkeletonList count={6} cardHeight={72} />
       </View>
     );
   }
 
   if (viewModel.isEmpty) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyTitle}>No Completed Episodes</Text>
-        <Text style={styles.emptyText}>
-          Episodes you finish from this podcast will appear here.
-        </Text>
-      </View>
+      <StateEmpty
+        icon='checkmark-circle-outline'
+        title='No Completed Episodes'
+        message='Episodes you finish from this podcast will appear here.'
+      />
     );
   }
 

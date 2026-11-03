@@ -17,7 +17,7 @@ import {
   CardEpisode,
   HeaderPodcast,
   EpisodesEmpty,
-  EpisodeLoadingState,
+  SkeletonList,
   EpisodeNotFoundState,
   Toast,
 } from '../../components';
@@ -32,7 +32,7 @@ export const PodcastDetailView = (props: PodcastDetailViewProps) => {
 
   // Loading state
   if (viewModel.loading && !viewModel.podcast) {
-    return <EpisodeLoadingState />;
+    return <SkeletonList count={6} cardHeight={100} />;
   }
 
   // Podcast not found

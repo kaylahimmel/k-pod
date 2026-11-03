@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { ActivityIndicator, Alert, Linking } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { SettingsView } from '../SettingsView';
 import { podcastStore, settingsStore } from '../../../stores';
 import { createMockAppSettings, createMockPodcast } from '../../../__mocks__';
@@ -29,9 +29,9 @@ describe('SettingsView', () => {
     it('should display loading indicator when loading', () => {
       settingsStore.setState({ loading: true });
 
-      const { UNSAFE_queryByType } = renderSettingsView();
+      const { getByTestId } = renderSettingsView();
 
-      expect(UNSAFE_queryByType(ActivityIndicator)).toBeTruthy();
+      expect(getByTestId('skeleton-list')).toBeTruthy();
     });
   });
 

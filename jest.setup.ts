@@ -114,6 +114,7 @@ jest.mock('./src/services/AudioPlayerService', () => ({
     play: jest.fn().mockResolvedValue({ success: true }),
     pause: jest.fn().mockResolvedValue({ success: true }),
     stop: jest.fn().mockResolvedValue({ success: true }),
+    unload: jest.fn(),
     seek: jest.fn().mockResolvedValue({ success: true }),
     setPlaybackSpeed: jest.fn().mockResolvedValue({ success: true }),
     skipForward: jest.fn().mockResolvedValue({ success: true }),

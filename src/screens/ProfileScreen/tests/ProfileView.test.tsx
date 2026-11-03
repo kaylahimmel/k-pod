@@ -2,7 +2,7 @@ import React, { act } from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { ProfileView } from '../ProfileView';
-import { podcastStore, authStore } from '../../../stores';
+import { podcastStore, authStore, historyStore } from '../../../stores';
 import { AuthService } from '../../../services';
 import { createMockPodcasts } from '../../../__mocks__';
 
@@ -161,10 +161,13 @@ describe('ProfileView', () => {
   });
 
   describe('Loading State', () => {
-    it('should show loading indicator while loading', async () => {
-      // The loading state is brief, but we can test that the component renders
-      const { toJSON } = await renderProfileView();
-      expect(toJSON()).toBeTruthy();
+    it('should show a skeleton until the history store hydrates', async () => {
+      historyStore.setState({ hasHydrated: false });
+
+      const { getByTestId } = await renderProfileView();
+
+      expect(getByTestId('skeleton-list')).toBeTruthy();
+      historyStore.setState({ hasHydrated: true });
     });
   });
 });
