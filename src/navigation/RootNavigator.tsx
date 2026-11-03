@@ -22,7 +22,8 @@ export const RootNavigator = () => {
 
   // Single owner of the AudioPlayerService callbacks (progress, auto-advance,
   // history). Must be mounted exactly once, here at the app root - screens
-  // use usePlaybackController, which never touches the callback slots
+  // use usePlaybackController or usePlaybackActions, which never touch the
+  // callback slots
   usePlaybackEvents();
 
   // Subscribe to Firebase auth state changes on mount.

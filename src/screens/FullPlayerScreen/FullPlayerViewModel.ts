@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   usePlaybackController,
   useQueueStore,
@@ -49,6 +49,18 @@ export const useFullPlayerViewModel = (
     () => storeCurrentPodcast || initialPodcast,
     [storeCurrentPodcast, initialPodcast],
   );
+
+  // The queue can run out while this screen is open. Without an episode every
+  // control here is dead, so close. The player starts empty when this screen
+  // opens from an episode page, so that only counts once it has held something
+  const hasHeldEpisode = useRef(false);
+  useEffect(() => {
+    if (storeCurrentEpisode) {
+      hasHeldEpisode.current = true;
+    } else if (hasHeldEpisode.current) {
+      onDismiss();
+    }
+  }, [storeCurrentEpisode, onDismiss]);
 
   // Load and play the episode when the screen opens. Opening from the mini
   // player after a restart must not start audio, hence the false

@@ -3,6 +3,7 @@ import { AudioPlayerService } from '../AudioPlayerService';
 
 // Import expo-audio after mocking
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
+import { Platform } from 'react-native';
 
 jest.unmock('../AudioPlayerService');
 
@@ -88,6 +89,18 @@ describe('AudioPlayerService', () => {
         interruptionMode: 'doNotMix',
         shouldRouteThroughEarpiece: false,
       });
+    });
+
+    it('should keep playing through interruptions on Android', async () => {
+      const originalOS = Platform.OS;
+      Platform.OS = 'android';
+
+      await AudioPlayerService.loadEpisode(mockEpisode);
+
+      Platform.OS = originalOS;
+      expect(setAudioModeAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ interruptionMode: 'duckOthers' }),
+      );
     });
 
     it('should only configure audio mode once', async () => {
@@ -189,6 +202,15 @@ describe('AudioPlayerService', () => {
       if (!result.success) {
         expect(result.error).toBe('No episode loaded');
       }
+    });
+
+    it('should restore volume left lowered by Android ducking', async () => {
+      await AudioPlayerService.loadEpisode(mockEpisode);
+      mockPlayerInstance.volume = 0.25;
+
+      await AudioPlayerService.play();
+
+      expect(mockPlayerInstance.volume).toBe(1);
     });
 
     it('should successfully play loaded episode', async () => {
@@ -717,6 +739,17 @@ describe('AudioPlayerService', () => {
       });
 
       expect(progressCallback).toHaveBeenCalledWith(30, 3600);
+    });
+
+    it('should undo a lowered volume on Android', () => {
+      const originalOS = Platform.OS;
+      Platform.OS = 'android';
+      mockPlayerInstance.volume = 0.5;
+
+      statusCallback({ isLoaded: true, currentTime: 30, duration: 3600 });
+
+      Platform.OS = originalOS;
+      expect(mockPlayerInstance.volume).toBe(1);
     });
 
     it('should call end callback when playback finishes', () => {

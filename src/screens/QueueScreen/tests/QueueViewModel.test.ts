@@ -27,6 +27,19 @@ describe('QueueViewModel', () => {
     });
   });
 
+  it('should not re-render on playback position updates', () => {
+    let renderCount = 0;
+    renderHook(() => {
+      renderCount++;
+      return useQueueViewModel();
+    });
+    const rendersBefore = renderCount;
+
+    act(() => playerStore.setState({ position: 42 }));
+
+    expect(renderCount).toBe(rendersBefore);
+  });
+
   describe('State Flags', () => {
     it('should return isEmpty true when queue is empty', () => {
       const { result } = renderHook(() => useQueueViewModel());

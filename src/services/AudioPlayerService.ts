@@ -5,6 +5,7 @@ import {
   createAudioPlayer,
   setAudioModeAsync,
 } from 'expo-audio';
+import { Platform } from 'react-native';
 import {
   PlaybackSpeed,
   PlaybackStatus,
@@ -62,10 +63,11 @@ async function configureAudioMode(): Promise<ServiceResult<void>> {
     await setAudioModeAsync({
       shouldPlayInBackground: true,
       playsInSilentMode: true,
-      // A podcast is speech, so it takes over audio instead of playing over
-      // lowered music. On Android, a brief sound like a notification pauses
-      // the episode until audio focus returns, rather than lowering its volume
-      interruptionMode: 'doNotMix',
+      // A podcast is speech, so on iOS it takes over audio instead of playing
+      // over lowered music. Android uses duckOthers so a notification plays
+      // over the episode: doNotMix pauses it there, and it may not resume.
+      // This also lets other apps' audio keep playing, lowered, on Android
+      interruptionMode: Platform.OS === 'android' ? 'duckOthers' : 'doNotMix',
       shouldRouteThroughEarpiece: false,
     });
     isAudioModeConfigured = true;
@@ -97,6 +99,17 @@ function handlePlaybackStatusUpdate(status: StatusWithError): void {
 
   if (!status.isLoaded) {
     return;
+  }
+
+  // expo-audio's Android duck handling saves the halved volume as the value to
+  // restore, so each notification would leave the episode quieter. Undoing it
+  // here limits a duck to about a second, until the next status event
+  if (
+    Platform.OS === 'android' &&
+    playerInstance &&
+    playerInstance.volume < 1
+  ) {
+    playerInstance.volume = 1;
   }
 
   // Drop stale progress from before an in-flight seek landed (far from the
@@ -249,6 +262,8 @@ async function play(): Promise<ServiceResult<void>> {
       await seek(0);
     }
 
+    // A paused player sends no status events, so undo any duck here too
+    playerInstance.volume = 1;
     playerInstance.play();
     return { success: true, data: undefined };
   } catch (error) {

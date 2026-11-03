@@ -43,6 +43,7 @@ export const usePodcastPreviewViewModel = (
   const { podcasts, addPodcast } = usePodcastStore();
   const { queue, addToQueue } = useQueueStore();
   const toast = useToast();
+  const { showToast } = toast;
   const subscribedFeedUrls = podcasts.map((p) => p.rssUrl);
 
   // Format podcast for display using presenter
@@ -131,8 +132,20 @@ export const usePodcastPreviewViewModel = (
     setIsRefreshing(false);
 
     if (result.success) {
+      const knownIds = new Set(episodes.map((episode) => episode.id));
+      const newEpisodeCount = result.data.episodes.filter(
+        (episode) => !knownIds.has(episode.id),
+      ).length;
       setEpisodes(result.data.episodes);
       setEpisodeError(null);
+      // With no earlier list, every episode would count as new
+      if (episodes.length > 0) {
+        showToast(
+          newEpisodeCount > 0
+            ? `Found ${newEpisodeCount} new episode${newEpisodeCount === 1 ? '' : 's'}`
+            : 'No new episodes',
+        );
+      }
       return;
     }
 
@@ -142,7 +155,7 @@ export const usePodcastPreviewViewModel = (
     } else {
       setEpisodeError(message);
     }
-  }, [podcast.feedUrl, episodes.length]);
+  }, [podcast.feedUrl, episodes, showToast]);
 
   // Subscribe to the podcast
   const handleSubscribe = useCallback(async () => {

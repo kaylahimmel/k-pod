@@ -38,6 +38,19 @@ describe('useFullPlayerViewModel', () => {
     });
   });
 
+  it('should close when the player empties', async () => {
+    renderHook(() =>
+      useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),
+    );
+    await act(async () => {});
+    expect(playerStore.getState().currentEpisode?.id).toBe('episode-1');
+    expect(mockOnDismiss).not.toHaveBeenCalled();
+
+    act(() => playerStore.setState({ currentEpisode: null }));
+
+    expect(mockOnDismiss).toHaveBeenCalledTimes(1);
+  });
+
   it('should return episode and podcast from props', async () => {
     const { result } = renderHook(() =>
       useFullPlayerViewModel(mockEpisode, mockPodcast, mockOnDismiss),

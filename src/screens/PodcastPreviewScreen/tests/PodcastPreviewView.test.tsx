@@ -6,11 +6,25 @@ import { RSSService } from '../../../services';
 import { podcastStore } from '../../../stores';
 import {
   createMockDiscoveryPodcast,
+  createMockEpisode,
   createMockPodcast,
   MOCK_PREVIEW_DISCOVERY_PODCAST,
 } from '../../../__mocks__';
 
 // Mock the services
+// The shared useToast mock makes a new showToast on every call
+const mockShowToast = jest.fn();
+jest.mock('../../../hooks/useToast', () => ({
+  useToast: () => ({
+    message: '',
+    visible: false,
+    translateY: { setValue: jest.fn() },
+    opacity: { setValue: jest.fn() },
+    showToast: mockShowToast,
+    dismissToast: jest.fn(),
+  }),
+}));
+
 jest.mock('../../../services', () => ({
   RSSService: {
     transformPodcastFromRSS: jest.fn(),
@@ -209,6 +223,46 @@ describe('PodcastPreviewView', () => {
       await refresh(getByTestId);
 
       expect(RSSService.transformPodcastFromRSS).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not count episodes as new when there was no list', async () => {
+      (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValueOnce(
+        failedFetch,
+      );
+      const { findByText, getByTestId } = renderPodcastPreviewView();
+      await findByText('Network down');
+
+      await refresh(getByTestId);
+
+      expect(mockShowToast).not.toHaveBeenCalled();
+    });
+
+    it('should say when a refresh finds nothing new', async () => {
+      const { findByText, getByTestId } = renderPodcastPreviewView();
+      await findByText('Recent Episodes');
+
+      await refresh(getByTestId);
+
+      expect(mockShowToast).toHaveBeenCalledWith('No new episodes');
+    });
+
+    it('should count the new episodes a refresh finds', async () => {
+      const { findByText, getByTestId } = renderPodcastPreviewView();
+      await findByText('Recent Episodes');
+
+      (RSSService.transformPodcastFromRSS as jest.Mock).mockResolvedValueOnce({
+        success: true,
+        data: {
+          ...mockRSSPodcast,
+          episodes: [
+            createMockEpisode({ id: 'brand-new-episode' }),
+            ...mockRSSPodcast.episodes,
+          ],
+        },
+      });
+      await refresh(getByTestId);
+
+      expect(mockShowToast).toHaveBeenCalledWith('Found 1 new episode');
     });
 
     it('should keep the episodes and alert when a refresh fails', async () => {

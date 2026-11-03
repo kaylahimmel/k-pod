@@ -302,6 +302,91 @@ describe('QueueView', () => {
     });
   });
 
+  describe('Currently playing button', () => {
+    const episode = createMockEpisode({ id: 'playing-episode' });
+
+    const renderWithPlayerState = (isPlaying: boolean) => {
+      queueStore.setState({
+        queue: [
+          createMockQueueItem({ id: 'q1', episode }),
+          createMockQueueItem({ id: 'q2' }),
+        ],
+        currentIndex: 0,
+      });
+      playerStore.setState({
+        currentEpisode: episode,
+        currentPodcast: createMockPodcast(),
+        isPlaying,
+      });
+      return render(<QueueView onPlayItem={jest.fn()} />);
+    };
+
+    it('should show pause only on the playing card', () => {
+      const { getByText, getAllByText } = renderWithPlayerState(true);
+
+      expect(getByText('pause-circle')).toBeTruthy();
+      expect(getAllByText('play-circle')).toHaveLength(1);
+    });
+
+    it('should play the card when the player holds a different episode', async () => {
+      const onPlayItem = jest.fn();
+      const cardItem = createMockQueueItem({
+        id: 'q1',
+        episode: createMockEpisode({ id: 'next-episode' }),
+      });
+      queueStore.setState({ queue: [cardItem], currentIndex: 0 });
+      playerStore.setState({
+        currentEpisode: episode,
+        currentPodcast: createMockPodcast(),
+        isPlaying: true,
+      });
+      const { getByText, queryByText } = render(
+        <QueueView onPlayItem={onPlayItem} />,
+      );
+
+      expect(queryByText('pause-circle')).toBeNull();
+      await act(async () => {
+        fireEvent.press(getByText('play-circle'));
+      });
+
+      expect(onPlayItem).toHaveBeenCalledWith(cardItem);
+      expect(playerStore.getState().isPlaying).toBe(true);
+    });
+
+    it('should play the card when the player is empty', async () => {
+      const onPlayItem = jest.fn();
+      const cardItem = createMockQueueItem({ id: 'q1' });
+      queueStore.setState({ queue: [cardItem], currentIndex: 0 });
+      const { getByText } = render(<QueueView onPlayItem={onPlayItem} />);
+
+      await act(async () => {
+        fireEvent.press(getByText('play-circle'));
+      });
+
+      expect(onPlayItem).toHaveBeenCalledWith(cardItem);
+    });
+
+    it('should pause the episode when tapped while playing', async () => {
+      const { getByText } = renderWithPlayerState(true);
+
+      await act(async () => {
+        fireEvent.press(getByText('pause-circle'));
+      });
+
+      expect(playerStore.getState().isPlaying).toBe(false);
+    });
+
+    it('should resume the episode when tapped while paused', async () => {
+      const { getAllByText } = renderWithPlayerState(false);
+
+      await act(async () => {
+        fireEvent.press(getAllByText('play-circle')[0]);
+      });
+
+      expect(playerStore.getState().isPlaying).toBe(true);
+    });
+  });
+
   describe('Reorder', () => {
     it('should reorder queue items', () => {
       queueStore.setState({

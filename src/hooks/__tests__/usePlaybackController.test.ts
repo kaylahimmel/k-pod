@@ -2,11 +2,13 @@ import { Alert } from 'react-native';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import {
   restoreLastEpisode,
+  usePlaybackActions,
   usePlaybackController,
   usePlaybackEvents,
 } from '../usePlaybackController';
 import { AudioPlayerService } from '../../services/AudioPlayerService';
 import { StorageService } from '../../services';
+import { QueueItem } from '../../models';
 import { playerStore } from '../../stores/playerStore';
 import { queueStore } from '../../stores/queueStore';
 import { settingsStore } from '../../stores/settingsStore';
@@ -18,6 +20,21 @@ import {
 } from '../../__mocks__';
 
 type PlaybackActions = ReturnType<typeof usePlaybackController>;
+
+describe('usePlaybackActions', () => {
+  it('should not re-render on playback position updates', () => {
+    let renderCount = 0;
+    renderHook(() => {
+      renderCount++;
+      return usePlaybackActions();
+    });
+    const rendersBefore = renderCount;
+
+    act(() => playerStore.setState({ position: 42 }));
+
+    expect(renderCount).toBe(rendersBefore);
+  });
+});
 
 describe('usePlaybackController', () => {
   const mockEpisode = createMockEpisode({
@@ -209,6 +226,36 @@ describe('usePlaybackController', () => {
   });
 
   describe('togglePlayPause', () => {
+    it('should ignore taps while an episode is loading', async () => {
+      let finishLoad: (result: { success: boolean }) => void = () => {};
+      (AudioPlayerService.loadEpisode as jest.Mock).mockReturnValue(
+        new Promise((resolve) => {
+          finishLoad = resolve;
+        }),
+      );
+      const { result } = renderHook(() => usePlaybackController());
+
+      let loading: Promise<void> = Promise.resolve();
+      act(() => {
+        loading = result.current.playEpisode(
+          createMockEpisode({ id: 'loading-episode' }),
+          mockPodcast,
+        );
+      });
+      const loadingEpisodeShown = playerStore.getState().currentEpisode?.id;
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+
+      expect(loadingEpisodeShown).toBe('loading-episode');
+      expect(AudioPlayerService.play).not.toHaveBeenCalled();
+
+      await act(async () => {
+        finishLoad({ success: true });
+        await loading;
+      });
+    });
+
     it('should pause when playing', async () => {
       const { result } = renderHook(() => usePlaybackController());
 
@@ -415,7 +462,222 @@ describe('usePlaybackController', () => {
     });
   });
 
+  describe('Overlapping loads', () => {
+    const current = createMockQueueItem({ id: 'q1', episode: mockEpisode });
+    const next = createMockQueueItem({ id: 'q2', episode: mockEpisode2 });
+
+    // A load that stays in flight until the test finishes it
+    const holdNextLoad = () => {
+      let finish: () => void = () => {};
+      (AudioPlayerService.loadEpisode as jest.Mock).mockReturnValueOnce(
+        new Promise((resolve) => {
+          finish = () => resolve({ success: true });
+        }),
+      );
+      return () => finish();
+    };
+
+    it('should cancel an in-flight load when stopping for the next episode', async () => {
+      const finishFirstLoad = holdNextLoad();
+      const { result } = renderHook(() => usePlaybackController());
+      let firstPlay: Promise<void> = Promise.resolve();
+      act(() => {
+        firstPlay = result.current.playEpisode(mockEpisode, mockPodcast);
+      });
+      act(() => {
+        queueStore.getState().setQueue([next]);
+        queueStore.getState().setCurrentIndex(0);
+      });
+
+      await act(async () => {
+        await result.current.stopCurrentAndPlayNext();
+      });
+      await act(async () => {
+        finishFirstLoad();
+        await firstPlay;
+      });
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenLastCalledWith(
+        mockEpisode2,
+        next.podcast,
+      );
+      expect(playerStore.getState().currentEpisode?.id).toBe('episode-2');
+      expect(AudioPlayerService.play).toHaveBeenCalledTimes(1);
+    });
+
+    it('should keep ignoring taps until the newest load finishes', async () => {
+      act(() => {
+        queueStore.getState().setQueue([current, next]);
+        queueStore.getState().setCurrentIndex(0);
+      });
+      const finishFirstLoad = holdNextLoad();
+      const { result } = renderHook(() => usePlaybackController());
+      let firstPlay: Promise<void> = Promise.resolve();
+      act(() => {
+        firstPlay = result.current.playEpisode(mockEpisode, mockPodcast);
+        playerStore.setState({ isPlaying: true });
+      });
+      const finishSecondLoad = holdNextLoad();
+      // Not awaited: removing starts the second load, which is being held
+      let removing: Promise<void> = Promise.resolve();
+      await act(async () => {
+        removing = result.current.removeQueueItem('q1');
+      });
+      await act(async () => {
+        finishFirstLoad();
+        await firstPlay;
+      });
+
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+
+      expect(AudioPlayerService.play).not.toHaveBeenCalled();
+
+      await act(async () => {
+        finishSecondLoad();
+        await removing;
+      });
+    });
+
+    it('should play after a load that was only for a seek or skip', async () => {
+      act(() => {
+        queueStore.getState().setQueue([current]);
+        queueStore.getState().setCurrentIndex(0);
+      });
+      await act(async () => {
+        await restoreLastEpisode();
+      });
+      const finishLoad = holdNextLoad();
+      const { result } = renderHook(() => usePlaybackController());
+      let skipping: Promise<void> = Promise.resolve();
+      act(() => {
+        skipping = result.current.skipForward();
+      });
+
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+      await act(async () => {
+        finishLoad();
+        await skipping;
+      });
+
+      expect(AudioPlayerService.play).toHaveBeenCalledTimes(1);
+      expect(playerStore.getState().isPlaying).toBe(true);
+    });
+  });
+
+  describe('Finishing with nothing to auto-play', () => {
+    const finishEpisode = async (queue: QueueItem[], autoPlayNext: boolean) => {
+      const { result } = renderHook(() => usePlaybackController());
+      await act(async () => {
+        await result.current.playEpisode(mockEpisode, mockPodcast);
+      });
+      act(() => {
+        queueStore.getState().setQueue(queue);
+        queueStore.getState().setCurrentIndex(0);
+        settingsStore.getState().updateSetting('autoPlayNext', autoPlayNext);
+      });
+      let onEnd: () => void = () => {};
+      (AudioPlayerService.setOnEnd as jest.Mock).mockImplementation(
+        (callback) => {
+          if (callback) onEnd = callback;
+        },
+      );
+      renderHook(() => usePlaybackEvents());
+      (AudioPlayerService.loadEpisode as jest.Mock).mockClear();
+      await act(async () => {
+        onEnd();
+      });
+    };
+    const current = createMockQueueItem({ id: 'q1', episode: mockEpisode });
+    const next = createMockQueueItem({ id: 'q2', episode: mockEpisode2 });
+
+    it('should show the next episode paused with auto-play off', async () => {
+      await finishEpisode([current, next], false);
+
+      await waitFor(() => {
+        expect(playerStore.getState().currentEpisode?.id).toBe('episode-2');
+      });
+      expect(playerStore.getState().isPlaying).toBe(false);
+      expect(AudioPlayerService.loadEpisode).not.toHaveBeenCalled();
+      expect(AudioPlayerService.unload).toHaveBeenCalled();
+    });
+
+    it('should load the shown episode on the next play tap', async () => {
+      await finishEpisode([current, next], false);
+      await waitFor(() => {
+        expect(playerStore.getState().currentEpisode?.id).toBe('episode-2');
+      });
+      const { result } = renderHook(() => usePlaybackController());
+
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
+        mockEpisode2,
+        next.podcast,
+      );
+    });
+
+    it('should empty the player when the queue runs out', async () => {
+      await finishEpisode([current], true);
+
+      await waitFor(() => {
+        expect(playerStore.getState().currentEpisode).toBeNull();
+      });
+      expect(playerStore.getState().position).toBe(0);
+      expect(AudioPlayerService.unload).toHaveBeenCalled();
+    });
+  });
+
   describe('Auto-advance', () => {
+    it('should ignore play taps while the next episode loads', async () => {
+      const current = createMockQueueItem({ id: 'q1', episode: mockEpisode });
+      const next = createMockQueueItem({ id: 'q2', episode: mockEpisode2 });
+      const { result } = renderHook(() => usePlaybackController());
+      await act(async () => {
+        await result.current.playEpisode(mockEpisode, mockPodcast);
+      });
+      act(() => {
+        queueStore.getState().setQueue([current, next]);
+        queueStore.getState().setCurrentIndex(0);
+        settingsStore.getState().updateSetting('autoPlayNext', true);
+      });
+      let onEnd: () => void = () => {};
+      (AudioPlayerService.setOnEnd as jest.Mock).mockImplementation(
+        (callback) => {
+          if (callback) onEnd = callback;
+        },
+      );
+      renderHook(() => usePlaybackEvents());
+      let finishLoad: (result: { success: boolean }) => void = () => {};
+      (AudioPlayerService.loadEpisode as jest.Mock).mockReturnValue(
+        new Promise((resolve) => {
+          finishLoad = resolve;
+        }),
+      );
+      (AudioPlayerService.play as jest.Mock).mockClear();
+
+      await act(async () => {
+        onEnd();
+      });
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+
+      expect(AudioPlayerService.play).not.toHaveBeenCalled();
+
+      await act(async () => {
+        finishLoad({ success: true });
+      });
+      await waitFor(() => {
+        expect(AudioPlayerService.play).toHaveBeenCalledTimes(1);
+      });
+    });
+
     it('should auto-advance to next episode when current episode ends', async () => {
       // Set up queue with two episodes
       const queueItem1 = createMockQueueItem({
@@ -1100,6 +1362,137 @@ describe('usePlaybackController', () => {
 
       expect(AudioPlayerService.loadEpisode).toHaveBeenCalledTimes(2);
       expect(playerStore.getState().isPlaying).toBe(true);
+    });
+  });
+
+  describe('Automatic playback retries', () => {
+    let alertSpy: jest.SpyInstance;
+    let onError: (error: string) => void = () => {};
+    let onProgress: (position: number, duration: number) => void = () => {};
+
+    const fail = () => act(() => onError('host not found'));
+    const waitForRetry = () =>
+      act(async () => {
+        await jest.advanceTimersByTimeAsync(1000);
+      });
+
+    const startPlaying = async () => {
+      renderHook(() => usePlaybackEvents());
+      const { result } = renderHook(() => usePlaybackController());
+      await act(async () => {
+        await result.current.playEpisode(mockEpisode, mockPodcast);
+      });
+      (AudioPlayerService.loadEpisode as jest.Mock).mockClear();
+      return result;
+    };
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      alertSpy = jest.spyOn(Alert, 'alert').mockImplementation();
+      jest.spyOn(console, 'error').mockImplementation();
+      (AudioPlayerService.setOnError as jest.Mock).mockImplementation(
+        (callback) => {
+          if (callback) onError = callback;
+        },
+      );
+      (AudioPlayerService.setOnProgress as jest.Mock).mockImplementation(
+        (callback) => {
+          if (callback) onProgress = callback;
+        },
+      );
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+      jest.restoreAllMocks();
+    });
+
+    it('should reload the episode quietly after a failure', async () => {
+      await startPlaying();
+
+      fail();
+      expect(AudioPlayerService.loadEpisode).not.toHaveBeenCalled();
+      await waitForRetry();
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledTimes(1);
+      expect(alertSpy).not.toHaveBeenCalled();
+      expect(playerStore.getState().isPlaying).toBe(true);
+    });
+
+    it('should show the alert once the retries run out', async () => {
+      await startPlaying();
+
+      fail();
+      await waitForRetry();
+      fail();
+      await waitForRetry();
+      expect(alertSpy).not.toHaveBeenCalled();
+      fail();
+      await waitForRetry();
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledTimes(2);
+      expect(alertSpy).toHaveBeenCalledTimes(1);
+      expect(playerStore.getState().isPlaying).toBe(false);
+    });
+
+    it('should get fresh retries once audio has played', async () => {
+      await startPlaying();
+
+      for (let attempt = 0; attempt < 3; attempt++) {
+        fail();
+        await waitForRetry();
+        act(() => onProgress(30, 3600));
+      }
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledTimes(3);
+      expect(alertSpy).not.toHaveBeenCalled();
+    });
+
+    it('should retry a failure that arrives during the load', async () => {
+      renderHook(() => usePlaybackEvents());
+      const { result } = renderHook(() => usePlaybackController());
+      (AudioPlayerService.loadEpisode as jest.Mock).mockReturnValueOnce(
+        new Promise(() => {}),
+      );
+      act(() => {
+        result.current.playEpisode(mockEpisode, mockPodcast);
+      });
+      (AudioPlayerService.loadEpisode as jest.Mock).mockClear();
+
+      fail();
+      await waitForRetry();
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledTimes(1);
+      expect(alertSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not retry a paused episode', async () => {
+      const result = await startPlaying();
+      await act(async () => {
+        await result.current.togglePlayPause();
+      });
+
+      fail();
+      await waitForRetry();
+
+      expect(AudioPlayerService.loadEpisode).not.toHaveBeenCalled();
+      expect(alertSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should drop the retry if the user switches episodes', async () => {
+      const result = await startPlaying();
+
+      fail();
+      await act(async () => {
+        await result.current.playEpisode(mockEpisode2, mockPodcast);
+      });
+      await waitForRetry();
+
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledTimes(1);
+      expect(AudioPlayerService.loadEpisode).toHaveBeenCalledWith(
+        mockEpisode2,
+        mockPodcast,
+      );
     });
   });
 

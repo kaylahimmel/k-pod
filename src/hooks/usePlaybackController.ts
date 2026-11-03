@@ -25,12 +25,41 @@ import { ensureHydrated } from '../utils';
 // Guards against concurrent episode loads from any screen
 let isLoadingEpisode = false;
 
+// Which load holds that guard. A cancelled load finishes later than the load
+// that replaced it, and must not release the guard out from under it
+let currentLoadClaim = 0;
+
+// Whether the current load starts playback when it finishes. A load for a
+// seek, skip or speed change doesn't, so a play tap during one is remembered
+let loadStartsPlayback = false;
+let playAfterLoad = false;
+
+function claimLoad(startsPlayback = true): number {
+  isLoadingEpisode = true;
+  loadStartsPlayback = startsPlayback;
+  playAfterLoad = false;
+  return ++currentLoadClaim;
+}
+
+function releaseLoad(claim: number): void {
+  if (claim === currentLoadClaim) {
+    isLoadingEpisode = false;
+  }
+}
+
 // Last position written to storage, to throttle saves to every ~10 seconds
 let lastSavedPosition = 0;
 
 // Bumped whenever a new load starts or the current one stops being wanted, so
 // a load still awaiting something can tell it has been replaced
 let loadGeneration = 0;
+
+// Podcast audio reaches its file through redirects that can pick a different
+// server on each request, so a server a network can't look up may work on the
+// next try. Failures in a row retry this many times before the alert
+const MAX_PLAYBACK_RETRIES = 2;
+const PLAYBACK_RETRY_DELAY_MS = 1000;
+let playbackRetryCount = 0;
 
 const PLAYBACK_ERROR_MESSAGE =
   "This episode couldn't be played. Check your connection and try again.";
@@ -127,19 +156,20 @@ async function loadAndPlay(episode: Episode, podcast: Podcast): Promise<void> {
 }
 
 /**
- * Loads and plays the current episode when it has no audio loaded. Shared by
- * every play control, so they all recover from a restart or a failed load.
+ * Loads and plays an episode that has no audio loaded, holding the load guard
+ * so play controls can't act on it halfway. Shared by every play control,
+ * so they all recover from a restart or a failed load.
  */
 async function startAwaitingEpisode(
   episode: Episode,
   podcast: Podcast,
 ): Promise<void> {
   if (isLoadingEpisode) return;
-  isLoadingEpisode = true;
+  const claim = claimLoad();
   try {
     await loadAndPlay(episode, podcast);
   } finally {
-    isLoadingEpisode = false;
+    releaseLoad(claim);
   }
 }
 
@@ -161,11 +191,17 @@ async function ensureEpisodeLoaded(): Promise<void> {
   if (!isAwaitingLoad() || isLoadingEpisode) return;
   if (!currentEpisode || !currentPodcast) return;
 
-  isLoadingEpisode = true;
+  const claim = claimLoad(false);
   try {
-    await loadAtSavedPosition(currentEpisode, currentPodcast);
+    const loaded = await loadAtSavedPosition(currentEpisode, currentPodcast);
+    if (loaded && playAfterLoad) {
+      const playResult = await AudioPlayerService.play();
+      if (playResult.success) {
+        playerStore.getState().setIsPlaying(true);
+      }
+    }
   } finally {
-    isLoadingEpisode = false;
+    releaseLoad(claim);
   }
 }
 
@@ -247,12 +283,50 @@ async function saveAndStopCurrent(): Promise<void> {
 }
 
 /**
+ * Loads the episode again after a short wait. Cancels whatever load the failed
+ * player was part of, and does nothing if the user moves on during the wait,
+ * since anything that starts or removes an episode changes loadGeneration.
+ */
+function retryAfterDelay(episode: Episode, podcast: Podcast): void {
+  const generation = cancelInFlightLoad();
+  setTimeout(() => {
+    if (generation === loadGeneration) {
+      startAwaitingEpisode(episode, podcast);
+    }
+  }, PLAYBACK_RETRY_DELAY_MS);
+}
+
+/**
+ * Moves the player to the queue's current item after an episode finishes with
+ * nothing to auto-play, so the mini player matches the Now Playing card
+ * instead of holding a finished episode that plays again on the next tap.
+ * Audio stays unloaded until the first tap.
+ */
+async function showQueueCurrentPaused(): Promise<void> {
+  const generation = cancelInFlightLoad();
+  AudioPlayerService.unload();
+
+  const { queue, currentIndex } = queueStore.getState();
+  const item = queue[currentIndex];
+  if (!item) {
+    clearPlayer();
+    return;
+  }
+
+  const savedPosition = await StorageService.loadPlaybackPosition(
+    item.episode.id,
+  );
+  if (generation !== loadGeneration) return; // The user started something else
+  showPaused(item.episode, item.podcast, savedPosition);
+}
+
+/**
  * PlaybackEvents hook
  * Registers the AudioPlayerService progress/end/error callbacks and routes
  * them into the stores (progress tracking, auto-advance, history).
  *
  * Mount this exactly ONCE at the app root (RootNavigator). Screens must use
- * usePlaybackController instead - if a screen registered these callbacks,
+ * usePlaybackController or usePlaybackActions - if a screen registered these callbacks,
  * its unmount would clear them for the whole app (last-writer-wins slots).
  */
 export const usePlaybackEvents = () => {
@@ -269,6 +343,11 @@ export const usePlaybackEvents = () => {
   const handleProgress = useCallback(
     (newPosition: number, newDuration: number) => {
       setPosition(newPosition);
+
+      // A failed player never reports a duration, so this one is working
+      if (newDuration > 0) {
+        playbackRetryCount = 0;
+      }
 
       // Get fresh duration to avoid stale closure
       const { duration: freshDuration, currentEpisode: freshEpisode } =
@@ -333,6 +412,7 @@ export const usePlaybackEvents = () => {
       if (completedItemId) {
         removeFromQueue(completedItemId);
       }
+      showQueueCurrentPaused();
       return;
     }
 
@@ -343,7 +423,7 @@ export const usePlaybackEvents = () => {
 
       // Start loading and playing the next episode (shared path, so the
       // saved-position resume applies to auto-advance too)
-      loadAndPlay(nextItem.episode, nextItem.podcast);
+      startAwaitingEpisode(nextItem.episode, nextItem.podcast);
 
       // Remove the completed episode synchronously after starting the load
       // This ensures correct queue state and index management
@@ -355,6 +435,7 @@ export const usePlaybackEvents = () => {
       if (completedItemId) {
         removeFromQueue(completedItemId);
       }
+      showQueueCurrentPaused();
     }
   }, [settings.autoPlayNext, addToHistory, setIsPlaying]);
 
@@ -363,11 +444,30 @@ export const usePlaybackEvents = () => {
    */
   const handleError = useCallback(
     (error: string) => {
-      console.error('Playback error:', error);
-      Alert.alert('Playback Error', PLAYBACK_ERROR_MESSAGE);
+      const { currentEpisode, currentPodcast, isPlaying } =
+        playerStore.getState();
+      // A failure can arrive before the load reaches setIsPlaying(true)
+      const wantsPlayback =
+        isPlaying || (isLoadingEpisode && loadStartsPlayback);
+
       setIsPlaying(false);
       // The player is dead, so the next play tap has to load it again
-      restoredEpisodeId = playerStore.getState().currentEpisode?.id ?? null;
+      restoredEpisodeId = currentEpisode?.id ?? null;
+
+      if (
+        currentEpisode &&
+        currentPodcast &&
+        wantsPlayback &&
+        playbackRetryCount < MAX_PLAYBACK_RETRIES
+      ) {
+        playbackRetryCount++;
+        retryAfterDelay(currentEpisode, currentPodcast);
+        return;
+      }
+
+      playbackRetryCount = 0;
+      console.error('Playback error:', error);
+      Alert.alert('Playback Error', PLAYBACK_ERROR_MESSAGE);
     },
     [setIsPlaying],
   );
@@ -416,33 +516,18 @@ export const usePlaybackEvents = () => {
 };
 
 /**
- * PlaybackController Hook
- * Exposes playback state and actions to screens. Safe to mount from any
- * number of screens at once: it does NOT own the AudioPlayerService
- * callbacks (see usePlaybackEvents, mounted once at the app root).
+ * PlaybackActions Hook
+ * The playback actions without the playback state. Use this on screens that
+ * don't show live position: usePlaybackController re-renders its screen every
+ * second during playback, which interrupts QueueScreen's drag and drop.
  */
-export const usePlaybackController = () => {
-  const {
-    currentEpisode,
-    currentPodcast,
-    isPlaying,
-    position,
-    duration,
-    speed,
-    setCurrentPodcast,
-    setIsPlaying,
-    setPosition,
-    setSpeed,
-  } = usePlayerStore();
-
-  const {
-    queue,
-    currentIndex,
-    setCurrentIndex,
-    setQueue,
-    removeFromQueue,
-    clearQueue,
-  } = useQueueStore();
+export const usePlaybackActions = () => {
+  // Read once instead of subscribing: store actions never change, and a
+  // subscription would re-render the caller on every position update
+  const { setCurrentPodcast, setIsPlaying, setPosition, setSpeed } =
+    playerStore.getState();
+  const { setCurrentIndex, setQueue, removeFromQueue, clearQueue } =
+    queueStore.getState();
 
   const { settings } = useSettingsStore();
 
@@ -493,7 +578,8 @@ export const usePlaybackController = () => {
         return; // Don't reload the same episode
       }
 
-      isLoadingEpisode = true;
+      const claim = claimLoad();
+      playbackRetryCount = 0;
 
       try {
         // Save the current episode's position before switching
@@ -535,7 +621,7 @@ export const usePlaybackController = () => {
         // saved position, apply speed, play
         await loadAndPlay(episode, podcast);
       } finally {
-        isLoadingEpisode = false;
+        releaseLoad(claim);
       }
     },
     [setCurrentIndex, setQueue, setCurrentPodcast],
@@ -556,6 +642,17 @@ export const usePlaybackController = () => {
     } = playerStore.getState();
 
     if (!freshEpisode) return;
+
+    // Acting during a load could start the old player, or start the new one
+    // before its saved position is applied. Most loads start playback when
+    // they finish, and one for a seek or skip does it because of this flag
+    if (isLoadingEpisode) {
+      if (!loadStartsPlayback) playAfterLoad = true;
+      return;
+    }
+
+    // A tap is a fresh attempt, with its own retries
+    playbackRetryCount = 0;
 
     // First play after a restart: there's no audio loaded to resume yet
     if (isAwaitingLoad() && freshPodcast) {
@@ -722,7 +819,8 @@ export const usePlaybackController = () => {
         return;
       }
 
-      isLoadingEpisode = true;
+      const claim = claimLoad();
+      playbackRetryCount = 0;
 
       try {
         // Save the current episode's position before switching
@@ -748,7 +846,7 @@ export const usePlaybackController = () => {
         // saved position, apply speed, play
         await loadAndPlay(queueItem.episode, queueItem.podcast);
       } finally {
-        isLoadingEpisode = false;
+        releaseLoad(claim);
       }
     },
     [setQueue, setCurrentIndex, setCurrentPodcast],
@@ -814,6 +912,9 @@ export const usePlaybackController = () => {
    * stale closure values in other callbacks
    */
   const stopCurrentAndPlayNext = useCallback(async () => {
+    // A load still in flight would otherwise finish and start this episode
+    cancelInFlightLoad();
+
     // Stop current playback
     AudioPlayerService.unload();
 
@@ -829,7 +930,7 @@ export const usePlaybackController = () => {
 
       // Shared load path: optimistic store updates, load, resume from
       // saved position, apply speed, play
-      await loadAndPlay(nextItem.episode, nextItem.podcast);
+      await startAwaitingEpisode(nextItem.episode, nextItem.podcast);
     } else {
       // No next episode - reset player state
       clearPlayer();
@@ -837,15 +938,6 @@ export const usePlaybackController = () => {
   }, []);
 
   return {
-    // State
-    currentEpisode,
-    currentPodcast,
-    isPlaying,
-    position,
-    duration,
-    speed,
-
-    // Actions
     playEpisode,
     togglePlayPause,
     seek,
@@ -858,6 +950,40 @@ export const usePlaybackController = () => {
     stopCurrentAndPlayNext,
     removeQueueItem,
     clearQueueAndStop,
+  };
+};
+
+/**
+ * PlaybackController Hook
+ * Exposes playback state and actions to screens. Safe to mount from any
+ * number of screens at once: it does NOT own the AudioPlayerService
+ * callbacks (see usePlaybackEvents, mounted once at the app root).
+ */
+export const usePlaybackController = () => {
+  const {
+    currentEpisode,
+    currentPodcast,
+    isPlaying,
+    position,
+    duration,
+    speed,
+  } = usePlayerStore();
+
+  const { queue, currentIndex } = useQueueStore();
+
+  const actions = usePlaybackActions();
+
+  return {
+    // State
+    currentEpisode,
+    currentPodcast,
+    isPlaying,
+    position,
+    duration,
+    speed,
+
+    // Actions
+    ...actions,
 
     // Queue info
     hasNext: currentIndex < queue.length - 1,
