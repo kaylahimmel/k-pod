@@ -7,3 +7,4 @@ export * from './useToast';
 export * from './usePlaybackController';
 export * from './useHistoryStore';
 export * from './useExternalLink';
+export * from './useThemeColors';

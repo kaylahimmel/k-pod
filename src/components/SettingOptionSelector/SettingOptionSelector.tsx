@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS } from '../../constants';
+import { ThemeColors } from '../../constants';
+import { useThemedStyles } from '../../hooks';
 
 interface Option<T extends number> {
   value: T;
@@ -30,81 +31,86 @@ export const SettingOptionSelector = <T extends number>({
   options,
   selectedValue,
   onSelect,
-}: SettingOptionSelectorProps<T>) => (
-  <View>
-    <View style={styles.labelRow}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.currentValue}>{currentValueLabel}</Text>
-    </View>
-    <View style={styles.optionsContainer}>
-      {options.map((option) => (
-        <TouchableOpacity
-          key={option.value}
-          style={[
-            styles.optionButton,
-            selectedValue === option.value && styles.optionButtonSelected,
-          ]}
-          onPress={() => onSelect(option.value)}
-        >
-          <Text
+}: SettingOptionSelectorProps<T>) => {
+  const styles = useThemedStyles(createStyles);
+  return (
+    <View>
+      <View style={styles.labelRow}>
+        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.currentValue}>{currentValueLabel}</Text>
+      </View>
+      <View style={styles.optionsContainer}>
+        {options.map((option) => (
+          <TouchableOpacity
+            key={option.value}
             style={[
-              styles.optionButtonText,
-              selectedValue === option.value && styles.optionButtonTextSelected,
+              styles.optionButton,
+              selectedValue === option.value && styles.optionButtonSelected,
             ]}
+            onPress={() => onSelect(option.value)}
           >
-            {option.label}
-          </Text>
-        </TouchableOpacity>
-      ))}
+            <Text
+              style={[
+                styles.optionButtonText,
+                selectedValue === option.value &&
+                  styles.optionButtonTextSelected,
+              ]}
+            >
+              {option.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
-const styles = StyleSheet.create({
-  labelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    minHeight: 48,
-  },
-  label: {
-    fontSize: 16,
-    color: COLORS.textPrimary,
-    flex: 1,
-  },
-  currentValue: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-  },
-  optionsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  optionButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: COLORS.background,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  optionButtonSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  optionButtonText: {
-    fontSize: 14,
-    color: COLORS.textPrimary,
-  },
-  optionButtonTextSelected: {
-    color: COLORS.cardBackground,
-    fontWeight: '600',
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    labelRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      minHeight: 48,
+    },
+    label: {
+      fontSize: 16,
+      color: colors.textPrimary,
+      flex: 1,
+    },
+    currentValue: {
+      fontSize: 16,
+      color: colors.textSecondary,
+    },
+    optionsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      gap: 8,
+    },
+    optionButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 8,
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    optionButtonSelected: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
+    },
+    optionButtonText: {
+      fontSize: 14,
+      color: colors.textPrimary,
+    },
+    optionButtonTextSelected: {
+      color: colors.onPrimary,
+      fontWeight: '600',
+    },
+  });

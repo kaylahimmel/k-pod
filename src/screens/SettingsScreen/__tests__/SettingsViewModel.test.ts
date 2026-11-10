@@ -3,6 +3,7 @@ import { useSettingsViewModel } from '../SettingsViewModel';
 import { settingsStore } from '../../../stores';
 import { unregisterBackgroundRefresh } from '../../../services';
 import { Alert, Linking } from 'react-native';
+import { createMockAppSettings } from '../../../__mocks__';
 
 // Mock the stores
 jest.mock('../../../stores', () => ({
@@ -25,25 +26,23 @@ describe('useSettingsViewModel', () => {
   const mockUpdateSetting = jest.fn();
   const mockResetSettings = jest.fn();
 
-  const defaultSettings = {
-    autoPlayNext: true,
-    defaultSpeed: 1,
-    downloadOnWiFi: true,
-    skipForwardSeconds: 30,
-    skipBackwardSeconds: 15,
-    newEpisodeNotifications: false,
-    mutedNotificationPodcastIds: [] as string[],
-  };
+  const defaultSettings = createMockAppSettings();
 
   const mockSettingsState = (
     overrides: Partial<typeof defaultSettings> = {},
   ) => {
-    (settingsStore as unknown as jest.Mock).mockReturnValue({
+    const state = {
       settings: { ...defaultSettings, ...overrides },
       loading: false,
       updateSetting: mockUpdateSetting,
       resetSettings: mockResetSettings,
-    });
+    };
+    // Honor selectors: useIsDarkMode() reads one field with
+    // settingsStore((state) => ...), while useSettingsStore() takes it all
+    (settingsStore as unknown as jest.Mock).mockImplementation(
+      (selector?: (s: typeof state) => unknown) =>
+        selector ? selector(state) : state,
+    );
   };
 
   beforeEach(() => {
@@ -253,6 +252,40 @@ describe('useSettingsViewModel', () => {
       });
 
       expect(Linking.openURL).toHaveBeenCalledWith('https://example.com/terms');
+    });
+  });
+  describe('dark mode', () => {
+    // Jest's React Native reports a light phone, so 'system' reads as light
+    it('should show the switch off while following a light phone', () => {
+      const { result } = renderHook(() => useSettingsViewModel());
+
+      expect(result.current.isDarkMode).toBe(false);
+    });
+
+    it('should save dark when the switch is turned on', () => {
+      const { result } = renderHook(() => useSettingsViewModel());
+
+      act(() => {
+        result.current.handleToggleDarkMode();
+      });
+
+      expect(mockUpdateSetting).toHaveBeenCalledWith('themePreference', 'dark');
+    });
+
+    it('should save light, not system, when the switch is turned off', () => {
+      mockSettingsState({ themePreference: 'dark' });
+      const { result } = renderHook(() => useSettingsViewModel());
+
+      expect(result.current.isDarkMode).toBe(true);
+
+      act(() => {
+        result.current.handleToggleDarkMode();
+      });
+
+      expect(mockUpdateSetting).toHaveBeenCalledWith(
+        'themePreference',
+        'light',
+      );
     });
   });
 });

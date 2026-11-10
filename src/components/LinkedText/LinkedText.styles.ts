@@ -1,9 +1,10 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../constants';
+import { ThemeColors } from '../../constants';
 
-export const styles = StyleSheet.create({
-  link: {
-    color: COLORS.primary,
-    textDecorationLine: 'underline',
-  },
-});
+export const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    link: {
+      color: colors.primary,
+      textDecorationLine: 'underline',
+    },
+  });

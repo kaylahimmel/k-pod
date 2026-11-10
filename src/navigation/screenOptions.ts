@@ -1,6 +1,6 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../constants';
+import { ThemeColors } from '../constants';
 
 /**
  * Common header button styles for consistent UI across screens
@@ -32,56 +32,48 @@ export const headerButtonStyles = StyleSheet.create({
 });
 
 /**
- * Common header button configuration
+ * Icon size for header buttons. Their color depends on the theme, so header
+ * buttons read colors.primary from useThemeColors()
  */
-export const HEADER_BUTTON_CONFIG = {
-  iconSize: 28,
-  color: COLORS.primary,
-};
+export const HEADER_ICON_SIZE = 28;
 
-/**
- * Default screen options for all stack navigators
- * Provides consistent header styling across the app
- */
-export const defaultScreenOptions: NativeStackNavigationOptions = {
+// Header and background colors shared by stack screens and modals
+const getSharedHeaderOptions = (
+  colors: ThemeColors,
+): NativeStackNavigationOptions => ({
   headerStyle: {
-    backgroundColor: COLORS.cardBackground,
+    backgroundColor: colors.cardBackground,
   },
-  headerTintColor: COLORS.primary,
+  headerTintColor: colors.primary,
   headerTitleStyle: {
     fontWeight: '600',
     fontSize: 17,
   },
+  contentStyle: {
+    backgroundColor: colors.background,
+  },
+});
+
+/**
+ * Default screen options for all stack navigators
+ * Provides consistent header styling across the app. A function of the
+ * palette so headers switch with the theme; navigators call it through
+ * useThemedStyles(getDefaultScreenOptions)
+ */
+export const getDefaultScreenOptions = (
+  colors: ThemeColors,
+): NativeStackNavigationOptions => ({
+  ...getSharedHeaderOptions(colors),
   headerBackButtonDisplayMode: 'minimal',
   headerShadowVisible: true,
-  contentStyle: {
-    backgroundColor: COLORS.background,
-  },
-};
+});
 
 /**
  * Modal screen options for full-screen modals
  */
-export const modalScreenOptions: NativeStackNavigationOptions = {
+export const getModalScreenOptions = (
+  colors: ThemeColors,
+): NativeStackNavigationOptions => ({
+  ...getSharedHeaderOptions(colors),
   presentation: 'modal',
-  headerStyle: {
-    backgroundColor: COLORS.cardBackground,
-  },
-  headerTintColor: COLORS.primary,
-  headerTitleStyle: {
-    fontWeight: '600',
-    fontSize: 17,
-  },
-  contentStyle: {
-    backgroundColor: COLORS.background,
-  },
-};
-
-/**
- * Transparent header options for screens with custom headers
- */
-export const transparentHeaderOptions: NativeStackNavigationOptions = {
-  headerTransparent: true,
-  headerTintColor: COLORS.cardBackground,
-  headerTitle: '',
-};
+});

@@ -2,15 +2,17 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useProfileViewModel } from './ProfileViewModel';
-import { styles } from './Profile.styles';
+import { createStyles } from './Profile.styles';
 import { SkeletonList } from '../../components';
-import { COLORS } from '../../constants';
 import { ProfileViewProps } from './Profile.types';
+import { useThemeColors, useThemedStyles } from '../../hooks';
 
 export const ProfileView = ({
   onViewHistoryPress,
   onChangePasswordPress,
 }: ProfileViewProps) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(createStyles);
   const viewModel = useProfileViewModel(
     onViewHistoryPress,
     onChangePasswordPress,
@@ -80,7 +82,7 @@ export const ProfileView = ({
           <Ionicons
             name='chevron-forward'
             size={20}
-            color={COLORS.textSecondary}
+            color={colors.textSecondary}
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -91,7 +93,7 @@ export const ProfileView = ({
           <Ionicons
             name='chevron-forward'
             size={20}
-            color={COLORS.textSecondary}
+            color={colors.textSecondary}
           />
         </TouchableOpacity>
         <TouchableOpacity

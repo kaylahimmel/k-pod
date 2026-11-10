@@ -1,7 +1,8 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ProfileStackParamList } from '../types';
-import { defaultScreenOptions } from '../screenOptions';
+import { getDefaultScreenOptions } from '../screenOptions';
+import { useThemedStyles } from '../../hooks';
 import { ProfileScreen } from '../../screens/ProfileScreen';
 import { ListeningHistoryScreen } from '../../screens/ListeningHistoryScreen';
 import { ChangePasswordScreen } from '../../screens/ChangePasswordScreen';
@@ -10,8 +11,9 @@ import { NavigationBackButton } from '../../components';
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
 export const ProfileStackNavigator = () => {
+  const screenOptions = useThemedStyles(getDefaultScreenOptions);
   return (
-    <Stack.Navigator screenOptions={defaultScreenOptions}>
+    <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen
         name='Profile'
         component={ProfileScreen}

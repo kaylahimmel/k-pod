@@ -7,3 +7,4 @@ export { SettingsStackNavigator } from './SettingsStackNavigator/SettingsStackNa
 export { TabNavigator } from './TabNavigator';
 export * from './types';
 export * from './screenOptions';
+export * from './navigationTheme';

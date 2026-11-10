@@ -3,8 +3,9 @@ import { Pressable, StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {
   headerButtonStyles,
-  HEADER_BUTTON_CONFIG,
+  HEADER_ICON_SIZE,
 } from '../../navigation/screenOptions';
+import { useThemeColors } from '../../hooks';
 
 interface HeaderButtonProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -23,21 +24,24 @@ export const HeaderButton = ({
   onPress,
   accessibilityLabel,
   style,
-  iconSize = HEADER_BUTTON_CONFIG.iconSize,
-  color = HEADER_BUTTON_CONFIG.color,
-}: HeaderButtonProps) => (
-  <Pressable
-    onPress={onPress}
-    accessibilityLabel={accessibilityLabel}
-    style={({ pressed }) => [
-      headerButtonStyles.base,
-      { opacity: pressed ? 0.6 : 1 },
-      style,
-    ]}
-  >
-    <Ionicons name={icon} size={iconSize} color={color} />
-  </Pressable>
-);
+  iconSize = HEADER_ICON_SIZE,
+  color,
+}: HeaderButtonProps) => {
+  const colors = useThemeColors();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityLabel={accessibilityLabel}
+      style={({ pressed }) => [
+        headerButtonStyles.base,
+        { opacity: pressed ? 0.6 : 1 },
+        style,
+      ]}
+    >
+      <Ionicons name={icon} size={iconSize} color={color ?? colors.primary} />
+    </Pressable>
+  );
+};
 
 interface HeaderBackButtonProps {
   onPress: () => void;

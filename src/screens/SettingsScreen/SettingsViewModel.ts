@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Alert, Linking } from 'react-native';
 import { PlaybackSpeed } from '../../models';
-import { useSettingsStore, useToast } from '../../hooks';
+import { useIsDarkMode, useSettingsStore, useToast } from '../../hooks';
 import { unregisterBackgroundRefresh } from '../../services';
 import {
   formatSettings,
@@ -25,6 +25,8 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
   const { settings, loading, updateSetting, resetSettings } =
     useSettingsStore();
   const toast = useToast();
+  // The current look, whether it came from the phone or from this switch
+  const isDarkMode = useIsDarkMode();
 
   // Formatted settings from presenter
   const formattedSettings = useMemo(() => formatSettings(settings), [settings]);
@@ -75,6 +77,15 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
     },
     [updateSetting],
   );
+
+  /**
+   * Flips the look and saves the choice. Saving 'light' or 'dark' (never
+   * 'system') means the app stops following the phone until the user taps
+   * Reset All Settings, which puts the preference back to 'system'
+   */
+  const handleToggleDarkMode = useCallback(() => {
+    updateSetting('themePreference', isDarkMode ? 'light' : 'dark');
+  }, [isDarkMode, updateSetting]);
 
   /**
    * Resets all settings to defaults with confirmation
@@ -131,12 +142,14 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
     skipForwardOptions: SKIP_FORWARD_OPTIONS,
     skipBackwardOptions: SKIP_BACKWARD_OPTIONS,
     appVersion,
+    isDarkMode,
     toast,
     handleToggleAutoPlayNext,
     handleSpeedChange,
     handleToggleDownloadOnWiFi,
     handleSkipForwardChange,
     handleSkipBackwardChange,
+    handleToggleDarkMode,
     handleResetSettings,
     handlePrivacyPolicyPress,
     handleTermsOfServicePress,

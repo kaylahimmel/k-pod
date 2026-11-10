@@ -9,6 +9,7 @@ import {
 } from '../SettingsPresenter';
 import { AppSettings } from '../../../models';
 import Constants from 'expo-constants';
+import { createMockAppSettings } from '../../../__mocks__';
 
 // expoConfig is a non-configurable getter on the real module, so jest.spyOn
 // can't wrap it - mock the module and mutate the plain object instead
@@ -82,15 +83,10 @@ describe('SettingsPresenter', () => {
 
   describe('formatSettings', () => {
     it('should format all settings correctly', () => {
-      const settings: AppSettings = {
-        autoPlayNext: true,
+      const settings: AppSettings = createMockAppSettings({
         defaultSpeed: 1.5,
         downloadOnWiFi: false,
-        skipForwardSeconds: 30,
-        skipBackwardSeconds: 15,
-        newEpisodeNotifications: false,
-        mutedNotificationPodcastIds: [],
-      };
+      });
 
       const formatted = formatSettings(settings);
 
@@ -105,15 +101,7 @@ describe('SettingsPresenter', () => {
     });
 
     it('should handle default settings', () => {
-      const defaultSettings: AppSettings = {
-        autoPlayNext: true,
-        defaultSpeed: 1,
-        downloadOnWiFi: true,
-        skipForwardSeconds: 30,
-        skipBackwardSeconds: 15,
-        newEpisodeNotifications: false,
-        mutedNotificationPodcastIds: [],
-      };
+      const defaultSettings: AppSettings = createMockAppSettings();
 
       const formatted = formatSettings(defaultSettings);
 

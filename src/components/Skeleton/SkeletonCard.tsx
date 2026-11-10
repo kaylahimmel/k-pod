@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Animated, DimensionValue, StyleProp, ViewStyle } from 'react-native';
-import { styles } from './Skeleton.styles';
+import { createStyles } from './Skeleton.styles';
+import { useThemedStyles } from '../../hooks';
 
 interface SkeletonCardProps {
   width?: DimensionValue;
@@ -24,6 +25,7 @@ export const SkeletonCard = ({
   borderRadius = 8,
   style,
 }: SkeletonCardProps) => {
+  const styles = useThemedStyles(createStyles);
   // useState, not useRef(...).current: see useToast for why
   const [shimmerAnim] = useState(() => new Animated.Value(0));
 

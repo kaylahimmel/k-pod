@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { SettingToggleRow } from '../SettingToggleRow';
-import { COLORS } from '../../../constants';
+import { LIGHT_COLORS } from '../../../constants';
 
 describe('SettingToggleRow', () => {
   const mockOnValueChange = jest.fn();
@@ -58,8 +58,8 @@ describe('SettingToggleRow', () => {
     );
 
     const { props } = getByTestId('setting-toggle-switch');
-    expect(props.thumbTintColor).toBe(COLORS.cardBackground);
-    expect(props.onTintColor).toBe(COLORS.primary);
+    expect(props.thumbTintColor).toBe(LIGHT_COLORS.onPrimary);
+    expect(props.onTintColor).toBe(LIGHT_COLORS.primary);
   });
 
   it('renders without last item styling by default', () => {

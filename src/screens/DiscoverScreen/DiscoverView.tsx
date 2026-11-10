@@ -18,8 +18,8 @@ import {
   StateNoResults,
   Toast,
 } from '../../components';
-import { COLORS } from '../../constants';
-import { styles } from './Discover.styles';
+import { createStyles } from './Discover.styles';
+import { useThemeColors, useThemedStyles } from '../../hooks';
 
 interface DiscoverViewProps {
   onPodcastPress: (podcast: DiscoveryPodcast) => void;
@@ -29,13 +29,18 @@ interface SectionHeaderProps {
   title: string;
 }
 
-const SectionHeader = ({ title }: SectionHeaderProps) => (
-  <View style={styles.sectionHeader}>
-    <Text style={styles.sectionTitle}>{title}</Text>
-  </View>
-);
+const SectionHeader = ({ title }: SectionHeaderProps) => {
+  const styles = useThemedStyles(createStyles);
+  return (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+    </View>
+  );
+};
 
 export const DiscoverView = ({ onPodcastPress }: DiscoverViewProps) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(createStyles);
   const viewModel = useDiscoverViewModel(onPodcastPress);
 
   const renderPodcastCard = ({ item }: { item: FormattedDiscoveryPodcast }) => {
@@ -214,7 +219,7 @@ export const DiscoverView = ({ onPodcastPress }: DiscoverViewProps) => {
               <RefreshControl
                 refreshing={viewModel.isRefreshing}
                 onRefresh={viewModel.handleRefresh}
-                tintColor={COLORS.primary}
+                tintColor={colors.primary}
               />
             }
           />

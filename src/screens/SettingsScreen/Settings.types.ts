@@ -33,12 +33,14 @@ export interface SettingsViewModelReturn {
   skipForwardOptions: SkipOption[];
   skipBackwardOptions: SkipOption[];
   appVersion: string;
+  isDarkMode: boolean;
   toast: UseToastReturn;
   handleToggleAutoPlayNext: () => void;
   handleSpeedChange: (speed: PlaybackSpeed) => void;
   handleToggleDownloadOnWiFi: () => void;
   handleSkipForwardChange: (seconds: number) => void;
   handleSkipBackwardChange: (seconds: number) => void;
+  handleToggleDarkMode: () => void;
   handleResetSettings: () => void;
   handlePrivacyPolicyPress: () => void;
   handleTermsOfServicePress: () => void;

@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { COLORS } from '../../constants';
 import { FormattedQueueItem } from '../../screens/QueueScreen/Queue.types';
-import { styles } from './CardQueueItem.styles';
+import { createStyles } from './CardQueueItem.styles';
 import { OpacityDecorator } from 'react-native-draggable-flatlist';
+import { useThemeColors, useThemedStyles } from '../../hooks';
 
 interface CardQueueItemProps {
   item: FormattedQueueItem;
@@ -28,6 +28,8 @@ export const CardQueueItem = ({
   isDraggable = true,
   isPlaying = false,
 }: CardQueueItemProps) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(createStyles);
   const renderRightActions = (
     _progress: Animated.AnimatedInterpolation<number>,
     dragX: Animated.AnimatedInterpolation<number>,
@@ -45,7 +47,7 @@ export const CardQueueItem = ({
         activeOpacity={0.8}
       >
         <Animated.View style={{ transform: [{ scale }] }}>
-          <Ionicons name='trash' size={24} color={COLORS.background} />
+          <Ionicons name='trash' size={24} color={colors.onPrimary} />
         </Animated.View>
       </TouchableOpacity>
     );
@@ -80,7 +82,7 @@ export const CardQueueItem = ({
               name='menu'
               size={20}
               color={
-                item.isCurrentlyPlaying ? COLORS.played : COLORS.textSecondary
+                item.isCurrentlyPlaying ? colors.played : colors.textSecondary
               }
             />
           </TouchableOpacity>
@@ -95,7 +97,7 @@ export const CardQueueItem = ({
               <Ionicons
                 name='musical-notes'
                 size={24}
-                color={COLORS.textSecondary}
+                color={colors.textSecondary}
               />
             </View>
           )}
@@ -129,7 +131,7 @@ export const CardQueueItem = ({
               <Ionicons
                 name={isPlaying ? 'pause-circle' : 'play-circle'}
                 size={32}
-                color={COLORS.primary}
+                color={colors.primary}
               />
             </TouchableOpacity>
           </View>

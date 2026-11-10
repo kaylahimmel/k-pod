@@ -1,7 +1,8 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DiscoverStackParamList } from '../types';
-import { defaultScreenOptions } from '../screenOptions';
+import { getDefaultScreenOptions } from '../screenOptions';
+import { useThemedStyles } from '../../hooks';
 import { DiscoverScreen } from '../../screens/DiscoverScreen';
 import { PodcastPreviewScreen } from '../../screens/PodcastPreviewScreen';
 import { EpisodeDetailScreen } from '../../screens/EpisodeDetailScreen';
@@ -10,8 +11,9 @@ import { NavigationBackButton } from '../../components';
 const Stack = createNativeStackNavigator<DiscoverStackParamList>();
 
 export const DiscoverStackNavigator = () => {
+  const screenOptions = useThemedStyles(getDefaultScreenOptions);
   return (
-    <Stack.Navigator screenOptions={defaultScreenOptions}>
+    <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen
         name='Discover'
         component={DiscoverScreen}

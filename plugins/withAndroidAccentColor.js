@@ -4,7 +4,7 @@ const {
   withAndroidStyles,
 } = require('expo/config-plugins');
 
-// Keep in step with COLORS.primary in src/constants/Colors.ts. This file runs
+// Keep in step with LIGHT_COLORS.primary in src/constants/Colors.ts. This file runs
 // in Node during prebuild, so it can't import the app's TypeScript.
 const ACCENT_COLOR = '#007AFF';
 const COLOR_NAME = 'colorAccent';

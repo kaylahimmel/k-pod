@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useSettingsViewModel } from './SettingsViewModel';
 import { SettingsViewProps } from './Settings.types';
-import { styles } from './Settings.styles';
+import { createStyles } from './Settings.styles';
 import {
   SettingToggleRow,
   SettingOptionSelector,
@@ -10,8 +10,10 @@ import {
   SkeletonList,
   Toast,
 } from '../../components';
+import { useThemedStyles } from '../../hooks';
 
 export const SettingsView = ({ onNotificationsPress }: SettingsViewProps) => {
+  const styles = useThemedStyles(createStyles);
   const viewModel = useSettingsViewModel();
 
   if (viewModel.isLoading) {
@@ -77,6 +79,19 @@ export const SettingsView = ({ onNotificationsPress }: SettingsViewProps) => {
             label='Download on WiFi only'
             value={viewModel.settings.downloadOnWiFi}
             onValueChange={viewModel.handleToggleDownloadOnWiFi}
+            isLast
+          />
+        </View>
+
+        {/* Appearance */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Appearance</Text>
+        </View>
+        <View style={styles.settingsSection}>
+          <SettingToggleRow
+            label='Dark Mode'
+            value={viewModel.isDarkMode}
+            onValueChange={viewModel.handleToggleDarkMode}
             isLast
           />
         </View>

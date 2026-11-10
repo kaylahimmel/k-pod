@@ -24,5 +24,6 @@ export const createMockAppSettings = (
   skipBackwardSeconds: 15,
   newEpisodeNotifications: false,
   mutedNotificationPodcastIds: [],
+  themePreference: 'system',
   ...overrides,
 });
