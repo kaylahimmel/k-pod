@@ -1,26 +1,8 @@
-import React, { useLayoutEffect } from 'react';
-import { NotificationSettingsScreenProps } from '../../navigation/types';
+import React from 'react';
 import { NotificationSettingsView } from './NotificationSettingsView';
-import { HeaderActionButton } from '../../components';
 
-export const NotificationSettingsScreen = ({
-  navigation,
-}: NotificationSettingsScreenProps) => {
-  // A full-screen modal has no swipe-to-dismiss on iOS, so it needs its own
-  // close button
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <HeaderActionButton
-          icon='close'
-          onPress={() => navigation.goBack()}
-          accessibilityLabel='Close'
-        />
-      ),
-    });
-  }, [navigation]);
-
-  return <NotificationSettingsView />;
-};
+// Pushed onto the Settings stack, so the header's back button is the only way
+// out (it used to be a full-screen modal with its own Close button)
+export const NotificationSettingsScreen = () => <NotificationSettingsView />;
 
 export default NotificationSettingsScreen;

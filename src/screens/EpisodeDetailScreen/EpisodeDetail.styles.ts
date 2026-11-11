@@ -1,125 +1,126 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../constants';
+import { ThemeColors } from '../../constants';
 
-export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  scrollContent: {
-    paddingBottom: 100,
-  },
-  header: {
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 4,
-    backgroundColor: COLORS.cardBackground,
-  },
-  artwork: {
-    width: 180,
-    height: 180,
-    borderRadius: 12,
-    marginBottom: 16,
-    backgroundColor: COLORS.border,
-  },
-  podcastTitle: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  episodeTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    textAlign: 'center',
-    marginBottom: 0,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginTop: 8,
-  },
-  metaText: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-  },
-  metaDot: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-  },
-  playedBadge: {
-    fontSize: 12,
-    color: COLORS.played,
-    fontWeight: '500',
-  },
-  actionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 16,
-    paddingVertical: 20,
-    paddingHorizontal: 24,
-    backgroundColor: COLORS.cardBackground,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 24,
-    backgroundColor: COLORS.primary,
-  },
-  actionButtonSecondary: {
-    backgroundColor: COLORS.background,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  actionButtonText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.cardBackground,
-  },
-  actionButtonTextSecondary: {
-    color: COLORS.textPrimary,
-  },
-  nowPlayingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    paddingVertical: 20,
-    paddingHorizontal: 24,
-    backgroundColor: COLORS.cardBackground,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  nowPlayingIcon: {
-    marginTop: 2,
-  },
-  nowPlayingText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.primary,
-  },
-  descriptionContainer: {
-    padding: 24,
-    backgroundColor: COLORS.cardBackground,
-    marginTop: 12,
-  },
-  descriptionLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 12,
-  },
-  descriptionText: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: COLORS.textSecondary,
-  },
-});
+export const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      paddingBottom: 100,
+    },
+    header: {
+      alignItems: 'center',
+      paddingHorizontal: 24,
+      paddingTop: 24,
+      paddingBottom: 4,
+      backgroundColor: colors.cardBackground,
+    },
+    artwork: {
+      width: 180,
+      height: 180,
+      borderRadius: 12,
+      marginBottom: 16,
+      backgroundColor: colors.border,
+    },
+    podcastTitle: {
+      fontSize: 18,
+      color: colors.textSecondary,
+      marginBottom: 4,
+      textAlign: 'center',
+    },
+    episodeTitle: {
+      fontSize: 22,
+      fontWeight: '600',
+      color: colors.textPrimary,
+      textAlign: 'center',
+      marginBottom: 0,
+    },
+    metaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      marginTop: 8,
+    },
+    metaText: {
+      fontSize: 18,
+      color: colors.textSecondary,
+    },
+    metaDot: {
+      fontSize: 17,
+      color: colors.textSecondary,
+    },
+    playedBadge: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      fontWeight: '500',
+    },
+    actionsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: 16,
+      paddingVertical: 20,
+      paddingHorizontal: 24,
+      backgroundColor: colors.cardBackground,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    actionButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      paddingVertical: 12,
+      paddingHorizontal: 24,
+      borderRadius: 24,
+      backgroundColor: colors.primaryFill,
+    },
+    actionButtonSecondary: {
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    actionButtonText: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: colors.onPrimary,
+    },
+    actionButtonTextSecondary: {
+      color: colors.textPrimary,
+    },
+    nowPlayingContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 12,
+      paddingVertical: 20,
+      paddingHorizontal: 24,
+      backgroundColor: colors.cardBackground,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    nowPlayingIcon: {
+      marginTop: 2,
+    },
+    nowPlayingText: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: colors.primary,
+    },
+    descriptionContainer: {
+      padding: 24,
+      backgroundColor: colors.cardBackground,
+      marginTop: 12,
+    },
+    descriptionLabel: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: colors.textPrimary,
+      marginBottom: 12,
+    },
+    descriptionText: {
+      fontSize: 18,
+      lineHeight: 25,
+      color: colors.textSecondary,
+    },
+  });

@@ -12,6 +12,7 @@ const defaultSettings: AppSettings = {
   skipBackwardSeconds: 15,
   newEpisodeNotifications: false,
   mutedNotificationPodcastIds: [],
+  themePreference: 'system',
 };
 
 export const settingsStore = create<SettingsStore>()(

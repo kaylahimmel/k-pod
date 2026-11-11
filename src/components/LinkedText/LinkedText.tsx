@@ -1,7 +1,8 @@
 import React from 'react';
 import { Text, StyleProp, TextStyle } from 'react-native';
 import { TextSegment } from '../../models';
-import { styles } from './LinkedText.styles';
+import { createStyles } from './LinkedText.styles';
+import { useThemedStyles } from '../../hooks';
 
 interface LinkedTextProps {
   segments: TextSegment[];
@@ -28,6 +29,7 @@ export const LinkedText = ({
   numberOfLines,
   fallback,
 }: LinkedTextProps) => {
+  const styles = useThemedStyles(createStyles);
   if (segments.length === 0) {
     return fallback ? (
       <Text style={style} numberOfLines={numberOfLines}>

@@ -4,21 +4,20 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { TabNavigator } from './TabNavigator';
 import { AuthStackNavigator } from './AuthStackNavigator/AuthStackNavigator';
-import { modalScreenOptions } from './screenOptions';
-import {
-  FullPlayerScreen,
-  AddPodcastModal,
-  NotificationSettingsScreen,
-} from '../screens';
+import { getModalScreenOptions } from './screenOptions';
+import { FullPlayerScreen, AddPodcastModal } from '../screens';
 import { AuthService } from '../services';
 import { authStore } from '../stores/authStore';
-import { usePlaybackEvents } from '../hooks';
-import { COLORS } from '../constants';
+import { usePlaybackEvents, useThemeColors, useThemedStyles } from '../hooks';
+import { ThemeColors } from '../constants';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
   const { isAuthenticated, isLoading, setUser, setLoading } = authStore();
+  const colors = useThemeColors();
+  const styles = useThemedStyles(createStyles);
+  const modalScreenOptions = useThemedStyles(getModalScreenOptions);
 
   // Single owner of the AudioPlayerService callbacks (progress, auto-advance,
   // history). Must be mounted exactly once, here at the app root - screens
@@ -40,7 +39,7 @@ export const RootNavigator = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size='large' color={COLORS.primary} />
+        <ActivityIndicator size='large' color={colors.primary} />
       </View>
     );
   }
@@ -63,27 +62,19 @@ export const RootNavigator = () => {
           component={AddPodcastModal}
           options={{ title: 'Add Podcast' }}
         />
-        <Stack.Screen
-          name='NotificationSettings'
-          component={NotificationSettingsScreen}
-          options={{
-            title: 'Notifications',
-            presentation: 'fullScreenModal',
-            headerShown: true,
-          }}
-        />
       </Stack.Group>
     </Stack.Navigator>
   );
 };
 
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.background,
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.background,
+    },
+  });
 
 export default RootNavigator;

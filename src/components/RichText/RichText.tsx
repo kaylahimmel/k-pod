@@ -2,7 +2,8 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { RichTextBlock } from '../../models';
 import { LinkedText } from '../LinkedText/LinkedText';
-import { styles } from './RichText.styles';
+import { createStyles } from './RichText.styles';
+import { useThemedStyles } from '../../hooks';
 
 interface RichTextProps {
   blocks: RichTextBlock[];
@@ -18,6 +19,7 @@ interface RichTextProps {
  * not that each feed's markup is reproduced faithfully.
  */
 export const RichText = ({ blocks, onLinkPress, fallback }: RichTextProps) => {
+  const styles = useThemedStyles(createStyles);
   if (blocks.length === 0) {
     return fallback ? <Text style={styles.paragraph}>{fallback}</Text> : null;
   }

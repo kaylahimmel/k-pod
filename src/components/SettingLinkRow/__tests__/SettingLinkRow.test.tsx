@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { SettingLinkRow } from '../SettingLinkRow';
+import { LIGHT_COLORS } from '../../../constants';
 
 describe('SettingLinkRow', () => {
   const mockOnPress = jest.fn();
@@ -52,5 +53,14 @@ describe('SettingLinkRow', () => {
     );
 
     expect(getByText('Terms of Service')).toBeTruthy();
+  });
+
+  it('shows a destructive row in red, with no arrow', () => {
+    const { getByText, toJSON } = render(
+      <SettingLinkRow label='Sign Out' onPress={jest.fn()} destructive />,
+    );
+
+    expect(getByText('Sign Out')).toHaveStyle({ color: LIGHT_COLORS.danger });
+    expect(JSON.stringify(toJSON())).not.toContain('chevron-forward');
   });
 });

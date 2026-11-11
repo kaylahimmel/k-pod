@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, FlatList, RefreshControl } from 'react-native';
 import { useLibraryViewModel } from './LibraryViewModel';
-import { COLORS } from '../../constants';
 import { LibraryViewProps, FormattedPodcast } from './Library.types';
 import {
   SearchBar,
@@ -12,12 +11,15 @@ import {
   StateNoResults,
   Toast,
 } from '../../components';
-import { styles } from './Library.styles';
+import { createStyles } from './Library.styles';
+import { useThemeColors, useThemedStyles } from '../../hooks';
 
 export const LibraryView = ({
   onPodcastPress,
   onAddPodcastPress,
 }: LibraryViewProps) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(createStyles);
   const viewModel = useLibraryViewModel(onPodcastPress, onAddPodcastPress);
 
   // Loading state
@@ -89,7 +91,7 @@ export const LibraryView = ({
           <RefreshControl
             refreshing={viewModel.refreshing}
             onRefresh={viewModel.handleRefresh}
-            tintColor={COLORS.primary}
+            tintColor={colors.primary}
           />
         }
         showsVerticalScrollIndicator={false}

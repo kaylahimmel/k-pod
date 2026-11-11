@@ -12,11 +12,14 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useSignUpViewModel } from './SignUpViewModel';
 import { SignUpViewProps } from './SignUp.types';
-import { styles } from './SignUp.styles';
-import { styles as authStyles } from '../../styles/auth.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './SignUp.styles';
+import { createStyles as createAuthStyles } from '../../styles/auth.styles';
+import { useThemeColors, useThemedStyles } from '../../hooks';
 
 export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(createStyles);
+  const authStyles = useThemedStyles(createAuthStyles);
   const viewModel = useSignUpViewModel();
 
   return (
@@ -48,7 +51,7 @@ export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
                 value={viewModel.email}
                 onChangeText={viewModel.handleEmailChange}
                 placeholder='you@example.com'
-                placeholderTextColor={COLORS.textSecondary}
+                placeholderTextColor={colors.textSecondary}
                 autoCapitalize='none'
                 autoCorrect={false}
                 keyboardType='email-address'
@@ -72,7 +75,7 @@ export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
                 value={viewModel.password}
                 onChangeText={viewModel.handlePasswordChange}
                 placeholder='Min. 6 characters'
-                placeholderTextColor={COLORS.textSecondary}
+                placeholderTextColor={colors.textSecondary}
                 secureTextEntry
                 returnKeyType='next'
                 accessibilityLabel='Password'
@@ -94,7 +97,7 @@ export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
                 value={viewModel.confirmPassword}
                 onChangeText={viewModel.handleConfirmPasswordChange}
                 placeholder='Re-enter your password'
-                placeholderTextColor={COLORS.textSecondary}
+                placeholderTextColor={colors.textSecondary}
                 secureTextEntry
                 returnKeyType='go'
                 onSubmitEditing={viewModel.handleSignUp}
@@ -106,7 +109,7 @@ export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
           {/* Inline error */}
           {viewModel.errorMessage ? (
             <View style={authStyles.errorContainer}>
-              <Ionicons name='alert-circle' size={16} color={COLORS.danger} />
+              <Ionicons name='alert-circle' size={16} color={colors.danger} />
               <Text style={authStyles.errorText}>{viewModel.errorMessage}</Text>
             </View>
           ) : null}
@@ -122,7 +125,7 @@ export const SignUpView = ({ onSignInPress }: SignUpViewProps) => {
             accessibilityLabel='Create account'
           >
             {viewModel.isLoading ? (
-              <ActivityIndicator color={COLORS.cardBackground} />
+              <ActivityIndicator color={colors.onPrimary} />
             ) : (
               <Text style={authStyles.buttonText}>Create Account</Text>
             )}

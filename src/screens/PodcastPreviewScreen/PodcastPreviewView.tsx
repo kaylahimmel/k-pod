@@ -21,8 +21,8 @@ import {
   StateEmpty,
   CardEpisode,
 } from '../../components';
-import { styles } from './PodcastPreview.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './PodcastPreview.styles';
+import { useThemeColors, useThemedStyles } from '../../hooks';
 
 export const PodcastPreviewView = ({
   podcast,
@@ -30,6 +30,8 @@ export const PodcastPreviewView = ({
   onEpisodePress,
   onPlayEpisode,
 }: PodcastPreviewViewProps) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(createStyles);
   const viewModel = usePodcastPreviewViewModel(
     podcast,
     onSubscribe,
@@ -116,7 +118,7 @@ export const PodcastPreviewView = ({
           <RefreshControl
             refreshing={viewModel.isRefreshing}
             onRefresh={viewModel.handleRefresh}
-            tintColor={COLORS.primary}
+            tintColor={colors.primary}
           />
         }
       >
@@ -148,12 +150,12 @@ export const PodcastPreviewView = ({
               disabled={viewModel.subscribeButtonState.isDisabled}
             >
               {viewModel.subscribeButtonState.showSpinner ? (
-                <ActivityIndicator size='small' color={COLORS.cardBackground} />
+                <ActivityIndicator size='small' color={colors.onPrimary} />
               ) : (
                 <Ionicons
                   name={viewModel.subscribeButtonState.iconName}
                   size={18}
-                  color={COLORS.cardBackground}
+                  color={colors.onPrimary}
                 />
               )}
               <Text style={styles.subscribeButtonText}>

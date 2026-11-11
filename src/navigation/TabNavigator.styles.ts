@@ -1,15 +1,18 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../constants';
+import { ThemeColors } from '../constants';
 
-export const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: COLORS.cardBackground,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    paddingTop: 8,
-  },
-  tabBarLabel: {
-    fontSize: 10,
-    fontWeight: '500',
-  },
-});
+export const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    tabBar: {
+      backgroundColor: colors.cardBackground,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+      paddingTop: 8,
+      // Keeps Library and Settings clear of the screen's rounded corners
+      paddingHorizontal: 12,
+    },
+    tabBarLabel: {
+      fontSize: 16,
+      fontWeight: '500',
+    },
+  });

@@ -15,13 +15,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAddPodcastViewModel } from './AddPodcastViewModel';
 import { AddPodcastViewProps } from './AddPodcast.types';
 import { formatPodcastPreview } from './AddPodcastPresenter';
-import { styles } from './AddPodcast.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './AddPodcast.styles';
+import { useThemeColors, useThemedStyles } from '../../hooks';
 
 export const AddPodcastView = ({
   onDismiss,
   onGoToDiscover,
 }: AddPodcastViewProps) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(createStyles);
   const viewModel = useAddPodcastViewModel(onDismiss, onGoToDiscover);
 
   const isAddButtonDisabled =
@@ -30,7 +32,7 @@ export const AddPodcastView = ({
   // Render loading state
   const renderLoading = () => (
     <View style={styles.loadingContainer}>
-      <ActivityIndicator size='large' color={COLORS.primary} />
+      <ActivityIndicator size='large' color={colors.primary} />
       <Text style={styles.loadingText}>Fetching podcast...</Text>
     </View>
   );
@@ -62,7 +64,7 @@ export const AddPodcastView = ({
                   <Ionicons
                     name='mic-outline'
                     size={14}
-                    color={COLORS.textSecondary}
+                    color={colors.textSecondary}
                   />
                   <Text style={styles.previewMetaText}>
                     {formatEpisodeCount(preview.episodeCount)}
@@ -72,7 +74,7 @@ export const AddPodcastView = ({
                   <Ionicons
                     name='time-outline'
                     size={14}
-                    color={COLORS.textSecondary}
+                    color={colors.textSecondary}
                   />
                   <Text style={styles.previewMetaText}>
                     {preview.latestEpisodeDate}
@@ -136,7 +138,7 @@ export const AddPodcastView = ({
             value={viewModel.url}
             onChangeText={viewModel.handleUrlChange}
             placeholder='https://example.com/feed.xml'
-            placeholderTextColor={COLORS.textSecondary}
+            placeholderTextColor={colors.textSecondary}
             autoCapitalize='none'
             autoCorrect={false}
             keyboardType='url'
@@ -153,7 +155,7 @@ export const AddPodcastView = ({
               <Ionicons
                 name='close-circle'
                 size={20}
-                color={COLORS.textSecondary}
+                color={colors.textSecondary}
               />
             </TouchableOpacity>
           )}
@@ -161,7 +163,7 @@ export const AddPodcastView = ({
 
         {viewModel.modalState === 'error' && viewModel.errorMessage && (
           <View style={styles.errorContainer}>
-            <Ionicons name='alert-circle' size={16} color={COLORS.danger} />
+            <Ionicons name='alert-circle' size={16} color={colors.danger} />
             <Text style={styles.errorText}>{viewModel.errorMessage}</Text>
           </View>
         )}

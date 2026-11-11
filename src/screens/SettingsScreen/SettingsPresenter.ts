@@ -1,83 +1,89 @@
-import Constants from 'expo-constants';
-import { AppSettings } from '../../models';
-import { FormattedSettings, SpeedOption, SkipOption } from './Settings.types';
+import { ListeningHistory, Podcast, User } from '../../models';
+import { FormattedAccount, ListeningStats } from './Settings.types';
 
 /**
- * Available playback speed options
+ * Formats listening time in seconds to a human-readable string
+ * Examples: "0 min", "45 min", "1h 30m", "24h 15m"
  */
-export const SPEED_OPTIONS: SpeedOption[] = [
-  { value: 0.5, label: '0.5x' },
-  { value: 0.75, label: '0.75x' },
-  { value: 1, label: '1x (Normal)' },
-  { value: 1.25, label: '1.25x' },
-  { value: 1.5, label: '1.5x' },
-  { value: 1.75, label: '1.75x' },
-  { value: 2, label: '2x' },
-];
-
-/**
- * Available skip forward duration options
- */
-export const SKIP_FORWARD_OPTIONS: SkipOption[] = [
-  { value: 10, label: '10 seconds' },
-  { value: 15, label: '15 seconds' },
-  { value: 30, label: '30 seconds' },
-  { value: 45, label: '45 seconds' },
-  { value: 60, label: '60 seconds' },
-];
-
-/**
- * Available skip backward duration options
- */
-export const SKIP_BACKWARD_OPTIONS: SkipOption[] = [
-  { value: 5, label: '5 seconds' },
-  { value: 10, label: '10 seconds' },
-  { value: 15, label: '15 seconds' },
-  { value: 30, label: '30 seconds' },
-];
-
-/**
- * Formats playback speed for display
- * Example: 1 -> "1x (Normal)", 1.5 -> "1.5x"
- */
-export function formatPlaybackSpeed(speed: number): string {
-  const option = SPEED_OPTIONS.find((opt) => opt.value === speed);
-  if (option) {
-    return option.label;
+export function formatListeningTime(seconds: number): string {
+  if (!seconds || seconds <= 0) {
+    return '0 min';
   }
-  return `${speed}x`;
+
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  if (hours === 0) {
+    return `${minutes} min`;
+  }
+
+  if (minutes === 0) {
+    return `${hours}h`;
+  }
+
+  return `${hours}h ${minutes}m`;
 }
 
 /**
- * Formats skip duration in seconds to a display string
- * Example: 30 -> "30 sec"
+ * Extracts initials from an email address
+ * Example: "john.doe@example.com" -> "JD"
  */
-export function formatSkipDuration(seconds: number): string {
-  return `${seconds} sec`;
+export function getInitialsFromEmail(email: string): string {
+  const localPart = email.split('@')[0];
+  const parts = localPart.split(/[._-]/);
+
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  return localPart.slice(0, 2).toUpperCase();
 }
 
 /**
- * Formats app settings for display in the View
+ * Formats the signed-in user for the Account section. Falls back to a
+ * placeholder so the row still renders if the auth state is briefly empty
  */
-export function formatSettings(settings: AppSettings): FormattedSettings {
+export function formatAccount(user: User | null): FormattedAccount {
+  if (!user) {
+    return { email: 'Not signed in', initials: '?' };
+  }
+
+  return { email: user.email, initials: getInitialsFromEmail(user.email) };
+}
+
+/**
+ * Calculates total listening time from history
+ * Returns total seconds listened
+ */
+export function calculateTotalListeningTime(
+  history: ListeningHistory[],
+): number {
+  return history.reduce((total, item) => {
+    const episodeDuration = item.episode.duration || 0;
+    const listenedPortion = (item.completionPercentage / 100) * episodeDuration;
+    return total + listenedPortion;
+  }, 0);
+}
+
+/**
+ * Counts completed episodes (>= 90% listened)
+ */
+export function countCompletedEpisodes(history: ListeningHistory[]): number {
+  return history.filter((item) => item.completionPercentage >= 90).length;
+}
+
+/**
+ * Builds the three stats shown in the Listening section
+ */
+export function getListeningStats(
+  history: ListeningHistory[],
+  subscribedPodcasts: Podcast[],
+): ListeningStats {
   return {
-    autoPlayNext: settings.autoPlayNext,
-    defaultSpeed: settings.defaultSpeed,
-    defaultSpeedLabel: formatPlaybackSpeed(settings.defaultSpeed),
-    downloadOnWiFi: settings.downloadOnWiFi,
-    skipForwardSeconds: settings.skipForwardSeconds,
-    skipForwardLabel: formatSkipDuration(settings.skipForwardSeconds),
-    skipBackwardSeconds: settings.skipBackwardSeconds,
-    skipBackwardLabel: formatSkipDuration(settings.skipBackwardSeconds),
+    totalListeningTime: formatListeningTime(
+      calculateTotalListeningTime(history),
+    ),
+    episodesCompleted: countCompletedEpisodes(history),
+    podcastsSubscribed: subscribedPodcasts.length,
   };
-}
-
-/**
- * Gets the app version string from app.json via expo-constants.
- *
- * Reading it at runtime keeps the Settings screen in step with the real
- * release; the previous hardcoded string drifted silently on every bump.
- */
-export function getAppVersion(): string {
-  return Constants.expoConfig?.version ?? '1.0.0';
 }

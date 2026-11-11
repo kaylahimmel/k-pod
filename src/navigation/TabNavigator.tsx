@@ -10,11 +10,10 @@ import { BottomTabParamList } from './types';
 import { LibraryStackNavigator } from './LibraryStackNavigator/LibraryStackNavigator';
 import { DiscoverStackNavigator } from './DiscoverStackNavigator/DiscoverStackNavigator';
 import { SettingsStackNavigator } from './SettingsStackNavigator/SettingsStackNavigator';
-import { ProfileStackNavigator } from './ProfileStackNavigator/ProfileStackNavigator';
 import { QueueStackNavigator } from './QueueStackNavigator/QueueStackNavigator';
 import { MiniPlayer } from '../components';
-import { COLORS } from '../constants';
-import { styles } from './TabNavigator.styles';
+import { createStyles } from './TabNavigator.styles';
+import { useThemeColors, useThemedStyles } from '../hooks';
 
 // Android 14 and lower report a 0 bottom inset under edge-to-edge (verified
 // by logging: API 34 -> bottom 0, API 36 -> bottom 24), which lets the
@@ -70,10 +69,6 @@ const TAB_ICONS: Record<keyof BottomTabParamList, TabIconConfig> = {
     focused: 'list',
     unfocused: 'list-outline',
   },
-  ProfileTab: {
-    focused: 'person',
-    unfocused: 'person-outline',
-  },
   SettingsTab: {
     focused: 'settings',
     unfocused: 'settings-outline',
@@ -81,6 +76,8 @@ const TAB_ICONS: Record<keyof BottomTabParamList, TabIconConfig> = {
 };
 
 export const TabNavigator = () => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(createStyles);
   return (
     <Tab.Navigator
       tabBar={(props) => <CustomTabBar {...props} />}
@@ -90,8 +87,8 @@ export const TabNavigator = () => {
           const iconName = focused ? iconConfig.focused : iconConfig.unfocused;
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.textSecondary,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabBarLabel,
         headerShown: false,
@@ -111,11 +108,6 @@ export const TabNavigator = () => {
         name='QueueTab'
         component={QueueStackNavigator}
         options={{ tabBarLabel: 'Up Next' }}
-      />
-      <Tab.Screen
-        name='ProfileTab'
-        component={ProfileStackNavigator}
-        options={{ tabBarLabel: 'Profile' }}
       />
       <Tab.Screen
         name='SettingsTab'

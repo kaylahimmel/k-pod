@@ -6,7 +6,7 @@ import {
   HeaderCloseButton,
   HeaderActionButton,
 } from '../HeaderButton';
-import { HEADER_BUTTON_CONFIG } from '../../../navigation/screenOptions';
+import { HEADER_ICON_SIZE } from '../../../navigation/screenOptions';
 
 describe('HeaderButton', () => {
   const mockOnPress = jest.fn();
@@ -52,9 +52,8 @@ describe('HeaderButton', () => {
 
       const button = getByLabelText('Settings');
       expect(button).toBeTruthy();
-      // Icon size and color are applied to the Ionicons component
-      expect(HEADER_BUTTON_CONFIG.iconSize).toBe(28);
-      expect(HEADER_BUTTON_CONFIG.color).toBe('#007AFF');
+      // Icon size comes from the shared config; color comes from the theme
+      expect(HEADER_ICON_SIZE).toBe(28);
     });
 
     it('allows custom icon size and color', () => {

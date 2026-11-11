@@ -5,9 +5,15 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { getNavigationTheme } from './src/navigation/navigationTheme';
 import { RefreshService } from './src/services';
+import { useAppearancePreference, useIsDarkMode } from './src/hooks';
 
 export default function App() {
+  // Applies the in-app Dark Mode choice (or the phone's setting) app-wide
+  useAppearancePreference();
+  const navigationTheme = getNavigationTheme(useIsDarkMode());
+
   // Start automatic foreground refresh when app mounts
   useEffect(() => {
     RefreshService.startForegroundRefresh();
@@ -19,7 +25,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <SafeAreaProvider>
-        <NavigationContainer>
+        <NavigationContainer theme={navigationTheme}>
           <RootNavigator />
           <StatusBar style='auto' />
         </NavigationContainer>

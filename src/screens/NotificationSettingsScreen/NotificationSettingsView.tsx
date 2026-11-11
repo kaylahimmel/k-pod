@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { useNotificationSettingsViewModel } from './NotificationSettingsViewModel';
-import { styles } from './NotificationSettings.styles';
+import { createStyles } from './NotificationSettings.styles';
 import { SettingLinkRow, SettingToggleRow } from '../../components';
+import { useThemedStyles } from '../../hooks';
 
 export const NotificationSettingsView = () => {
+  const styles = useThemedStyles(createStyles);
   const viewModel = useNotificationSettingsViewModel();
 
   return (

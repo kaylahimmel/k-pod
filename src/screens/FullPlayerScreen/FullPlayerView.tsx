@@ -14,10 +14,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFullPlayerViewModel } from './FullPlayerViewModel';
 import { FullPlayerViewProps, PLAYBACK_SPEEDS } from './FullPlayer.types';
-import { styles } from './FullPlayer.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './FullPlayer.styles';
 import { PlaybackSpeed } from '../../models';
-import { useSettingsStore } from '../../hooks';
+import { useSettingsStore, useThemeColors, useThemedStyles } from '../../hooks';
 import {
   HeaderBackButton,
   HeaderCloseButton,
@@ -30,6 +29,8 @@ export const FullPlayerView = ({
   podcast,
   onDismiss,
 }: FullPlayerViewProps) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(createStyles);
   const viewModel = useFullPlayerViewModel(episode, podcast, onDismiss);
   const { settings } = useSettingsStore();
   const [speedPickerVisible, setSpeedPickerVisible] = useState(false);
@@ -110,9 +111,9 @@ export const FullPlayerView = ({
             maximumValue={viewModel.duration || 1}
             value={viewModel.position}
             onSlidingComplete={viewModel.handleSeek}
-            minimumTrackTintColor={COLORS.primary}
-            maximumTrackTintColor={COLORS.progressTrack}
-            thumbTintColor={COLORS.primary}
+            minimumTrackTintColor={colors.primary}
+            maximumTrackTintColor={colors.progressTrack}
+            thumbTintColor={colors.primary}
           />
           <View style={styles.timeContainer}>
             <Text style={styles.timeText}>
@@ -129,7 +130,7 @@ export const FullPlayerView = ({
             onPress={viewModel.handleSkipBackward}
             accessibilityLabel={`Skip backward ${settings.skipBackwardSeconds} seconds`}
           >
-            <Ionicons name='play-back' size={32} color={COLORS.textPrimary} />
+            <Ionicons name='play-back' size={32} color={colors.textPrimary} />
             <Text style={styles.skipLabel}>
               {settings.skipBackwardSeconds}s
             </Text>
@@ -142,7 +143,7 @@ export const FullPlayerView = ({
             <Ionicons
               name={viewModel.isPlaying ? 'pause' : 'play'}
               size={36}
-              color={COLORS.cardBackground}
+              color={colors.onPrimary}
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -153,7 +154,7 @@ export const FullPlayerView = ({
             <Ionicons
               name='play-forward'
               size={32}
-              color={COLORS.textPrimary}
+              color={colors.textPrimary}
             />
             <Text style={styles.skipLabel}>{settings.skipForwardSeconds}s</Text>
           </TouchableOpacity>

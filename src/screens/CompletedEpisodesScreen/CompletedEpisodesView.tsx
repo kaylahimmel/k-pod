@@ -4,7 +4,7 @@ import { View, Text, FlatList } from 'react-native';
 
 import { CompletedEpisodesViewProps } from './CompletedEpisodes.types';
 import { useCompletedEpisodesViewModel } from './CompletedEpisodesViewModel';
-import { styles } from './CompletedEpisodes.styles';
+import { createStyles } from './CompletedEpisodes.styles';
 import {
   CardHistoryItem,
   EpisodeActionsMenu,
@@ -12,10 +12,12 @@ import {
   StateEmpty,
   Toast,
 } from '../../components';
+import { useThemedStyles } from '../../hooks';
 
 export const CompletedEpisodesView = ({
   podcastId,
 }: CompletedEpisodesViewProps) => {
+  const styles = useThemedStyles(createStyles);
   const viewModel = useCompletedEpisodesViewModel(podcastId);
 
   if (viewModel.isLoading) {

@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, DimensionValue, StyleProp, ViewStyle } from 'react-native';
 import { SkeletonCard } from './SkeletonCard';
-import { styles } from './Skeleton.styles';
+import { createStyles } from './Skeleton.styles';
+import { useThemedStyles } from '../../hooks';
 
 interface SkeletonListProps {
   count?: number;
@@ -27,15 +28,18 @@ export const SkeletonList = ({
   cardWidth = '100%' as DimensionValue,
   spacing = 12,
   style,
-}: SkeletonListProps) => (
-  <View style={[styles.listContainer, style]} testID='skeleton-list'>
-    {Array.from({ length: count }).map((_, index) => (
-      <SkeletonCard
-        key={index}
-        width={cardWidth}
-        height={cardHeight}
-        style={index < count - 1 ? { marginBottom: spacing } : undefined}
-      />
-    ))}
-  </View>
-);
+}: SkeletonListProps) => {
+  const styles = useThemedStyles(createStyles);
+  return (
+    <View style={[styles.listContainer, style]} testID='skeleton-list'>
+      {Array.from({ length: count }).map((_, index) => (
+        <SkeletonCard
+          key={index}
+          width={cardWidth}
+          height={cardHeight}
+          style={index < count - 1 ? { marginBottom: spacing } : undefined}
+        />
+      ))}
+    </View>
+  );
+};

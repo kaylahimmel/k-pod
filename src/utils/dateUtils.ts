@@ -2,7 +2,7 @@
  * How much detail a relative date should carry.
  *
  * Two different ladders existed in the app and both are still wanted:
- * - 'compact'  (Profile / history): Today, Yesterday, N days ago, then "Mar 4"
+ * - 'compact'  (Listening History): Today, Yesterday, N days ago, then "Mar 4"
  * - 'detailed' (Library): also weeks and months, then a full date with year
  *
  * The style is explicit at every call site rather than defaulted, so merging

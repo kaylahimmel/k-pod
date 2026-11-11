@@ -7,6 +7,7 @@ import {
   MOCK_PLAYER_EPISODE,
   MOCK_PLAYER_PODCAST,
   createMockQueueItems,
+  createMockAppSettings,
 } from '../../../__mocks__';
 
 describe('FullPlayerView', () => {
@@ -26,15 +27,7 @@ describe('FullPlayerView', () => {
       currentIndex: 0,
     });
     settingsStore.setState({
-      settings: {
-        autoPlayNext: true,
-        defaultSpeed: 1,
-        downloadOnWiFi: true,
-        skipForwardSeconds: 30,
-        skipBackwardSeconds: 15,
-        newEpisodeNotifications: false,
-        mutedNotificationPodcastIds: [],
-      },
+      settings: createMockAppSettings(),
       loading: false,
       error: null,
     });

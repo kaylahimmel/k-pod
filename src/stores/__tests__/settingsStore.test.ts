@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { settingsStore } from '../../stores';
 import { AppSettings } from '../../models';
 import { STORAGE_KEYS } from '../../constants';
+import { createMockAppSettings } from '../../__mocks__';
 
 describe('settingsStore', () => {
   const defaultSettings: AppSettings = {
@@ -12,6 +13,7 @@ describe('settingsStore', () => {
     skipBackwardSeconds: 15,
     newEpisodeNotifications: false,
     mutedNotificationPodcastIds: [],
+    themePreference: 'system',
   };
 
   beforeEach(() => {
@@ -119,15 +121,13 @@ describe('settingsStore', () => {
 
   describe('loadSettings', () => {
     it('should load and replace entire settings object', () => {
-      const newSettings: AppSettings = {
+      const newSettings: AppSettings = createMockAppSettings({
         autoPlayNext: false,
         defaultSpeed: 0.75,
         downloadOnWiFi: false,
         skipForwardSeconds: 45,
         skipBackwardSeconds: 10,
-        newEpisodeNotifications: false,
-        mutedNotificationPodcastIds: [],
-      };
+      });
 
       settingsStore.getState().loadSettings(newSettings);
 
@@ -145,6 +145,7 @@ describe('settingsStore', () => {
         skipBackwardSeconds: 15,
         newEpisodeNotifications: false,
         mutedNotificationPodcastIds: [],
+        themePreference: 'system',
       };
 
       settingsStore.getState().loadSettings(newSettings);
@@ -173,6 +174,33 @@ describe('settingsStore', () => {
 
       state = settingsStore.getState();
       expect(state.settings).toEqual(defaultSettings);
+    });
+  });
+
+  describe('themePreference', () => {
+    it('should follow the phone by default', () => {
+      expect(settingsStore.getState().settings.themePreference).toBe('system');
+    });
+
+    it('should go back to following the phone after a reset', () => {
+      settingsStore.getState().updateSetting('themePreference', 'dark');
+
+      settingsStore.getState().resetSettings();
+
+      expect(settingsStore.getState().settings.themePreference).toBe('system');
+    });
+
+    it('should keep a saved light choice across a restart', async () => {
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce(
+        JSON.stringify({
+          state: { settings: { ...defaultSettings, themePreference: 'light' } },
+          version: 0,
+        }),
+      );
+
+      await settingsStore.persist.rehydrate();
+
+      expect(settingsStore.getState().settings.themePreference).toBe('light');
     });
   });
 
@@ -206,15 +234,13 @@ describe('settingsStore', () => {
       state.setLoading(true);
       expect(settingsStore.getState().loading).toBe(true);
 
-      const newSettings: AppSettings = {
+      const newSettings: AppSettings = createMockAppSettings({
         autoPlayNext: false,
         defaultSpeed: 1.75,
         downloadOnWiFi: false,
         skipForwardSeconds: 45,
         skipBackwardSeconds: 20,
-        newEpisodeNotifications: false,
-        mutedNotificationPodcastIds: [],
-      };
+      });
 
       state.loadSettings(newSettings);
       state.setLoading(false);
@@ -265,6 +291,7 @@ describe('settingsStore', () => {
         ...legacySettings,
         newEpisodeNotifications: false,
         mutedNotificationPodcastIds: [],
+        themePreference: 'system',
       });
     });
 

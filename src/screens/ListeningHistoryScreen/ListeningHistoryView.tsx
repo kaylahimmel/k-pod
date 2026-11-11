@@ -2,13 +2,15 @@ import { FormattedHistoryItem } from '../../models';
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { useListeningHistoryViewModel } from './ListeningHistoryViewModel';
-import { styles } from './ListeningHistory.styles';
+import { createStyles } from './ListeningHistory.styles';
 import { CardHistoryItem, SkeletonList, StateEmpty } from '../../components';
 import { ListeningHistoryViewProps } from './ListeningHistory.types';
+import { useThemedStyles } from '../../hooks';
 
 export const ListeningHistoryView = ({
   onClearHistory,
 }: ListeningHistoryViewProps) => {
+  const styles = useThemedStyles(createStyles);
   const viewModel = useListeningHistoryViewModel(onClearHistory);
 
   if (viewModel.isLoading) {

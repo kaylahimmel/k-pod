@@ -11,8 +11,7 @@ import {
   PodcastDetailViewProps,
 } from './PodcastDetail.types';
 import { usePodcastDetailViewModel } from './PodcastDetailViewModel';
-import { styles } from './PodcastDetail.styles';
-import { COLORS } from '../../constants';
+import { createStyles } from './PodcastDetail.styles';
 import {
   CardEpisode,
   HeaderPodcast,
@@ -21,8 +20,11 @@ import {
   EpisodeNotFoundState,
   Toast,
 } from '../../components';
+import { useThemeColors, useThemedStyles } from '../../hooks';
 
 export const PodcastDetailView = (props: PodcastDetailViewProps) => {
+  const colors = useThemeColors();
+  const styles = useThemedStyles(createStyles);
   const viewModel = usePodcastDetailViewModel(
     props.podcastId,
     props.onEpisodePress,
@@ -111,7 +113,7 @@ export const PodcastDetailView = (props: PodcastDetailViewProps) => {
           <RefreshControl
             refreshing={viewModel.refreshing}
             onRefresh={viewModel.handleEpisodeRefresh}
-            tintColor={COLORS.primary}
+            tintColor={colors.primary}
           />
         }
         showsVerticalScrollIndicator={false}
