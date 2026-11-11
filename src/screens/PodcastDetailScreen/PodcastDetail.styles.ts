@@ -31,7 +31,7 @@ export const createStyles = (colors: ThemeColors) =>
       flex: 1,
     },
     footerButtonText: {
-      fontSize: 14,
+      fontSize: 17,
       fontWeight: '600',
       color: colors.primary,
     },

@@ -7,7 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { getNavigationTheme } from './src/navigation/navigationTheme';
 import { RefreshService } from './src/services';
-import { useAppearancePreference, useThemedStyles } from './src/hooks';
+import { useAppearancePreference, useIsDarkMode } from './src/hooks';
 
 export default function App() {
   // Applies the in-app Dark Mode choice (or the phone's setting) app-wide

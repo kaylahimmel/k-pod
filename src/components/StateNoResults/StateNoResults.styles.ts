@@ -11,14 +11,14 @@ export const createStyles = (colors: ThemeColors) =>
       backgroundColor: colors.background,
     },
     title: {
-      fontSize: 20,
+      fontSize: 22,
       fontWeight: '600',
       color: colors.textPrimary,
       marginTop: 16,
       marginBottom: 8,
     },
     message: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textSecondary,
       textAlign: 'center',
     },

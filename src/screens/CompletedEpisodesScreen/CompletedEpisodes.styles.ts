@@ -14,7 +14,7 @@ export const createStyles = (colors: ThemeColors) =>
       marginBottom: 8,
     },
     summaryText: {
-      fontSize: 15,
+      fontSize: 18,
       color: colors.textSecondary,
     },
     listContainer: {

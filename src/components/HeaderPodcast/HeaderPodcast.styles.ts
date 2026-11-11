@@ -24,29 +24,29 @@ export const createStyles = (colors: ThemeColors) =>
       justifyContent: 'center',
     },
     title: {
-      fontSize: 20,
+      fontSize: 22,
       fontWeight: '700',
       color: colors.textPrimary,
       marginBottom: 4,
     },
     author: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textSecondary,
       marginBottom: 8,
     },
     episodeCount: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.primary,
       fontWeight: '500',
     },
     description: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
-      lineHeight: 20,
+      lineHeight: 24,
       marginBottom: 4,
     },
     showMoreText: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.primary,
       fontWeight: '500',
       marginBottom: 16,
@@ -63,7 +63,7 @@ export const createStyles = (colors: ThemeColors) =>
       marginBottom: 16,
     },
     unsubscribeText: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.success,
       fontWeight: '500',
       marginLeft: 6,
@@ -74,7 +74,7 @@ export const createStyles = (colors: ThemeColors) =>
       paddingTop: 16,
     },
     sectionTitle: {
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: '600',
       color: colors.textPrimary,
     },

@@ -3,33 +3,21 @@ import { StyleSheet } from 'react-native';
 import { ThemeColors } from '../constants';
 
 /**
- * Common header button styles for consistent UI across screens
+ * Shared header button style. A fixed square with the icon centered and no
+ * padding: on iOS 26+ the system wraps each header button in a "glass" pill
+ * sized to its content, so any uneven or extra padding stretched the pill into
+ * an oval. HEADER_BUTTON_HIT_SLOP keeps the tap area at least 44 points
  */
 export const headerButtonStyles = StyleSheet.create({
-  // Base style for all header buttons
   base: {
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-  },
-  // Back button with extra left padding to avoid being too close to edge
-  back: {
-    paddingVertical: 8,
-    paddingLeft: 8,
-    paddingRight: 8,
-  },
-  // Close button style
-  close: {
-    paddingVertical: 8,
-    paddingLeft: 8,
-    paddingRight: 8,
-  },
-  // Action button (like + button) for header right
-  action: {
-    paddingVertical: 8,
-    paddingLeft: 8,
-    paddingRight: 8,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
+
+export const HEADER_BUTTON_HIT_SLOP = { top: 4, bottom: 4, left: 4, right: 4 };
 
 /**
  * Icon size for header buttons. Their color depends on the theme, so header
@@ -47,7 +35,7 @@ const getSharedHeaderOptions = (
   headerTintColor: colors.primary,
   headerTitleStyle: {
     fontWeight: '600',
-    fontSize: 17,
+    fontSize: 19,
   },
   contentStyle: {
     backgroundColor: colors.background,

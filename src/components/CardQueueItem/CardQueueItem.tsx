@@ -73,18 +73,15 @@ export const CardQueueItem = ({
       >
         <View style={styles.queueItemContent}>
           <TouchableOpacity
-            style={styles.dragHandle}
+            style={[
+              styles.dragHandle,
+              item.isCurrentlyPlaying && styles.dragHandleDisabled,
+            ]}
             onLongPress={item.isCurrentlyPlaying ? undefined : drag}
             delayLongPress={0}
             disabled={item.isCurrentlyPlaying}
           >
-            <Ionicons
-              name='menu'
-              size={20}
-              color={
-                item.isCurrentlyPlaying ? colors.played : colors.textSecondary
-              }
-            />
+            <Ionicons name='menu' size={20} color={colors.textSecondary} />
           </TouchableOpacity>
 
           {item.podcastArtworkUrl ? (

@@ -10,7 +10,6 @@ import { BottomTabParamList } from './types';
 import { LibraryStackNavigator } from './LibraryStackNavigator/LibraryStackNavigator';
 import { DiscoverStackNavigator } from './DiscoverStackNavigator/DiscoverStackNavigator';
 import { SettingsStackNavigator } from './SettingsStackNavigator/SettingsStackNavigator';
-import { ProfileStackNavigator } from './ProfileStackNavigator/ProfileStackNavigator';
 import { QueueStackNavigator } from './QueueStackNavigator/QueueStackNavigator';
 import { MiniPlayer } from '../components';
 import { createStyles } from './TabNavigator.styles';
@@ -70,10 +69,6 @@ const TAB_ICONS: Record<keyof BottomTabParamList, TabIconConfig> = {
     focused: 'list',
     unfocused: 'list-outline',
   },
-  ProfileTab: {
-    focused: 'person',
-    unfocused: 'person-outline',
-  },
   SettingsTab: {
     focused: 'settings',
     unfocused: 'settings-outline',
@@ -113,11 +108,6 @@ export const TabNavigator = () => {
         name='QueueTab'
         component={QueueStackNavigator}
         options={{ tabBarLabel: 'Up Next' }}
-      />
-      <Tab.Screen
-        name='ProfileTab'
-        component={ProfileStackNavigator}
-        options={{ tabBarLabel: 'Profile' }}
       />
       <Tab.Screen
         name='SettingsTab'

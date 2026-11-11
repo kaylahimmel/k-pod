@@ -8,13 +8,13 @@ export const createStyles = (colors: ThemeColors) =>
       alignItems: 'center',
     },
     title: {
-      fontSize: 32,
+      fontSize: 34,
       fontWeight: '700',
       color: colors.textPrimary,
       marginBottom: 8,
     },
     subtitle: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textSecondary,
       textAlign: 'center',
     },
@@ -29,11 +29,11 @@ export const createStyles = (colors: ThemeColors) =>
       gap: 4,
     },
     signInText: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
     },
     signInLinkText: {
-      fontSize: 14,
+      fontSize: 17,
       fontWeight: '600',
       color: colors.primary,
     },

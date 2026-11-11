@@ -24,10 +24,10 @@ export interface HistoryStore {
 /**
  * A ListeningHistory entry formatted for display.
  *
- * Lives in models rather than a screen's types because Profile,
- * ListeningHistory, CompletedEpisodes and the CardHistoryItem component all
- * consume it; keeping it under ProfileScreen forced cross-screen imports that
- * break the layering rule.
+ * Lives in models rather than a screen's types because ListeningHistory,
+ * CompletedEpisodes and the CardHistoryItem component all consume it;
+ * keeping it under one screen forced cross-screen imports that break the
+ * layering rule.
  */
 export interface FormattedHistoryItem {
   id: string;

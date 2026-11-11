@@ -28,18 +28,18 @@ export const createStyles = (colors: ThemeColors) =>
       marginRight: 8,
     },
     podcastTitle: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.textPrimary,
       marginBottom: 2,
     },
     podcastAuthor: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
       marginBottom: 4,
     },
     podcastMeta: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
     },
   });

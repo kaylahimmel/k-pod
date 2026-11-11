@@ -30,7 +30,7 @@ export const ChangePasswordView = ({ onSuccess }: ChangePasswordViewProps) => {
             <Ionicons
               name='checkmark-circle'
               size={36}
-              color={colors.success}
+              color={colors.onPrimary}
             />
           </View>
           <Text style={styles.successTitle}>Password updated</Text>

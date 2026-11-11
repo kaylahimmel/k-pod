@@ -1,18 +1,26 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { useSettingsViewModel } from './SettingsViewModel';
 import { SettingsViewProps } from './Settings.types';
 import { createStyles } from './Settings.styles';
 import {
+  SettingAccountHeader,
   SettingToggleRow,
-  SettingOptionSelector,
   SettingLinkRow,
+  SettingStatsRow,
   SkeletonList,
   Toast,
 } from '../../components';
 import { useThemedStyles } from '../../hooks';
 
-export const SettingsView = ({ onNotificationsPress }: SettingsViewProps) => {
+export const SettingsView = ({
+  onNotificationsPress,
+  onPlayerControlsPress,
+  onLegalPress,
+  onAppInfoPress,
+  onListeningHistoryPress,
+  onChangePasswordPress,
+}: SettingsViewProps) => {
   const styles = useThemedStyles(createStyles);
   const viewModel = useSettingsViewModel();
 
@@ -30,113 +38,68 @@ export const SettingsView = ({ onNotificationsPress }: SettingsViewProps) => {
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Playback Settings */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Playback</Text>
-        </View>
+        {/* One card holds every row, in this order */}
         <View style={styles.settingsSection}>
-          <SettingToggleRow
-            label='Auto-play next episode'
-            value={viewModel.settings.autoPlayNext}
-            onValueChange={viewModel.handleToggleAutoPlayNext}
+          <SettingAccountHeader
+            initials={viewModel.account.initials}
+            email={viewModel.account.email}
           />
-          <SettingOptionSelector
-            label='Default playback speed'
-            currentValueLabel={viewModel.settings.defaultSpeedLabel}
-            options={viewModel.speedOptions}
-            selectedValue={viewModel.settings.defaultSpeed}
-            onSelect={viewModel.handleSpeedChange}
+          <SettingStatsRow
+            stats={[
+              {
+                label: 'Listening Time',
+                value: viewModel.listeningStats.totalListeningTime,
+              },
+              {
+                label: 'Episodes',
+                value: viewModel.listeningStats.episodesCompleted,
+              },
+              {
+                label: 'Subscribed',
+                value: viewModel.listeningStats.podcastsSubscribed,
+              },
+            ]}
           />
-        </View>
-
-        {/* Skip Controls */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Skip Controls</Text>
-        </View>
-        <View style={styles.settingsSection}>
-          <SettingOptionSelector
-            label='Skip forward'
-            currentValueLabel={viewModel.settings.skipForwardLabel}
-            options={viewModel.skipForwardOptions}
-            selectedValue={viewModel.settings.skipForwardSeconds}
-            onSelect={viewModel.handleSkipForwardChange}
+          <SettingLinkRow
+            label='Listening History'
+            onPress={onListeningHistoryPress}
           />
-          <SettingOptionSelector
-            label='Skip backward'
-            currentValueLabel={viewModel.settings.skipBackwardLabel}
-            options={viewModel.skipBackwardOptions}
-            selectedValue={viewModel.settings.skipBackwardSeconds}
-            onSelect={viewModel.handleSkipBackwardChange}
+          <SettingLinkRow
+            label='Notifications'
+            onPress={onNotificationsPress}
           />
-        </View>
-
-        {/* Download Settings */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Downloads</Text>
-        </View>
-        <View style={styles.settingsSection}>
-          <SettingToggleRow
-            label='Download on WiFi only'
-            value={viewModel.settings.downloadOnWiFi}
-            onValueChange={viewModel.handleToggleDownloadOnWiFi}
-            isLast
-          />
-        </View>
-
-        {/* Appearance */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Appearance</Text>
-        </View>
-        <View style={styles.settingsSection}>
           <SettingToggleRow
             label='Dark Mode'
             value={viewModel.isDarkMode}
             onValueChange={viewModel.handleToggleDarkMode}
+          />
+          <SettingToggleRow
+            label='Download On WiFi Only'
+            value={viewModel.downloadOnWiFi}
+            onValueChange={viewModel.handleToggleDownloadOnWiFi}
+          />
+          <SettingLinkRow
+            label='Player Controls'
+            onPress={onPlayerControlsPress}
+          />
+          <SettingLinkRow label='Legal' onPress={onLegalPress} />
+          <SettingLinkRow label='App Information' onPress={onAppInfoPress} />
+          <SettingLinkRow
+            label='Change Password'
+            onPress={onChangePasswordPress}
+          />
+          <SettingLinkRow
+            label='Sign Out'
+            onPress={viewModel.handleSignOutPress}
+            destructive
+          />
+          <SettingLinkRow
+            label='Reset All Settings'
+            onPress={viewModel.handleResetSettings}
+            destructive
             isLast
           />
         </View>
-
-        {/* Notifications */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Notifications</Text>
-        </View>
-        <View style={styles.settingsSection}>
-          <SettingLinkRow
-            label='New episode alerts'
-            onPress={onNotificationsPress}
-            isLast
-          />
-        </View>
-
-        {/* Legal */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Legal</Text>
-        </View>
-        <View style={styles.settingsSection}>
-          <SettingLinkRow
-            label='Privacy Policy'
-            onPress={viewModel.handlePrivacyPolicyPress}
-          />
-          <SettingLinkRow
-            label='Terms of Service'
-            onPress={viewModel.handleTermsOfServicePress}
-            isLast
-          />
-        </View>
-
-        {/* App Info */}
-        <View style={styles.appInfoSection}>
-          <Text style={styles.appName}>K-Pod</Text>
-          <Text style={styles.appVersion}>Version {viewModel.appVersion}</Text>
-        </View>
-
-        {/* Reset Settings Button */}
-        <TouchableOpacity
-          style={styles.resetButton}
-          onPress={viewModel.handleResetSettings}
-        >
-          <Text style={styles.resetButtonText}>Reset All Settings</Text>
-        </TouchableOpacity>
       </ScrollView>
       <Toast
         message={viewModel.toast.message}

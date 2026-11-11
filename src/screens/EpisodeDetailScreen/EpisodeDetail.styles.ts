@@ -25,13 +25,13 @@ export const createStyles = (colors: ThemeColors) =>
       backgroundColor: colors.border,
     },
     podcastTitle: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textSecondary,
       marginBottom: 4,
       textAlign: 'center',
     },
     episodeTitle: {
-      fontSize: 20,
+      fontSize: 22,
       fontWeight: '600',
       color: colors.textPrimary,
       textAlign: 'center',
@@ -44,16 +44,16 @@ export const createStyles = (colors: ThemeColors) =>
       marginTop: 8,
     },
     metaText: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textSecondary,
     },
     metaDot: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
     },
     playedBadge: {
-      fontSize: 12,
-      color: colors.played,
+      fontSize: 16,
+      color: colors.textSecondary,
       fontWeight: '500',
     },
     actionsContainer: {
@@ -73,7 +73,7 @@ export const createStyles = (colors: ThemeColors) =>
       paddingVertical: 12,
       paddingHorizontal: 24,
       borderRadius: 24,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.primaryFill,
     },
     actionButtonSecondary: {
       backgroundColor: colors.background,
@@ -81,7 +81,7 @@ export const createStyles = (colors: ThemeColors) =>
       borderColor: colors.border,
     },
     actionButtonText: {
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: '600',
       color: colors.onPrimary,
     },
@@ -103,7 +103,7 @@ export const createStyles = (colors: ThemeColors) =>
       marginTop: 2,
     },
     nowPlayingText: {
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: '600',
       color: colors.primary,
     },
@@ -113,14 +113,14 @@ export const createStyles = (colors: ThemeColors) =>
       marginTop: 12,
     },
     descriptionLabel: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.textPrimary,
       marginBottom: 12,
     },
     descriptionText: {
-      fontSize: 16,
-      lineHeight: 22,
+      fontSize: 18,
+      lineHeight: 25,
       color: colors.textSecondary,
     },
   });

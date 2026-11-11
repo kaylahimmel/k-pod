@@ -1,20 +1,16 @@
 import { useCallback, useMemo } from 'react';
-import { Alert, Linking } from 'react-native';
-import { PlaybackSpeed } from '../../models';
-import { useIsDarkMode, useSettingsStore, useToast } from '../../hooks';
-import { unregisterBackgroundRefresh } from '../../services';
+import { Alert } from 'react-native';
 import {
-  formatSettings,
-  getAppVersion,
-  SPEED_OPTIONS,
-  SKIP_FORWARD_OPTIONS,
-  SKIP_BACKWARD_OPTIONS,
-} from './SettingsPresenter';
+  useAuthStore,
+  useHistoryStore,
+  useIsDarkMode,
+  usePodcastStore,
+  useSettingsStore,
+  useToast,
+} from '../../hooks';
+import { AuthService, unregisterBackgroundRefresh } from '../../services';
+import { formatAccount, getListeningStats } from './SettingsPresenter';
 import { SettingsViewModelReturn } from './Settings.types';
-
-// Placeholder URLs for legal pages
-const PRIVACY_POLICY_URL = 'https://example.com/privacy';
-const TERMS_OF_SERVICE_URL = 'https://example.com/terms';
 
 /**
  * ViewModel hook for the Settings screen
@@ -28,27 +24,14 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
   // The current look, whether it came from the phone or from this switch
   const isDarkMode = useIsDarkMode();
 
-  // Formatted settings from presenter
-  const formattedSettings = useMemo(() => formatSettings(settings), [settings]);
-
-  // App version from presenter
-  const appVersion = useMemo(() => getAppVersion(), []);
-
-  /**
-   * Toggles the auto-play next episode setting
-   */
-  const handleToggleAutoPlayNext = useCallback(() => {
-    updateSetting('autoPlayNext', !settings.autoPlayNext);
-  }, [settings.autoPlayNext, updateSetting]);
-
-  /**
-   * Updates the default playback speed
-   */
-  const handleSpeedChange = useCallback(
-    (speed: PlaybackSpeed) => {
-      updateSetting('defaultSpeed', speed);
-    },
-    [updateSetting],
+  // Account and Listening sections (moved here from the old Profile tab)
+  const { user } = useAuthStore();
+  const { podcasts } = usePodcastStore();
+  const { history } = useHistoryStore();
+  const account = useMemo(() => formatAccount(user), [user]);
+  const listeningStats = useMemo(
+    () => getListeningStats(history, podcasts),
+    [history, podcasts],
   );
 
   /**
@@ -57,26 +40,6 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
   const handleToggleDownloadOnWiFi = useCallback(() => {
     updateSetting('downloadOnWiFi', !settings.downloadOnWiFi);
   }, [settings.downloadOnWiFi, updateSetting]);
-
-  /**
-   * Updates the skip forward duration
-   */
-  const handleSkipForwardChange = useCallback(
-    (seconds: number) => {
-      updateSetting('skipForwardSeconds', seconds);
-    },
-    [updateSetting],
-  );
-
-  /**
-   * Updates the skip backward duration
-   */
-  const handleSkipBackwardChange = useCallback(
-    (seconds: number) => {
-      updateSetting('skipBackwardSeconds', seconds);
-    },
-    [updateSetting],
-  );
 
   /**
    * Flips the look and saves the choice. Saving 'light' or 'dark' (never
@@ -112,47 +75,33 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
   }, [resetSettings, toast]);
 
   /**
-   * Opens the privacy policy in the device browser
+   * Signs out after a confirmation. RootNavigator's onAuthStateChanged
+   * listener updates authStore, which switches the app to the sign-in screens
    */
-  const handlePrivacyPolicyPress = useCallback(async () => {
-    // TODO: Replace with actual privacy policy URL when available
-    try {
-      await Linking.openURL(PRIVACY_POLICY_URL);
-    } catch {
-      Alert.alert('Error', 'Unable to open privacy policy.');
-    }
-  }, []);
-
-  /**
-   * Opens the terms of service in the device browser
-   */
-  const handleTermsOfServicePress = useCallback(async () => {
-    // TODO: Replace with actual terms of service URL when available
-    try {
-      await Linking.openURL(TERMS_OF_SERVICE_URL);
-    } catch {
-      Alert.alert('Error', 'Unable to open terms of service.');
-    }
+  const handleSignOutPress = useCallback(() => {
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          await AuthService.signOut();
+        },
+      },
+    ]);
   }, []);
 
   return {
-    settings: formattedSettings,
+    downloadOnWiFi: settings.downloadOnWiFi,
     isLoading: loading,
-    speedOptions: SPEED_OPTIONS,
-    skipForwardOptions: SKIP_FORWARD_OPTIONS,
-    skipBackwardOptions: SKIP_BACKWARD_OPTIONS,
-    appVersion,
     isDarkMode,
+    account,
+    listeningStats,
     toast,
-    handleToggleAutoPlayNext,
-    handleSpeedChange,
     handleToggleDownloadOnWiFi,
-    handleSkipForwardChange,
-    handleSkipBackwardChange,
     handleToggleDarkMode,
     handleResetSettings,
-    handlePrivacyPolicyPress,
-    handleTermsOfServicePress,
+    handleSignOutPress,
   };
 };
 

@@ -19,7 +19,7 @@ export const createStyles = (colors: ThemeColors) =>
       gap: 6,
     },
     label: {
-      fontSize: 14,
+      fontSize: 17,
       fontWeight: '600',
       color: colors.textPrimary,
     },
@@ -35,7 +35,7 @@ export const createStyles = (colors: ThemeColors) =>
       borderColor: colors.danger,
     },
     input: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textPrimary,
     },
     errorContainer: {
@@ -44,12 +44,12 @@ export const createStyles = (colors: ThemeColors) =>
       gap: 6,
     },
     errorText: {
-      fontSize: 13,
+      fontSize: 17,
       color: colors.danger,
       flex: 1,
     },
     button: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.primaryFill,
       borderRadius: 10,
       paddingVertical: 14,
       alignItems: 'center',
@@ -59,7 +59,7 @@ export const createStyles = (colors: ThemeColors) =>
       opacity: 0.6,
     },
     buttonText: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.onPrimary,
     },
@@ -74,7 +74,7 @@ export const createStyles = (colors: ThemeColors) =>
       width: 72,
       height: 72,
       borderRadius: 36,
-      backgroundColor: colors.success,
+      backgroundColor: colors.successFill,
       justifyContent: 'center',
       alignItems: 'center',
     },

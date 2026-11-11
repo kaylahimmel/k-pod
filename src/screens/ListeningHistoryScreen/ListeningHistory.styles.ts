@@ -17,7 +17,7 @@ export const createStyles = (colors: ThemeColors) =>
       alignItems: 'center',
     },
     summaryText: {
-      fontSize: 15,
+      fontSize: 18,
       color: colors.textSecondary,
     },
     clearButton: {
@@ -25,7 +25,7 @@ export const createStyles = (colors: ThemeColors) =>
       paddingHorizontal: 12,
     },
     clearButtonText: {
-      fontSize: 15,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.danger,
     },

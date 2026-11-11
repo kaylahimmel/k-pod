@@ -35,25 +35,10 @@ describe('SettingsScreen', () => {
     it('should render SettingsView', () => {
       const { getByText } = renderSettingsScreen();
 
-      expect(getByText('Playback')).toBeTruthy();
+      expect(getByText('Listening History')).toBeTruthy();
     });
 
-    it('should display all settings sections', () => {
-      const { getByText } = renderSettingsScreen();
-
-      expect(getByText('Playback')).toBeTruthy();
-      expect(getByText('Skip Controls')).toBeTruthy();
-      expect(getByText('Downloads')).toBeTruthy();
-      expect(getByText('Legal')).toBeTruthy();
-    });
-
-    it('should display app info section', () => {
-      const { getByText } = renderSettingsScreen();
-
-      expect(getByText('K-Pod')).toBeTruthy();
-    });
-
-    it('should display reset settings button', () => {
+    it('should display the reset settings row', () => {
       const { getByText } = renderSettingsScreen();
 
       expect(getByText('Reset All Settings')).toBeTruthy();
@@ -61,14 +46,43 @@ describe('SettingsScreen', () => {
   });
 
   describe('Navigation', () => {
-    it('should open the notifications modal', () => {
+    it('should open the notification settings', () => {
       const { getByText } = renderSettingsScreen();
 
-      fireEvent.press(getByText('New episode alerts'));
+      fireEvent.press(getByText('Notifications'));
 
       expect(mockNavigationFns.navigate).toHaveBeenCalledWith(
         'NotificationSettings',
       );
+    });
+
+    it('should open the Player Controls and App Information screens', () => {
+      const { getByText } = renderSettingsScreen();
+
+      fireEvent.press(getByText('Player Controls'));
+      expect(mockNavigationFns.navigate).toHaveBeenCalledWith('PlayerControls');
+
+      fireEvent.press(getByText('App Information'));
+      expect(mockNavigationFns.navigate).toHaveBeenCalledWith('AppInfo');
+    });
+
+    it('should open the Legal screen', () => {
+      const { getByText } = renderSettingsScreen();
+
+      fireEvent.press(getByText('Legal'));
+      expect(mockNavigationFns.navigate).toHaveBeenCalledWith('Legal');
+    });
+
+    it('should open Listening History and Change Password in the Settings stack', () => {
+      const { getByText } = renderSettingsScreen();
+
+      fireEvent.press(getByText('Listening History'));
+      expect(mockNavigationFns.navigate).toHaveBeenCalledWith(
+        'ListeningHistory',
+      );
+
+      fireEvent.press(getByText('Change Password'));
+      expect(mockNavigationFns.navigate).toHaveBeenCalledWith('ChangePassword');
     });
   });
   describe('Dark Mode', () => {

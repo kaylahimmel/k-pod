@@ -8,12 +8,15 @@ interface SettingLinkRowProps {
   label: string;
   onPress: () => void;
   isLast?: boolean;
+  // Red label and no arrow, for actions like Sign Out that don't open a page
+  destructive?: boolean;
 }
 
 export const SettingLinkRow = ({
   label,
   onPress,
   isLast = false,
+  destructive = false,
 }: SettingLinkRowProps) => {
   const colors = useThemeColors();
   const styles = useThemedStyles(createStyles);
@@ -22,8 +25,16 @@ export const SettingLinkRow = ({
       style={[styles.container, isLast && styles.containerLast]}
       onPress={onPress}
     >
-      <Text style={styles.label}>{label}</Text>
-      <Ionicons name='chevron-forward' size={20} color={colors.textSecondary} />
+      <Text style={[styles.label, destructive && styles.labelDestructive]}>
+        {label}
+      </Text>
+      {!destructive && (
+        <Ionicons
+          name='chevron-forward'
+          size={20}
+          color={colors.textSecondary}
+        />
+      )}
     </TouchableOpacity>
   );
 };
@@ -44,8 +55,11 @@ const createStyles = (colors: ThemeColors) =>
       borderBottomWidth: 0,
     },
     label: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textPrimary,
       flex: 1,
+    },
+    labelDestructive: {
+      color: colors.danger,
     },
   });

@@ -52,7 +52,7 @@ const createStyles = (colors: ThemeColors) =>
       borderBottomWidth: 0,
     },
     label: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textPrimary,
       flex: 1,
     },

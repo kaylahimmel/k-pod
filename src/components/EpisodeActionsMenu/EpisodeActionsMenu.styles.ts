@@ -16,7 +16,7 @@ export const createStyles = (colors: ThemeColors) =>
       paddingTop: 8,
     },
     title: {
-      fontSize: 15,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.textPrimary,
       paddingHorizontal: 20,
@@ -33,7 +33,7 @@ export const createStyles = (colors: ThemeColors) =>
       minHeight: 48,
     },
     actionText: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textPrimary,
     },
     cancel: {
@@ -44,7 +44,7 @@ export const createStyles = (colors: ThemeColors) =>
       minHeight: 48,
     },
     cancelText: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textSecondary,
       textAlign: 'center',
     },

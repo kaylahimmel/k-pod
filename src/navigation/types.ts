@@ -36,21 +36,20 @@ export type QueueStackParamList = {
   EpisodeDetail: { episodeId: string; podcastId: string };
 };
 
-export type ProfileStackParamList = {
-  Profile: undefined;
-  ListeningHistory: undefined;
-  ChangePassword: undefined;
-};
-
 export type SettingsStackParamList = {
   Settings: undefined;
+  NotificationSettings: undefined;
+  PlayerControls: undefined;
+  Legal: undefined;
+  AppInfo: undefined;
+  ListeningHistory: undefined;
+  ChangePassword: undefined;
 };
 
 export type BottomTabParamList = {
   LibraryTab: NavigatorScreenParams<LibraryStackParamList>;
   DiscoverTab: NavigatorScreenParams<DiscoverStackParamList>;
   QueueTab: NavigatorScreenParams<QueueStackParamList>;
-  ProfileTab: NavigatorScreenParams<ProfileStackParamList>;
   SettingsTab: NavigatorScreenParams<SettingsStackParamList>;
 };
 
@@ -58,7 +57,6 @@ export type RootStackParamList = {
   Main: NavigatorScreenParams<BottomTabParamList>;
   FullPlayer: { episode: Episode; podcast: Podcast };
   AddPodcastModal: undefined;
-  NotificationSettings: undefined;
 };
 
 export type LibraryScreenProps = CompositeScreenProps<
@@ -133,26 +131,18 @@ export type QueueEpisodeDetailScreenProps = CompositeScreenProps<
   >
 >;
 
-export type ProfileScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'Profile'>,
-  CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, 'ProfileTab'>,
-    NativeStackScreenProps<RootStackParamList>
-  >
->;
-
 export type ListeningHistoryScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'ListeningHistory'>,
+  NativeStackScreenProps<SettingsStackParamList, 'ListeningHistory'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, 'ProfileTab'>,
+    BottomTabScreenProps<BottomTabParamList, 'SettingsTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
 
 export type ChangePasswordScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<ProfileStackParamList, 'ChangePassword'>,
+  NativeStackScreenProps<SettingsStackParamList, 'ChangePassword'>,
   CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, 'ProfileTab'>,
+    BottomTabScreenProps<BottomTabParamList, 'SettingsTab'>,
     NativeStackScreenProps<RootStackParamList>
   >
 >;
@@ -173,11 +163,6 @@ export type FullPlayerScreenProps = NativeStackScreenProps<
 export type AddPodcastModalScreenProps = NativeStackScreenProps<
   RootStackParamList,
   'AddPodcastModal'
->;
-
-export type NotificationSettingsScreenProps = NativeStackScreenProps<
-  RootStackParamList,
-  'NotificationSettings'
 >;
 
 export type LoginScreenProps = NativeStackScreenProps<

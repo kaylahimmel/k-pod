@@ -4,13 +4,13 @@ import { ThemeColors } from '../../constants';
 export const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     successTitle: {
-      fontSize: 24,
+      fontSize: 26,
       fontWeight: '700',
       color: colors.textPrimary,
       textAlign: 'center',
     },
     successMessage: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textSecondary,
       textAlign: 'center',
     },

@@ -24,19 +24,19 @@ export const createStyles = (colors: ThemeColors) =>
       marginRight: 12,
     },
     episodeTitle: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.textPrimary,
       marginBottom: 4,
     },
     episodeTitlePlayed: {
-      color: colors.played,
+      color: colors.textSecondary,
     },
     episodeDescription: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
       marginBottom: 8,
-      lineHeight: 18,
+      lineHeight: 22,
     },
     episodeMeta: {
       flexDirection: 'row',
@@ -45,11 +45,11 @@ export const createStyles = (colors: ThemeColors) =>
       gap: 8,
     },
     episodeDate: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
     },
     episodeDuration: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
     },
     playedBadge: {
@@ -58,7 +58,7 @@ export const createStyles = (colors: ThemeColors) =>
       gap: 2,
     },
     playedText: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
     },
     episodeActions: {

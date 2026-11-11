@@ -1,47 +1,34 @@
 import { UseToastReturn } from '../../hooks';
-import { PlaybackSpeed } from '../../models';
 
-export interface SpeedOption {
-  value: PlaybackSpeed;
-  label: string;
+export interface FormattedAccount {
+  email: string;
+  initials: string;
 }
 
-export interface SkipOption {
-  value: number;
-  label: string;
-}
-
-export interface FormattedSettings {
-  autoPlayNext: boolean;
-  defaultSpeed: PlaybackSpeed;
-  defaultSpeedLabel: string;
-  downloadOnWiFi: boolean;
-  skipForwardSeconds: number;
-  skipForwardLabel: string;
-  skipBackwardSeconds: number;
-  skipBackwardLabel: string;
+export interface ListeningStats {
+  totalListeningTime: string;
+  episodesCompleted: number;
+  podcastsSubscribed: number;
 }
 
 export interface SettingsViewProps {
   onNotificationsPress: () => void;
+  onPlayerControlsPress: () => void;
+  onLegalPress: () => void;
+  onAppInfoPress: () => void;
+  onListeningHistoryPress: () => void;
+  onChangePasswordPress: () => void;
 }
 
 export interface SettingsViewModelReturn {
-  settings: FormattedSettings;
+  downloadOnWiFi: boolean;
   isLoading: boolean;
-  speedOptions: SpeedOption[];
-  skipForwardOptions: SkipOption[];
-  skipBackwardOptions: SkipOption[];
-  appVersion: string;
   isDarkMode: boolean;
+  account: FormattedAccount;
+  listeningStats: ListeningStats;
   toast: UseToastReturn;
-  handleToggleAutoPlayNext: () => void;
-  handleSpeedChange: (speed: PlaybackSpeed) => void;
   handleToggleDownloadOnWiFi: () => void;
-  handleSkipForwardChange: (seconds: number) => void;
-  handleSkipBackwardChange: (seconds: number) => void;
   handleToggleDarkMode: () => void;
   handleResetSettings: () => void;
-  handlePrivacyPolicyPress: () => void;
-  handleTermsOfServicePress: () => void;
+  handleSignOutPress: () => void;
 }

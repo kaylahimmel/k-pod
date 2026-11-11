@@ -28,13 +28,13 @@ export const createStyles = (colors: ThemeColors) =>
       marginRight: 8,
     },
     podcastTitle: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.textPrimary,
       marginBottom: 2,
     },
     podcastAuthor: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
       marginBottom: 4,
     },
@@ -43,12 +43,12 @@ export const createStyles = (colors: ThemeColors) =>
       alignItems: 'center',
     },
     podcastGenre: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.primary,
       marginRight: 8,
     },
     podcastEpisodes: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
     },
     subscribeButton: {

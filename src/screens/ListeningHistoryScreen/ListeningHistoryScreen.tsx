@@ -6,7 +6,7 @@ export const ListeningHistoryScreen = ({
   navigation,
 }: ListeningHistoryScreenProps) => {
   const handleClearHistory = useCallback(() => {
-    // Navigate back to profile after clearing history
+    // Navigate back to Settings after clearing history
     navigation.goBack();
   }, [navigation]);
 

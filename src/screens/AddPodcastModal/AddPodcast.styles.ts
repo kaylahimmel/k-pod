@@ -21,7 +21,7 @@ export const createStyles = (colors: ThemeColors) =>
       marginBottom: 24,
     },
     headerTitle: {
-      fontSize: 17,
+      fontSize: 19,
       fontWeight: '600',
       color: colors.textPrimary,
     },
@@ -29,7 +29,7 @@ export const createStyles = (colors: ThemeColors) =>
       padding: 8,
     },
     headerButtonText: {
-      fontSize: 17,
+      fontSize: 19,
       color: colors.primary,
     },
     headerButtonDisabled: {
@@ -39,7 +39,7 @@ export const createStyles = (colors: ThemeColors) =>
       marginBottom: 8,
     },
     inputLabel: {
-      fontSize: 14,
+      fontSize: 17,
       fontWeight: '500',
       color: colors.textSecondary,
       marginBottom: 8,
@@ -58,7 +58,7 @@ export const createStyles = (colors: ThemeColors) =>
     },
     input: {
       flex: 1,
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textPrimary,
       paddingVertical: 14,
     },
@@ -72,12 +72,12 @@ export const createStyles = (colors: ThemeColors) =>
       gap: 6,
     },
     errorText: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.danger,
       flex: 1,
     },
     addButton: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.primaryFill,
       borderRadius: 12,
       paddingVertical: 16,
       alignItems: 'center',
@@ -87,7 +87,7 @@ export const createStyles = (colors: ThemeColors) =>
       backgroundColor: colors.border,
     },
     addButtonText: {
-      fontSize: 17,
+      fontSize: 19,
       fontWeight: '600',
       color: colors.onPrimary,
     },
@@ -101,7 +101,7 @@ export const createStyles = (colors: ThemeColors) =>
       paddingVertical: 48,
     },
     loadingText: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textSecondary,
       marginTop: 16,
     },
@@ -130,13 +130,13 @@ export const createStyles = (colors: ThemeColors) =>
       justifyContent: 'center',
     },
     previewTitle: {
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: '600',
       color: colors.textPrimary,
       marginBottom: 4,
     },
     previewAuthor: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
       marginBottom: 8,
     },
@@ -151,22 +151,22 @@ export const createStyles = (colors: ThemeColors) =>
       gap: 4,
     },
     previewMetaText: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
     },
     previewDescription: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
-      lineHeight: 20,
+      lineHeight: 24,
     },
     subscribeButton: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.primaryFill,
       borderRadius: 12,
       paddingVertical: 16,
       alignItems: 'center',
     },
     subscribeButtonText: {
-      fontSize: 17,
+      fontSize: 19,
       fontWeight: '600',
       color: colors.onPrimary,
     },
@@ -181,16 +181,16 @@ export const createStyles = (colors: ThemeColors) =>
       alignItems: 'center',
     },
     changeUrlText: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.primary,
     },
     hintContainer: {
       marginBottom: 20,
     },
     hintText: {
-      fontSize: 13,
+      fontSize: 17,
       color: colors.textSecondary,
       textAlign: 'center',
-      lineHeight: 18,
+      lineHeight: 24,
     },
   });

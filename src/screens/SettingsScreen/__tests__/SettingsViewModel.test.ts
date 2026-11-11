@@ -1,9 +1,17 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useSettingsViewModel } from '../SettingsViewModel';
-import { settingsStore } from '../../../stores';
-import { unregisterBackgroundRefresh } from '../../../services';
+import { podcastStore, settingsStore } from '../../../stores';
+import { authStore } from '../../../stores/authStore';
+import { historyStore } from '../../../stores/historyStore';
+import { AuthService, unregisterBackgroundRefresh } from '../../../services';
 import { Alert, Linking } from 'react-native';
-import { createMockAppSettings } from '../../../__mocks__';
+import {
+  createMockAppSettings,
+  createMockEpisode,
+  createMockListeningHistory,
+  createMockPodcasts,
+  createMockUser,
+} from '../../../__mocks__';
 
 // Mock the stores
 jest.mock('../../../stores', () => ({
@@ -14,6 +22,7 @@ jest.mock('../../../stores', () => ({
 // Mock the background service the ViewModel calls
 jest.mock('../../../services', () => ({
   unregisterBackgroundRefresh: jest.fn(),
+  AuthService: { signOut: jest.fn() },
 }));
 
 const mockUnregister = unregisterBackgroundRefresh as jest.Mock;
@@ -49,19 +58,17 @@ describe('useSettingsViewModel', () => {
     jest.clearAllMocks();
     mockSettingsState();
     mockUnregister.mockResolvedValue({ success: true, data: undefined });
+    // usePodcastStore reads the mocked barrel; auth and history are the real
+    // stores (their hooks import them directly), reset to empty here
+    (podcastStore as unknown as jest.Mock).mockReturnValue({ podcasts: [] });
+    authStore.setState({ user: null });
+    historyStore.setState({ history: [] });
   });
 
-  it('should return formatted settings', () => {
+  it('should return the download setting', () => {
     const { result } = renderHook(() => useSettingsViewModel());
 
-    expect(result.current.settings.autoPlayNext).toBe(true);
-    expect(result.current.settings.defaultSpeed).toBe(1);
-    expect(result.current.settings.defaultSpeedLabel).toBe('1x (Normal)');
-    expect(result.current.settings.downloadOnWiFi).toBe(true);
-    expect(result.current.settings.skipForwardSeconds).toBe(30);
-    expect(result.current.settings.skipForwardLabel).toBe('30 sec');
-    expect(result.current.settings.skipBackwardSeconds).toBe(15);
-    expect(result.current.settings.skipBackwardLabel).toBe('15 sec');
+    expect(result.current.downloadOnWiFi).toBe(true);
   });
 
   it('should return loading state', () => {
@@ -77,50 +84,6 @@ describe('useSettingsViewModel', () => {
     expect(result.current.isLoading).toBe(true);
   });
 
-  it('should return speed options', () => {
-    const { result } = renderHook(() => useSettingsViewModel());
-
-    expect(result.current.speedOptions).toHaveLength(7);
-    expect(result.current.speedOptions[0].value).toBe(0.5);
-  });
-
-  it('should return skip options', () => {
-    const { result } = renderHook(() => useSettingsViewModel());
-
-    expect(result.current.skipForwardOptions).toHaveLength(5);
-    expect(result.current.skipBackwardOptions).toHaveLength(4);
-  });
-
-  it('should return app version', () => {
-    const { result } = renderHook(() => useSettingsViewModel());
-
-    expect(result.current.appVersion).toBe('1.0.0');
-  });
-
-  describe('handleToggleAutoPlayNext', () => {
-    it('should toggle auto-play next setting', () => {
-      const { result } = renderHook(() => useSettingsViewModel());
-
-      act(() => {
-        result.current.handleToggleAutoPlayNext();
-      });
-
-      expect(mockUpdateSetting).toHaveBeenCalledWith('autoPlayNext', false);
-    });
-  });
-
-  describe('handleSpeedChange', () => {
-    it('should update playback speed', () => {
-      const { result } = renderHook(() => useSettingsViewModel());
-
-      act(() => {
-        result.current.handleSpeedChange(1.5);
-      });
-
-      expect(mockUpdateSetting).toHaveBeenCalledWith('defaultSpeed', 1.5);
-    });
-  });
-
   describe('handleToggleDownloadOnWiFi', () => {
     it('should toggle download on WiFi setting', () => {
       const { result } = renderHook(() => useSettingsViewModel());
@@ -130,30 +93,6 @@ describe('useSettingsViewModel', () => {
       });
 
       expect(mockUpdateSetting).toHaveBeenCalledWith('downloadOnWiFi', false);
-    });
-  });
-
-  describe('handleSkipForwardChange', () => {
-    it('should update skip forward seconds', () => {
-      const { result } = renderHook(() => useSettingsViewModel());
-
-      act(() => {
-        result.current.handleSkipForwardChange(45);
-      });
-
-      expect(mockUpdateSetting).toHaveBeenCalledWith('skipForwardSeconds', 45);
-    });
-  });
-
-  describe('handleSkipBackwardChange', () => {
-    it('should update skip backward seconds', () => {
-      const { result } = renderHook(() => useSettingsViewModel());
-
-      act(() => {
-        result.current.handleSkipBackwardChange(10);
-      });
-
-      expect(mockUpdateSetting).toHaveBeenCalledWith('skipBackwardSeconds', 10);
     });
   });
 
@@ -229,31 +168,6 @@ describe('useSettingsViewModel', () => {
     });
   });
 
-  describe('handlePrivacyPolicyPress', () => {
-    it('should open privacy policy URL', async () => {
-      const { result } = renderHook(() => useSettingsViewModel());
-
-      await act(async () => {
-        await result.current.handlePrivacyPolicyPress();
-      });
-
-      expect(Linking.openURL).toHaveBeenCalledWith(
-        'https://example.com/privacy',
-      );
-    });
-  });
-
-  describe('handleTermsOfServicePress', () => {
-    it('should open terms of service URL', async () => {
-      const { result } = renderHook(() => useSettingsViewModel());
-
-      await act(async () => {
-        await result.current.handleTermsOfServicePress();
-      });
-
-      expect(Linking.openURL).toHaveBeenCalledWith('https://example.com/terms');
-    });
-  });
   describe('dark mode', () => {
     // Jest's React Native reports a light phone, so 'system' reads as light
     it('should show the switch off while following a light phone', () => {
@@ -286,6 +200,60 @@ describe('useSettingsViewModel', () => {
         'themePreference',
         'light',
       );
+    });
+  });
+
+  describe('account and listening stats', () => {
+    it('should show the signed-in email and initials', () => {
+      authStore.setState({
+        user: createMockUser({ email: 'kayla.h@example.com' }),
+      });
+      const { result } = renderHook(() => useSettingsViewModel());
+
+      expect(result.current.account).toEqual({
+        email: 'kayla.h@example.com',
+        initials: 'KH',
+      });
+    });
+
+    it('should build stats from history and subscriptions', () => {
+      (podcastStore as unknown as jest.Mock).mockReturnValue({
+        podcasts: createMockPodcasts(2),
+      });
+      historyStore.setState({
+        history: [
+          createMockListeningHistory({
+            episode: createMockEpisode({ duration: 600 }),
+            completionPercentage: 100,
+          }),
+        ],
+      });
+      const { result } = renderHook(() => useSettingsViewModel());
+
+      expect(result.current.listeningStats).toEqual({
+        totalListeningTime: '10 min',
+        episodesCompleted: 1,
+        podcastsSubscribed: 2,
+      });
+    });
+
+    it('should sign out only after the user confirms', async () => {
+      const { result } = renderHook(() => useSettingsViewModel());
+
+      act(() => {
+        result.current.handleSignOutPress();
+      });
+      expect(AuthService.signOut).not.toHaveBeenCalled();
+
+      const buttons = (Alert.alert as jest.Mock).mock.calls[0][2];
+      const signOutButton = buttons.find(
+        (button: { text: string }) => button.text === 'Sign Out',
+      );
+      await act(async () => {
+        await signOutButton.onPress();
+      });
+
+      expect(AuthService.signOut).toHaveBeenCalledTimes(1);
     });
   });
 });

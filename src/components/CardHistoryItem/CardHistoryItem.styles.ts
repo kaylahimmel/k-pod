@@ -25,17 +25,17 @@ export const createStyles = (colors: ThemeColors) =>
       justifyContent: 'center',
     },
     episodeTitle: {
-      fontSize: 15,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.textPrimary,
       marginBottom: 2,
     },
     podcastTitle: {
-      fontSize: 13,
+      fontSize: 17,
       color: colors.textSecondary,
     },
     meta: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
       marginTop: 2,
     },

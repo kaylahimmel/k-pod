@@ -35,14 +35,14 @@ export const createStyles = (colors: ThemeColors) =>
       marginBottom: 12,
     },
     episodeTitle: {
-      fontSize: 20,
+      fontSize: 22,
       fontWeight: '600',
       color: colors.textPrimary,
       textAlign: 'center',
       marginBottom: 6,
     },
     podcastTitle: {
-      fontSize: 18,
+      fontSize: 20,
       color: colors.textSecondary,
       textAlign: 'center',
       paddingBottom: 8,
@@ -52,15 +52,15 @@ export const createStyles = (colors: ThemeColors) =>
       paddingHorizontal: 8,
     },
     descriptionText: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textSecondary,
-      lineHeight: 20,
+      lineHeight: 23,
     },
     seeMoreButton: {
       marginTop: 4,
     },
     seeMoreText: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.primary,
       fontWeight: '500',
     },
@@ -77,7 +77,7 @@ export const createStyles = (colors: ThemeColors) =>
       marginTop: -8,
     },
     timeText: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
     },
     controlsContainer: {
@@ -91,7 +91,7 @@ export const createStyles = (colors: ThemeColors) =>
       width: 72,
       height: 72,
       borderRadius: 36,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.primaryFill,
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -99,7 +99,7 @@ export const createStyles = (colors: ThemeColors) =>
       padding: 8,
     },
     skipLabel: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
       textAlign: 'center',
       marginTop: 2,
@@ -119,7 +119,7 @@ export const createStyles = (colors: ThemeColors) =>
       borderColor: colors.border,
     },
     speedButtonText: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.textPrimary,
     },
@@ -143,12 +143,12 @@ export const createStyles = (colors: ThemeColors) =>
       borderBottomColor: colors.border,
     },
     speedPickerTitle: {
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: '600',
       color: colors.textPrimary,
     },
     speedPickerDone: {
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: '600',
       color: colors.primary,
     },
@@ -167,10 +167,10 @@ export const createStyles = (colors: ThemeColors) =>
       alignItems: 'center',
     },
     speedOptionSelected: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.primaryFill,
     },
     speedOptionText: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: '500',
       color: colors.textPrimary,
     },

@@ -18,7 +18,7 @@ export const createStyles = (colors: ThemeColors) =>
     },
     searchInput: {
       flex: 1,
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textPrimary,
     },
   });

@@ -1,127 +1,163 @@
 import {
-  formatPlaybackSpeed,
-  formatSkipDuration,
-  formatSettings,
-  getAppVersion,
-  SPEED_OPTIONS,
-  SKIP_FORWARD_OPTIONS,
-  SKIP_BACKWARD_OPTIONS,
+  formatListeningTime,
+  getInitialsFromEmail,
+  formatAccount,
+  calculateTotalListeningTime,
+  countCompletedEpisodes,
+  getListeningStats,
 } from '../SettingsPresenter';
-import { AppSettings } from '../../../models';
-import Constants from 'expo-constants';
-import { createMockAppSettings } from '../../../__mocks__';
+import {
+  createMockEpisode,
+  createMockListeningHistory,
+  createMockPodcasts,
+  createMockUser,
+} from '../../../__mocks__';
 
-// expoConfig is a non-configurable getter on the real module, so jest.spyOn
-// can't wrap it - mock the module and mutate the plain object instead
-jest.mock('expo-constants', () => ({
-  __esModule: true,
-  default: { expoConfig: { version: '1.0.0' } },
-}));
+describe('SettingsPresenter', () => {});
 
-type MutableConstants = { expoConfig: { version?: string } | null };
-const mockConstants = Constants as unknown as MutableConstants;
+describe('formatListeningTime', () => {
+  it("should return '0 min' for 0 seconds", () => {
+    expect(formatListeningTime(0)).toBe('0 min');
+  });
 
-describe('SettingsPresenter', () => {
-  describe('SPEED_OPTIONS', () => {
-    it('should have expected speed options', () => {
-      expect(SPEED_OPTIONS).toHaveLength(7);
-      expect(SPEED_OPTIONS[0]).toEqual({ value: 0.5, label: '0.5x' });
-      expect(SPEED_OPTIONS[2]).toEqual({ value: 1, label: '1x (Normal)' });
-      expect(SPEED_OPTIONS[6]).toEqual({ value: 2, label: '2x' });
+  it("should return '0 min' for negative seconds", () => {
+    expect(formatListeningTime(-10)).toBe('0 min');
+  });
+
+  it("should return '0 min' for null/undefined", () => {
+    expect(formatListeningTime(null as unknown as number)).toBe('0 min');
+    expect(formatListeningTime(undefined as unknown as number)).toBe('0 min');
+  });
+
+  it('should format minutes only', () => {
+    expect(formatListeningTime(300)).toBe('5 min');
+    expect(formatListeningTime(2700)).toBe('45 min');
+  });
+
+  it('should format hours only when minutes is 0', () => {
+    expect(formatListeningTime(3600)).toBe('1h');
+    expect(formatListeningTime(7200)).toBe('2h');
+  });
+
+  it('should format hours and minutes', () => {
+    expect(formatListeningTime(3660)).toBe('1h 1m');
+    expect(formatListeningTime(5400)).toBe('1h 30m');
+    expect(formatListeningTime(90000)).toBe('25h'); // 25 hours, 0 minutes returns just "25h"
+  });
+});
+
+describe('getInitialsFromEmail', () => {
+  it('should extract initials from email with dot separator', () => {
+    expect(getInitialsFromEmail('john.doe@example.com')).toBe('JD');
+  });
+
+  it('should extract initials from email with underscore separator', () => {
+    expect(getInitialsFromEmail('jane_smith@example.com')).toBe('JS');
+  });
+
+  it('should extract initials from email with dash separator', () => {
+    expect(getInitialsFromEmail('bob-wilson@example.com')).toBe('BW');
+  });
+
+  it('should use first two characters for simple emails', () => {
+    expect(getInitialsFromEmail('admin@example.com')).toBe('AD');
+    expect(getInitialsFromEmail('xy@example.com')).toBe('XY');
+  });
+});
+
+describe('calculateTotalListeningTime', () => {
+  it('should return 0 for empty history', () => {
+    expect(calculateTotalListeningTime([])).toBe(0);
+  });
+
+  it('should calculate total based on completion percentage', () => {
+    const items = [
+      createMockListeningHistory({
+        episode: createMockEpisode({ duration: 1000 }),
+        completionPercentage: 100,
+      }),
+      createMockListeningHistory({
+        episode: createMockEpisode({ duration: 1000 }),
+        completionPercentage: 50,
+      }),
+    ];
+
+    // 1000 * 1.0 + 1000 * 0.5 = 1500
+    expect(calculateTotalListeningTime(items)).toBe(1500);
+  });
+
+  it('should handle episodes with no duration', () => {
+    const items = [
+      createMockListeningHistory({
+        episode: createMockEpisode({ duration: 0 }),
+        completionPercentage: 100,
+      }),
+    ];
+
+    expect(calculateTotalListeningTime(items)).toBe(0);
+  });
+});
+
+describe('countCompletedEpisodes', () => {
+  it('should return 0 for empty history', () => {
+    expect(countCompletedEpisodes([])).toBe(0);
+  });
+
+  it('should count episodes with >= 90% completion', () => {
+    const items = [
+      createMockListeningHistory({ completionPercentage: 100 }),
+      createMockListeningHistory({ completionPercentage: 95 }),
+      createMockListeningHistory({ completionPercentage: 90 }),
+      createMockListeningHistory({ completionPercentage: 89 }),
+      createMockListeningHistory({ completionPercentage: 50 }),
+    ];
+
+    expect(countCompletedEpisodes(items)).toBe(3);
+  });
+});
+
+describe('formatAccount', () => {
+  it('should show a placeholder when nobody is signed in', () => {
+    expect(formatAccount(null)).toEqual({
+      email: 'Not signed in',
+      initials: '?',
     });
   });
 
-  describe('SKIP_FORWARD_OPTIONS', () => {
-    it('should have expected skip forward options', () => {
-      expect(SKIP_FORWARD_OPTIONS).toHaveLength(5);
-      expect(SKIP_FORWARD_OPTIONS[0]).toEqual({
-        value: 10,
-        label: '10 seconds',
-      });
-      expect(SKIP_FORWARD_OPTIONS[2]).toEqual({
-        value: 30,
-        label: '30 seconds',
-      });
+  it('should use the email and its initials', () => {
+    const user = createMockUser({ email: 'john.doe@example.com' });
+    expect(formatAccount(user)).toEqual({
+      email: 'john.doe@example.com',
+      initials: 'JD',
+    });
+  });
+});
+
+describe('getListeningStats', () => {
+  it('should return zero stats for empty data', () => {
+    expect(getListeningStats([], [])).toEqual({
+      totalListeningTime: '0 min',
+      episodesCompleted: 0,
+      podcastsSubscribed: 0,
     });
   });
 
-  describe('SKIP_BACKWARD_OPTIONS', () => {
-    it('should have expected skip backward options', () => {
-      expect(SKIP_BACKWARD_OPTIONS).toHaveLength(4);
-      expect(SKIP_BACKWARD_OPTIONS[0]).toEqual({
-        value: 5,
-        label: '5 seconds',
-      });
-      expect(SKIP_BACKWARD_OPTIONS[2]).toEqual({
-        value: 15,
-        label: '15 seconds',
-      });
-    });
-  });
+  it('should calculate time, completed episodes and subscriptions', () => {
+    const history = [
+      createMockListeningHistory({
+        episode: createMockEpisode({ duration: 3600 }),
+        completionPercentage: 100,
+      }),
+      createMockListeningHistory({
+        episode: createMockEpisode({ duration: 3600 }),
+        completionPercentage: 50,
+      }),
+    ];
 
-  describe('formatPlaybackSpeed', () => {
-    it('should return label for known speed options', () => {
-      expect(formatPlaybackSpeed(1)).toBe('1x (Normal)');
-      expect(formatPlaybackSpeed(1.5)).toBe('1.5x');
-      expect(formatPlaybackSpeed(2)).toBe('2x');
-      expect(formatPlaybackSpeed(0.5)).toBe('0.5x');
-    });
-
-    it('should format unknown speeds with x suffix', () => {
-      expect(formatPlaybackSpeed(1.1)).toBe('1.1x');
-      expect(formatPlaybackSpeed(3)).toBe('3x');
-    });
-  });
-
-  describe('formatSkipDuration', () => {
-    it('should format duration with sec suffix', () => {
-      expect(formatSkipDuration(10)).toBe('10 sec');
-      expect(formatSkipDuration(30)).toBe('30 sec');
-      expect(formatSkipDuration(60)).toBe('60 sec');
-    });
-  });
-
-  describe('formatSettings', () => {
-    it('should format all settings correctly', () => {
-      const settings: AppSettings = createMockAppSettings({
-        defaultSpeed: 1.5,
-        downloadOnWiFi: false,
-      });
-
-      const formatted = formatSettings(settings);
-
-      expect(formatted.autoPlayNext).toBe(true);
-      expect(formatted.defaultSpeed).toBe(1.5);
-      expect(formatted.defaultSpeedLabel).toBe('1.5x');
-      expect(formatted.downloadOnWiFi).toBe(false);
-      expect(formatted.skipForwardSeconds).toBe(30);
-      expect(formatted.skipForwardLabel).toBe('30 sec');
-      expect(formatted.skipBackwardSeconds).toBe(15);
-      expect(formatted.skipBackwardLabel).toBe('15 sec');
-    });
-
-    it('should handle default settings', () => {
-      const defaultSettings: AppSettings = createMockAppSettings();
-
-      const formatted = formatSettings(defaultSettings);
-
-      expect(formatted.defaultSpeedLabel).toBe('1x (Normal)');
-    });
-  });
-
-  describe('getAppVersion', () => {
-    it('should read the version from expo-constants, not a hardcoded string', () => {
-      // Hardcoding meant Settings silently drifted from app.json on every
-      // release bump
-      mockConstants.expoConfig = { version: '2.4.1' };
-
-      expect(getAppVersion()).toBe('2.4.1');
-    });
-
-    it('should fall back to a placeholder when no version is configured', () => {
-      mockConstants.expoConfig = null;
-
-      expect(getAppVersion()).toBe('1.0.0');
+    expect(getListeningStats(history, createMockPodcasts(3))).toEqual({
+      totalListeningTime: '1h 30m',
+      episodesCompleted: 1,
+      podcastsSubscribed: 3,
     });
   });
 });

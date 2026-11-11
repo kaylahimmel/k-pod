@@ -31,7 +31,7 @@ export const createStyles = (colors: ThemeColors) =>
     },
     toastMessage: {
       flex: 1,
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textPrimary,
       fontWeight: '500',
     },

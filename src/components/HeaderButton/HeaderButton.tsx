@@ -3,6 +3,7 @@ import { Pressable, StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {
   headerButtonStyles,
+  HEADER_BUTTON_HIT_SLOP,
   HEADER_ICON_SIZE,
 } from '../../navigation/screenOptions';
 import { useThemeColors } from '../../hooks';
@@ -32,6 +33,7 @@ export const HeaderButton = ({
     <Pressable
       onPress={onPress}
       accessibilityLabel={accessibilityLabel}
+      hitSlop={HEADER_BUTTON_HIT_SLOP}
       style={({ pressed }) => [
         headerButtonStyles.base,
         { opacity: pressed ? 0.6 : 1 },
@@ -59,7 +61,6 @@ export const HeaderBackButton = ({
     icon='chevron-back'
     onPress={onPress}
     accessibilityLabel={accessibilityLabel}
-    style={headerButtonStyles.back}
   />
 );
 
@@ -79,7 +80,6 @@ export const HeaderCloseButton = ({
     icon='close'
     onPress={onPress}
     accessibilityLabel={accessibilityLabel}
-    style={headerButtonStyles.close}
   />
 );
 
@@ -101,6 +101,5 @@ export const HeaderActionButton = ({
     icon={icon}
     onPress={onPress}
     accessibilityLabel={accessibilityLabel}
-    style={headerButtonStyles.action}
   />
 );

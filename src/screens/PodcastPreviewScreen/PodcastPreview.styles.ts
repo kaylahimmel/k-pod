@@ -29,13 +29,13 @@ export const createStyles = (colors: ThemeColors) =>
       justifyContent: 'center',
     },
     title: {
-      fontSize: 20,
+      fontSize: 22,
       fontWeight: '700',
       color: colors.textPrimary,
       marginBottom: 4,
     },
     author: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
       marginBottom: 8,
     },
@@ -45,7 +45,7 @@ export const createStyles = (colors: ThemeColors) =>
       marginBottom: 12,
     },
     genre: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.primary,
       backgroundColor: colors.background,
       paddingHorizontal: 8,
@@ -55,25 +55,28 @@ export const createStyles = (colors: ThemeColors) =>
       marginRight: 8,
     },
     episodeCount: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
     },
     subscribeButton: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: colors.primary,
+      backgroundColor: colors.primaryFill,
       paddingVertical: 10,
       paddingHorizontal: 16,
       borderRadius: 8,
     },
+    subscribeButtonDisabled: {
+      backgroundColor: colors.border,
+    },
     subscribedButton: {
-      backgroundColor: colors.success,
+      backgroundColor: colors.successFill,
     },
     subscribeButtonText: {
       color: colors.onPrimary,
       fontWeight: '600',
-      fontSize: 14,
+      fontSize: 17,
       marginLeft: 6,
     },
     descriptionSection: {
@@ -82,21 +85,21 @@ export const createStyles = (colors: ThemeColors) =>
       marginTop: 12,
     },
     sectionTitle: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.textPrimary,
       marginBottom: 8,
     },
     description: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
-      lineHeight: 20,
+      lineHeight: 24,
     },
     showMoreButton: {
       marginTop: 8,
     },
     showMoreText: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.primary,
       fontWeight: '500',
     },
@@ -118,28 +121,28 @@ export const createStyles = (colors: ThemeColors) =>
       borderBottomColor: colors.border,
     },
     episodeTitle: {
-      fontSize: 15,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.textPrimary,
       marginBottom: 4,
     },
     episodeDescription: {
-      fontSize: 13,
+      fontSize: 17,
       color: colors.textSecondary,
       marginBottom: 8,
-      lineHeight: 18,
+      lineHeight: 24,
     },
     episodeMeta: {
       flexDirection: 'row',
       alignItems: 'center',
     },
     episodeDate: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
       marginRight: 12,
     },
     episodeDuration: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
     },
     loadingContainer: {
@@ -148,7 +151,7 @@ export const createStyles = (colors: ThemeColors) =>
     },
     loadingText: {
       marginTop: 12,
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
     },
     errorContainer: {
@@ -156,7 +159,7 @@ export const createStyles = (colors: ThemeColors) =>
       alignItems: 'center',
     },
     errorText: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.danger,
       textAlign: 'center',
       marginBottom: 12,
@@ -166,7 +169,7 @@ export const createStyles = (colors: ThemeColors) =>
       alignItems: 'center',
     },
     emptyText: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
       textAlign: 'center',
     },

@@ -32,6 +32,11 @@ export const createStyles = (colors: ThemeColors) =>
       paddingRight: 12,
       justifyContent: 'center',
     },
+    // The playing episode's handle can't be dragged. Fading it marks it
+    // disabled, and disabled controls are exempt from contrast minimums
+    dragHandleDisabled: {
+      opacity: 0.4,
+    },
     queueItemArtwork: {
       width: 50,
       height: 50,
@@ -43,12 +48,12 @@ export const createStyles = (colors: ThemeColors) =>
       marginLeft: 12,
     },
     queueItemTitle: {
-      fontSize: 15,
+      fontSize: 18,
       fontWeight: '500',
       color: colors.textPrimary,
     },
     queueItemPodcast: {
-      fontSize: 13,
+      fontSize: 17,
       color: colors.textSecondary,
       marginTop: 2,
     },
@@ -58,11 +63,11 @@ export const createStyles = (colors: ThemeColors) =>
       marginTop: 4,
     },
     queueItemDuration: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
     },
     queueItemPosition: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.primary,
       marginLeft: 8,
     },

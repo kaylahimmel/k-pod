@@ -19,12 +19,12 @@ export const createStyles = (colors: ThemeColors) =>
       flex: 1,
     },
     headerTitle: {
-      fontSize: 14,
+      fontSize: 17,
       fontWeight: '600',
       color: colors.textPrimary,
     },
     headerSubtitle: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
       marginTop: 2,
     },
@@ -37,7 +37,7 @@ export const createStyles = (colors: ThemeColors) =>
       borderRadius: 8,
     },
     clearButtonText: {
-      fontSize: 14,
+      fontSize: 17,
       fontWeight: '500',
       color: colors.danger,
       marginLeft: 4,

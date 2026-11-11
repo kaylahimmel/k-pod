@@ -34,7 +34,7 @@ export const ForgotPasswordView = ({
       >
         <View style={authStyles.successContainer}>
           <View style={authStyles.successIconContainer}>
-            <Ionicons name='mail-outline' size={36} color={colors.success} />
+            <Ionicons name='mail-outline' size={36} color={colors.onPrimary} />
           </View>
           <Text style={styles.successTitle}>Check your email</Text>
           <Text style={styles.successMessage}>

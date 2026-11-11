@@ -6,7 +6,7 @@ const {
 
 // Keep in step with LIGHT_COLORS.primary in src/constants/Colors.ts. This file runs
 // in Node during prebuild, so it can't import the app's TypeScript.
-const ACCENT_COLOR = '#007AFF';
+const ACCENT_COLOR = '#0062CC';
 const COLOR_NAME = 'colorAccent';
 
 // Native Android Alert buttons use the theme's colorAccent. The app never set

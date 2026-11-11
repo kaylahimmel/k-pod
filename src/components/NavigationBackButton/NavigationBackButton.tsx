@@ -2,8 +2,11 @@ import React from 'react';
 import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { HEADER_ICON_SIZE } from '../../navigation/screenOptions';
-import { styles } from './NavigationBackButton.styles';
+import {
+  headerButtonStyles,
+  HEADER_BUTTON_HIT_SLOP,
+  HEADER_ICON_SIZE,
+} from '../../navigation/screenOptions';
 import { useThemeColors } from '../../hooks';
 
 interface NavigationBackButtonProps {
@@ -24,7 +27,11 @@ export const NavigationBackButton = ({
     <Pressable
       onPress={() => navigation.goBack()}
       accessibilityLabel='Go back'
-      style={({ pressed }) => [styles.button, { opacity: pressed ? 0.6 : 1 }]}
+      hitSlop={HEADER_BUTTON_HIT_SLOP}
+      style={({ pressed }) => [
+        headerButtonStyles.base,
+        { opacity: pressed ? 0.6 : 1 },
+      ]}
     >
       <Ionicons
         name='chevron-back'

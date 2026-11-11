@@ -10,10 +10,10 @@ interface Option<T extends number> {
 
 interface SettingOptionSelectorProps<T extends number> {
   label: string;
-  currentValueLabel: string;
   options: Option<T>[];
   selectedValue: T;
   onSelect: (value: T) => void;
+  isLast?: boolean;
 }
 
 /**
@@ -24,21 +24,22 @@ interface SettingOptionSelectorProps<T extends number> {
  * an arbitrary number), while the skip pickers keep using plain numbers. A
  * non-generic `value: number` would silently widen the speed picker and let
  * invalid speeds through.
+ *
+ * The title and its buttons are one setting, so the bottom border sits under
+ * the buttons rather than between them. There's no current-value label: the
+ * highlighted button already shows the choice.
  */
 export const SettingOptionSelector = <T extends number>({
   label,
-  currentValueLabel,
   options,
   selectedValue,
   onSelect,
+  isLast = false,
 }: SettingOptionSelectorProps<T>) => {
   const styles = useThemedStyles(createStyles);
   return (
-    <View>
-      <View style={styles.labelRow}>
-        <Text style={styles.label}>{label}</Text>
-        <Text style={styles.currentValue}>{currentValueLabel}</Text>
-      </View>
+    <View style={[styles.container, isLast && styles.containerLast]}>
+      <Text style={styles.label}>{label}</Text>
       <View style={styles.optionsContainer}>
         {options.map((option) => (
           <TouchableOpacity
@@ -67,30 +68,28 @@ export const SettingOptionSelector = <T extends number>({
 
 const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
-    labelRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingVertical: 12,
-      paddingHorizontal: 16,
+    container: {
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
-      minHeight: 48,
     },
+    containerLast: {
+      borderBottomWidth: 0,
+    },
+    // 16 above the title and below the buttons matches where a toggle row's
+    // label sits: SettingToggleRow pads 12, and the taller switch centers its
+    // text about 4 more points in
     label: {
-      fontSize: 16,
+      fontSize: 18,
       color: colors.textPrimary,
-      flex: 1,
-    },
-    currentValue: {
-      fontSize: 16,
-      color: colors.textSecondary,
+      paddingTop: 16,
+      paddingHorizontal: 16,
     },
     optionsContainer: {
       flexDirection: 'row',
       flexWrap: 'wrap',
       paddingHorizontal: 16,
-      paddingVertical: 12,
+      paddingTop: 12,
+      paddingBottom: 16,
       gap: 8,
     },
     optionButton: {
@@ -102,11 +101,11 @@ const createStyles = (colors: ThemeColors) =>
       borderColor: colors.border,
     },
     optionButtonSelected: {
-      backgroundColor: colors.primary,
-      borderColor: colors.primary,
+      backgroundColor: colors.primaryFill,
+      borderColor: colors.primaryFill,
     },
     optionButtonText: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textPrimary,
     },
     optionButtonTextSelected: {

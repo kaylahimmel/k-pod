@@ -15,10 +15,10 @@ export const createStyles = (colors: ThemeColors) =>
       alignItems: 'center',
       paddingHorizontal: 12,
       paddingVertical: 8,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.primaryFill,
     },
     nowPlayingLabel: {
-      fontSize: 12,
+      fontSize: 16,
       fontWeight: '600',
       color: colors.onPrimary,
       marginLeft: 6,
@@ -39,17 +39,17 @@ export const createStyles = (colors: ThemeColors) =>
       marginLeft: 12,
     },
     nowPlayingTitle: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: '600',
       color: colors.textPrimary,
     },
     nowPlayingPodcast: {
-      fontSize: 14,
+      fontSize: 17,
       color: colors.textSecondary,
       marginTop: 2,
     },
     nowPlayingDuration: {
-      fontSize: 12,
+      fontSize: 16,
       color: colors.textSecondary,
       marginTop: 4,
     },

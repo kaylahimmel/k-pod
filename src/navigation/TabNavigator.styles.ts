@@ -8,9 +8,11 @@ export const createStyles = (colors: ThemeColors) =>
       borderTopWidth: 1,
       borderTopColor: colors.border,
       paddingTop: 8,
+      // Keeps Library and Settings clear of the screen's rounded corners
+      paddingHorizontal: 12,
     },
     tabBarLabel: {
-      fontSize: 10,
+      fontSize: 16,
       fontWeight: '500',
     },
   });

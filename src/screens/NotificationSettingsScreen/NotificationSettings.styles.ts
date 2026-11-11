@@ -16,7 +16,7 @@ export const createStyles = (colors: ThemeColors) =>
       paddingBottom: 8,
     },
     sectionTitle: {
-      fontSize: 13,
+      fontSize: 17,
       fontWeight: '600',
       color: colors.textSecondary,
       textTransform: 'uppercase',
@@ -27,7 +27,7 @@ export const createStyles = (colors: ThemeColors) =>
       marginBottom: 8,
     },
     sectionHint: {
-      fontSize: 13,
+      fontSize: 17,
       color: colors.textSecondary,
       paddingHorizontal: 16,
       marginBottom: 8,
