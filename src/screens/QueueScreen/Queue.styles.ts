@@ -13,22 +13,4 @@ export const createStyles = (colors: ThemeColors) =>
     listContent: {
       paddingBottom: 100,
     },
-    emptyContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingHorizontal: 32,
-    },
-    emptyTitle: {
-      fontSize: 22,
-      fontWeight: '600',
-      color: colors.textPrimary,
-      marginTop: 16,
-      marginBottom: 8,
-    },
-    emptyMessage: {
-      fontSize: 18,
-      color: colors.textSecondary,
-      textAlign: 'center',
-    },
   });

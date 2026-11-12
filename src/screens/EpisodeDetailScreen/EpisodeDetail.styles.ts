@@ -118,9 +118,4 @@ export const createStyles = (colors: ThemeColors) =>
       color: colors.textPrimary,
       marginBottom: 12,
     },
-    descriptionText: {
-      fontSize: 18,
-      lineHeight: 25,
-      color: colors.textSecondary,
-    },
   });

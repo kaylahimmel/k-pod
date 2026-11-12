@@ -47,15 +47,4 @@ export const createStyles = (colors: ThemeColors) =>
       fontWeight: '600',
       color: colors.primary,
     },
-    successTitle: {
-      fontSize: 26,
-      fontWeight: '700',
-      color: colors.textPrimary,
-      textAlign: 'center',
-    },
-    successMessage: {
-      fontSize: 18,
-      color: colors.textSecondary,
-      textAlign: 'center',
-    },
   });

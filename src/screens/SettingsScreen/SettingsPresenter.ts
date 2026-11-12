@@ -1,12 +1,16 @@
-import { ListeningHistory, Podcast, User } from '../../models';
-import { FormattedAccount, ListeningStats } from './Settings.types';
+import { ListeningHistory, User } from '../../models';
+import { SettingStat } from '../../components';
+import { COMPLETION_THRESHOLD_PERCENT } from '../../constants';
+import { FormattedAccount } from './Settings.types';
 
 /**
  * Formats listening time in seconds to a human-readable string
  * Examples: "0 min", "45 min", "1h 30m", "24h 15m"
  */
 export function formatListeningTime(seconds: number): string {
-  if (!seconds || seconds <= 0) {
+  // Number.isFinite also rejects NaN and Infinity (a feed with an unknown
+  // duration), which would otherwise render "Infinityh NaNm"
+  if (!Number.isFinite(seconds) || seconds <= 0) {
     return '0 min';
   }
 
@@ -40,7 +44,7 @@ export function getInitialsFromEmail(email: string): string {
 }
 
 /**
- * Formats the signed-in user for the Account section. Falls back to a
+ * Formats the signed-in user for the account row at the top of Settings. Falls back to a
  * placeholder so the row still renders if the auth state is briefly empty
  */
 export function formatAccount(user: User | null): FormattedAccount {
@@ -66,24 +70,30 @@ export function calculateTotalListeningTime(
 }
 
 /**
- * Counts completed episodes (>= 90% listened)
+ * Counts completed episodes (at or past COMPLETION_THRESHOLD_PERCENT).
+ * History is only written past that point today, so this matches
+ * history.length, but it stays correct if partial history is ever saved
  */
 export function countCompletedEpisodes(history: ListeningHistory[]): number {
-  return history.filter((item) => item.completionPercentage >= 90).length;
+  return history.filter(
+    (item) => item.completionPercentage >= COMPLETION_THRESHOLD_PERCENT,
+  ).length;
 }
 
 /**
- * Builds the three stats shown in the Listening section
+ * Builds the three stats in the row under the account email, in the shape
+ * SettingStatsRow draws (labels live here so the View just passes them on)
  */
 export function getListeningStats(
   history: ListeningHistory[],
-  subscribedPodcasts: Podcast[],
-): ListeningStats {
-  return {
-    totalListeningTime: formatListeningTime(
-      calculateTotalListeningTime(history),
-    ),
-    episodesCompleted: countCompletedEpisodes(history),
-    podcastsSubscribed: subscribedPodcasts.length,
-  };
+  podcastsSubscribed: number,
+): SettingStat[] {
+  return [
+    {
+      label: 'Listening Time',
+      value: formatListeningTime(calculateTotalListeningTime(history)),
+    },
+    { label: 'Episodes', value: countCompletedEpisodes(history) },
+    { label: 'Subscribed', value: podcastsSubscribed },
+  ];
 }

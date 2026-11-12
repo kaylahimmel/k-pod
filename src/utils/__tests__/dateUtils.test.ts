@@ -4,7 +4,7 @@ const daysAgo = (n: number) =>
   new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString();
 
 describe('formatRelativeDate', () => {
-  describe("compact (Profile's ladder)", () => {
+  describe("compact (Listening History's ladder)", () => {
     it('should say Today, Yesterday and N days ago', () => {
       expect(formatRelativeDate(daysAgo(0), 'compact')).toBe('Today');
       expect(formatRelativeDate(daysAgo(1), 'compact')).toBe('Yesterday');

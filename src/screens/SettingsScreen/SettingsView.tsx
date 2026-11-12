@@ -2,35 +2,19 @@ import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { useSettingsViewModel } from './SettingsViewModel';
 import { SettingsViewProps } from './Settings.types';
-import { createStyles } from './Settings.styles';
+import { createStyles } from '../../styles/settingsPage.styles';
 import {
   SettingAccountHeader,
   SettingToggleRow,
   SettingLinkRow,
   SettingStatsRow,
-  SkeletonList,
   Toast,
 } from '../../components';
 import { useThemedStyles } from '../../hooks';
 
-export const SettingsView = ({
-  onNotificationsPress,
-  onPlayerControlsPress,
-  onLegalPress,
-  onAppInfoPress,
-  onListeningHistoryPress,
-  onChangePasswordPress,
-}: SettingsViewProps) => {
+export const SettingsView = ({ onNavigate }: SettingsViewProps) => {
   const styles = useThemedStyles(createStyles);
   const viewModel = useSettingsViewModel();
-
-  if (viewModel.isLoading) {
-    return (
-      <View style={styles.container}>
-        <SkeletonList count={5} cardHeight={72} />
-      </View>
-    );
-  }
 
   return (
     <>
@@ -44,29 +28,14 @@ export const SettingsView = ({
             initials={viewModel.account.initials}
             email={viewModel.account.email}
           />
-          <SettingStatsRow
-            stats={[
-              {
-                label: 'Listening Time',
-                value: viewModel.listeningStats.totalListeningTime,
-              },
-              {
-                label: 'Episodes',
-                value: viewModel.listeningStats.episodesCompleted,
-              },
-              {
-                label: 'Subscribed',
-                value: viewModel.listeningStats.podcastsSubscribed,
-              },
-            ]}
-          />
+          <SettingStatsRow stats={viewModel.listeningStats} />
           <SettingLinkRow
             label='Listening History'
-            onPress={onListeningHistoryPress}
+            onPress={() => onNavigate('ListeningHistory')}
           />
           <SettingLinkRow
             label='Notifications'
-            onPress={onNotificationsPress}
+            onPress={() => onNavigate('NotificationSettings')}
           />
           <SettingToggleRow
             label='Dark Mode'
@@ -80,13 +49,16 @@ export const SettingsView = ({
           />
           <SettingLinkRow
             label='Player Controls'
-            onPress={onPlayerControlsPress}
+            onPress={() => onNavigate('PlayerControls')}
           />
-          <SettingLinkRow label='Legal' onPress={onLegalPress} />
-          <SettingLinkRow label='App Information' onPress={onAppInfoPress} />
+          <SettingLinkRow label='Legal' onPress={() => onNavigate('Legal')} />
+          <SettingLinkRow
+            label='App Information'
+            onPress={() => onNavigate('AppInfo')}
+          />
           <SettingLinkRow
             label='Change Password'
-            onPress={onChangePasswordPress}
+            onPress={() => onNavigate('ChangePassword')}
           />
           <SettingLinkRow
             label='Sign Out'

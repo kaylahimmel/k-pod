@@ -26,12 +26,12 @@ export {
   MOCK_CONTENT_ENCODED_RSS,
 } from './mockPodcasts';
 
-// Profile mocks (User, ListeningHistory)
+// User and ListeningHistory mocks
 export {
   createMockUser,
   createMockListeningHistory,
   createMockListeningHistoryItems,
-} from './mockProfile';
+} from './mockUser';
 
 // Queue mocks (QueueItem)
 export { createMockQueueItem, createMockQueueItems } from './mockQueue';

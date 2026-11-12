@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { APP_NAME, getAppVersion } from './AppInfoPresenter';
 import { AppInfoViewModelReturn } from './AppInfo.types';
 
@@ -8,8 +7,5 @@ import { AppInfoViewModelReturn } from './AppInfo.types';
  * here and keep them updated with each release
  */
 export const useAppInfoViewModel = (): AppInfoViewModelReturn => {
-  // The version can't change while the app is running
-  const appVersion = useMemo(() => getAppVersion(), []);
-
-  return { appName: APP_NAME, appVersion };
+  return { appName: APP_NAME, appVersion: getAppVersion() };
 };

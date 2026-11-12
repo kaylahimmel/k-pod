@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { Appearance, ColorSchemeName, useColorScheme } from 'react-native';
 import { DARK_COLORS, LIGHT_COLORS, ThemeColors } from '../constants';
 import { ThemePreference } from '../models';
@@ -38,17 +38,44 @@ export function useThemeColors(): ThemeColors {
   return useIsDarkMode() ? DARK_COLORS : LIGHT_COLORS;
 }
 
+// One styles object per (createStyles function, palette) pair, shared by
+// every component that asks for it. A WeakMap so a createStyles function that
+// is ever thrown away (e.g. in a test) doesn't keep its styles alive
+const themedStylesCache = new WeakMap<object, Map<ThemeColors, unknown>>();
+
+/**
+ * Returns the styles `createStyles` builds for `colors`, building them only
+ * the first time that pair is asked for. There are only two palettes, so each
+ * `*.styles.ts` file runs at most twice for the life of the app
+ */
+export function getThemedStyles<T>(
+  createStyles: (colors: ThemeColors) => T,
+  colors: ThemeColors,
+): T {
+  let stylesByPalette = themedStylesCache.get(createStyles);
+  if (!stylesByPalette) {
+    stylesByPalette = new Map();
+    themedStylesCache.set(createStyles, stylesByPalette);
+  }
+  if (!stylesByPalette.has(colors)) {
+    stylesByPalette.set(colors, createStyles(colors));
+  }
+  return stylesByPalette.get(colors) as T;
+}
+
 /**
  * Builds a component's styles from the active palette. Pass the
- * `createStyles` function exported by a `*.styles.ts` file. The styles are
- * rebuilt only when the theme changes, not on every render, which matters on
- * screens that re-render every second during playback
+ * `createStyles` function exported by a `*.styles.ts` file (defined at module
+ * level, never inline, so it's the same function on every render).
+ *
+ * Styles are cached app-wide, not per component: every row in a long list
+ * shares one styles object instead of each running StyleSheet.create when it
+ * mounts, and a re-render (every second during playback) costs two lookups
  */
 export function useThemedStyles<T>(
   createStyles: (colors: ThemeColors) => T,
 ): T {
-  const colors = useThemeColors();
-  return useMemo(() => createStyles(colors), [createStyles, colors]);
+  return getThemedStyles(createStyles, useThemeColors());
 }
 
 /**

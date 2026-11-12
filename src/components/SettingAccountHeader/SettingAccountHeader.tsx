@@ -9,7 +9,7 @@ interface SettingAccountHeaderProps {
 }
 
 /**
- * The signed-in user's row at the top of the Settings Account section:
+ * The signed-in user's row at the top of the Settings screen:
  * an initials avatar and the account email
  */
 export const SettingAccountHeader = ({

@@ -12,7 +12,6 @@ import {
   ListeningHistoryScreen,
   ChangePasswordScreen,
 } from '../../screens';
-import { NavigationBackButton } from '../../components';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -28,56 +27,32 @@ export const SettingsStackNavigator = () => {
       <Stack.Screen
         name='NotificationSettings'
         component={NotificationSettingsScreen}
-        options={{
-          title: 'Notifications',
-          headerBackVisible: false,
-          headerLeft: () => <NavigationBackButton />,
-        }}
+        options={{ title: 'Notifications' }}
       />
       <Stack.Screen
         name='PlayerControls'
         component={PlayerControlsScreen}
-        options={{
-          title: 'Player Controls',
-          headerBackVisible: false,
-          headerLeft: () => <NavigationBackButton />,
-        }}
+        options={{ title: 'Player Controls' }}
       />
       <Stack.Screen
         name='Legal'
         component={LegalScreen}
-        options={{
-          title: 'Legal',
-          headerBackVisible: false,
-          headerLeft: () => <NavigationBackButton />,
-        }}
+        options={{ title: 'Legal' }}
       />
       <Stack.Screen
         name='AppInfo'
         component={AppInfoScreen}
-        options={{
-          title: 'App Information',
-          headerBackVisible: false,
-          headerLeft: () => <NavigationBackButton />,
-        }}
+        options={{ title: 'App Information' }}
       />
       <Stack.Screen
         name='ListeningHistory'
         component={ListeningHistoryScreen}
-        options={{
-          title: 'Listening History',
-          headerBackVisible: false,
-          headerLeft: () => <NavigationBackButton />,
-        }}
+        options={{ title: 'Listening History' }}
       />
       <Stack.Screen
         name='ChangePassword'
         component={ChangePasswordScreen}
-        options={{
-          title: 'Change Password',
-          headerBackVisible: false,
-          headerLeft: () => <NavigationBackButton />,
-        }}
+        options={{ title: 'Change Password' }}
       />
     </Stack.Navigator>
   );

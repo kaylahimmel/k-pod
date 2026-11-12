@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { useLegalViewModel } from './LegalViewModel';
-import { createStyles } from './Legal.styles';
+import { createStyles } from '../../styles/settingsPage.styles';
 import { SettingLinkRow } from '../../components';
 import { useThemedStyles } from '../../hooks';
 

@@ -42,8 +42,6 @@ describe('NotificationSettingsView', () => {
     mockGetPermissions.mockResolvedValue({ granted: true });
     settingsStore.setState({
       settings: createMockAppSettings(),
-      loading: false,
-      error: null,
     });
     podcastStore.setState({ podcasts: [] });
   });

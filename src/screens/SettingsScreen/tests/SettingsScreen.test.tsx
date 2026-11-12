@@ -23,8 +23,6 @@ describe('SettingsScreen', () => {
     jest.clearAllMocks();
     settingsStore.setState({
       settings: createMockAppSettings(),
-      loading: false,
-      error: null,
     });
   });
 
@@ -37,54 +35,25 @@ describe('SettingsScreen', () => {
 
       expect(getByText('Listening History')).toBeTruthy();
     });
-
-    it('should display the reset settings row', () => {
-      const { getByText } = renderSettingsScreen();
-
-      expect(getByText('Reset All Settings')).toBeTruthy();
-    });
   });
 
   describe('Navigation', () => {
-    it('should open the notification settings', () => {
+    it.each([
+      ['Listening History', 'ListeningHistory'],
+      ['Notifications', 'NotificationSettings'],
+      ['Player Controls', 'PlayerControls'],
+      ['Legal', 'Legal'],
+      ['App Information', 'AppInfo'],
+      ['Change Password', 'ChangePassword'],
+    ])('should open %s in the Settings stack', (label, route) => {
       const { getByText } = renderSettingsScreen();
 
-      fireEvent.press(getByText('Notifications'));
+      fireEvent.press(getByText(label));
 
-      expect(mockNavigationFns.navigate).toHaveBeenCalledWith(
-        'NotificationSettings',
-      );
-    });
-
-    it('should open the Player Controls and App Information screens', () => {
-      const { getByText } = renderSettingsScreen();
-
-      fireEvent.press(getByText('Player Controls'));
-      expect(mockNavigationFns.navigate).toHaveBeenCalledWith('PlayerControls');
-
-      fireEvent.press(getByText('App Information'));
-      expect(mockNavigationFns.navigate).toHaveBeenCalledWith('AppInfo');
-    });
-
-    it('should open the Legal screen', () => {
-      const { getByText } = renderSettingsScreen();
-
-      fireEvent.press(getByText('Legal'));
-      expect(mockNavigationFns.navigate).toHaveBeenCalledWith('Legal');
-    });
-
-    it('should open Listening History and Change Password in the Settings stack', () => {
-      const { getByText } = renderSettingsScreen();
-
-      fireEvent.press(getByText('Listening History'));
-      expect(mockNavigationFns.navigate).toHaveBeenCalledWith(
-        'ListeningHistory',
-      );
-
-      fireEvent.press(getByText('Change Password'));
-      expect(mockNavigationFns.navigate).toHaveBeenCalledWith('ChangePassword');
+      expect(mockNavigationFns.navigate).toHaveBeenCalledWith(route);
     });
   });
+
   describe('Dark Mode', () => {
     it('saves dark and redraws in the dark palette when switched on', () => {
       const { getByLabelText } = renderSettingsScreen();

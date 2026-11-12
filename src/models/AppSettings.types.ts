@@ -18,8 +18,6 @@ export interface AppSettings {
 
 export interface SettingsStore {
   settings: AppSettings;
-  loading: boolean;
-  error: string | null;
   updateSetting: <K extends keyof AppSettings>(
     key: K,
     value: AppSettings[K],
@@ -27,6 +25,4 @@ export interface SettingsStore {
   updateSettings: (settings: Partial<AppSettings>) => void; // Update multiple settings at once
   loadSettings: (settings: AppSettings) => void; // Load settings from storage
   resetSettings: () => void; // Reset to defaults
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
 }

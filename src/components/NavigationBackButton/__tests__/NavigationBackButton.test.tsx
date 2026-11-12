@@ -28,18 +28,4 @@ describe('NavigationBackButton', () => {
 
     expect(mockGoBack).toHaveBeenCalledTimes(1);
   });
-
-  it('accepts custom tintColor', () => {
-    const { getByLabelText } = render(
-      <NavigationBackButton tintColor='#FF0000' />,
-    );
-
-    expect(getByLabelText('Go back')).toBeTruthy();
-  });
-
-  it('uses default tintColor from config when not specified', () => {
-    const { getByLabelText } = render(<NavigationBackButton />);
-
-    expect(getByLabelText('Go back')).toBeTruthy();
-  });
 });

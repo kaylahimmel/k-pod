@@ -85,16 +85,20 @@ describe('useThemeColors', () => {
   });
 
   describe('useThemedStyles', () => {
-    const createStyles = jest.fn((colors: ThemeColors) => ({
-      text: { color: colors.textPrimary },
-    }));
+    // A fresh function per test, since styles are cached app-wide per function
+    const makeCreateStyles = () =>
+      jest.fn((colors: ThemeColors) => ({
+        text: { color: colors.textPrimary },
+      }));
 
     it('builds styles from the active palette', () => {
+      const createStyles = makeCreateStyles();
       const { result } = renderHook(() => useThemedStyles(createStyles));
       expect(result.current.text.color).toBe(LIGHT_COLORS.textPrimary);
     });
 
     it('reuses the same styles across re-renders until the theme changes', () => {
+      const createStyles = makeCreateStyles();
       const { result, rerender } = renderHook(() =>
         useThemedStyles(createStyles),
       );
@@ -107,6 +111,27 @@ describe('useThemeColors', () => {
       setPreference('dark');
       expect(result.current).not.toBe(first);
       expect(result.current.text.color).toBe(DARK_COLORS.textPrimary);
+    });
+
+    it('shares one styles object between components (e.g. list rows)', () => {
+      const createStyles = makeCreateStyles();
+      const rowA = renderHook(() => useThemedStyles(createStyles));
+      const rowB = renderHook(() => useThemedStyles(createStyles));
+
+      expect(rowB.result.current).toBe(rowA.result.current);
+      expect(createStyles).toHaveBeenCalledTimes(1);
+    });
+
+    it('builds each palette only once, even after switching back', () => {
+      const createStyles = makeCreateStyles();
+      const { result } = renderHook(() => useThemedStyles(createStyles));
+      const light = result.current;
+
+      setPreference('dark');
+      setPreference('light');
+
+      expect(result.current).toBe(light);
+      expect(createStyles).toHaveBeenCalledTimes(2);
     });
   });
 
