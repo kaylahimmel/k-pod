@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { usePlayerControlsViewModel } from './PlayerControlsViewModel';
-import { createStyles } from './PlayerControls.styles';
+import { createStyles } from '../../styles/settingsPage.styles';
 import { SettingOptionSelector, SettingToggleRow } from '../../components';
 import { useThemedStyles } from '../../hooks';
 

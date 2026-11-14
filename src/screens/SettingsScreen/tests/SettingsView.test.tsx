@@ -1,67 +1,42 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { Alert, Linking } from 'react-native';
+import { Alert } from 'react-native';
 import { SettingsView } from '../SettingsView';
 import { podcastStore, settingsStore } from '../../../stores';
 import { createMockAppSettings, createMockPodcast } from '../../../__mocks__';
 
 jest.spyOn(Alert, 'alert');
-jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
 
 describe('SettingsView', () => {
   const defaultSettings = createMockAppSettings();
-  const mockOnNotificationsPress = jest.fn();
-  const mockOnPlayerControlsPress = jest.fn();
-  const mockOnLegalPress = jest.fn();
-  const mockOnAppInfoPress = jest.fn();
-  const mockOnListeningHistoryPress = jest.fn();
-  const mockOnChangePasswordPress = jest.fn();
+  const mockOnNavigate = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
     settingsStore.setState({
       settings: defaultSettings,
-      loading: false,
-      error: null,
     });
     podcastStore.setState({ podcasts: [] });
   });
 
   const renderSettingsView = () =>
-    render(
-      <SettingsView
-        onNotificationsPress={mockOnNotificationsPress}
-        onPlayerControlsPress={mockOnPlayerControlsPress}
-        onLegalPress={mockOnLegalPress}
-        onAppInfoPress={mockOnAppInfoPress}
-        onListeningHistoryPress={mockOnListeningHistoryPress}
-        onChangePasswordPress={mockOnChangePasswordPress}
-      />,
-    );
-
-  describe('Loading State', () => {
-    it('should display loading indicator when loading', () => {
-      settingsStore.setState({ loading: true });
-
-      const { getByTestId } = renderSettingsView();
-
-      expect(getByTestId('skeleton-list')).toBeTruthy();
-    });
-  });
+    render(<SettingsView onNavigate={mockOnNavigate} />);
 
   describe('Account Rows', () => {
-    it('should open each linked screen', () => {
+    it.each([
+      ['Listening History', 'ListeningHistory'],
+      ['Notifications', 'NotificationSettings'],
+      ['Player Controls', 'PlayerControls'],
+      ['Legal', 'Legal'],
+      ['App Information', 'AppInfo'],
+      ['Change Password', 'ChangePassword'],
+    ])('should open %s when its row is pressed', (label, page) => {
       const { getByText } = renderSettingsView();
 
-      fireEvent.press(getByText('Notifications'));
-      fireEvent.press(getByText('Player Controls'));
-      fireEvent.press(getByText('Legal'));
-      fireEvent.press(getByText('App Information'));
+      fireEvent.press(getByText(label));
 
-      expect(mockOnNotificationsPress).toHaveBeenCalledTimes(1);
-      expect(mockOnPlayerControlsPress).toHaveBeenCalledTimes(1);
-      expect(mockOnLegalPress).toHaveBeenCalledTimes(1);
-      expect(mockOnAppInfoPress).toHaveBeenCalledTimes(1);
+      expect(mockOnNavigate).toHaveBeenCalledTimes(1);
+      expect(mockOnNavigate).toHaveBeenCalledWith(page);
     });
 
     it('should show the Dark Mode and Download On WiFi Only switches', () => {
@@ -89,7 +64,7 @@ describe('SettingsView', () => {
       });
       const { queryByText } = renderSettingsView();
 
-      expect(queryByText('Auto-play next episode')).toBeNull();
+      expect(queryByText('Auto-Play Next Episode')).toBeNull();
       expect(queryByText('Skip Forward')).toBeNull();
       expect(queryByText('Privacy Policy')).toBeNull();
       expect(queryByText('K-Pod')).toBeNull();
@@ -98,12 +73,6 @@ describe('SettingsView', () => {
   });
 
   describe('Reset Settings', () => {
-    it('should display the Reset All Settings row', () => {
-      const { getByText } = renderSettingsView();
-
-      expect(getByText('Reset All Settings')).toBeTruthy();
-    });
-
     it('should show confirmation alert when reset is pressed', () => {
       const { getByText } = renderSettingsView();
 
@@ -120,8 +89,6 @@ describe('SettingsView', () => {
       const resetSettingsSpy = jest.fn();
       settingsStore.setState({
         settings: defaultSettings,
-        loading: false,
-        error: null,
         resetSettings: resetSettingsSpy,
       });
 
@@ -182,16 +149,6 @@ describe('SettingsView', () => {
       ]) {
         expect(queryByText(header)).toBeNull();
       }
-    });
-
-    it('should open Listening History and Change Password', () => {
-      const { getByText } = renderSettingsView();
-
-      fireEvent.press(getByText('Listening History'));
-      fireEvent.press(getByText('Change Password'));
-
-      expect(mockOnListeningHistoryPress).toHaveBeenCalledTimes(1);
-      expect(mockOnChangePasswordPress).toHaveBeenCalledTimes(1);
     });
 
     it('should ask for confirmation before signing out', () => {

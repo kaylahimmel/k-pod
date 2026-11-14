@@ -3,14 +3,14 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { ThemeColors } from '../../constants';
 import { useThemedStyles } from '../../hooks';
 
-interface Option<T extends number> {
+export interface SettingOption<T extends number> {
   value: T;
   label: string;
 }
 
 interface SettingOptionSelectorProps<T extends number> {
   label: string;
-  options: Option<T>[];
+  options: SettingOption<T>[];
   selectedValue: T;
   onSelect: (value: T) => void;
   isLast?: boolean;

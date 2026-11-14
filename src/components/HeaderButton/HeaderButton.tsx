@@ -1,32 +1,27 @@
 import React from 'react';
-import { Pressable, StyleProp, ViewStyle } from 'react-native';
+import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {
   headerButtonStyles,
   HEADER_BUTTON_HIT_SLOP,
   HEADER_ICON_SIZE,
-} from '../../navigation/screenOptions';
+} from './HeaderButton.styles';
 import { useThemeColors } from '../../hooks';
 
 interface HeaderButtonProps {
   icon: keyof typeof Ionicons.glyphMap;
   onPress: () => void;
   accessibilityLabel: string;
-  style?: StyleProp<ViewStyle>;
-  iconSize?: number;
-  color?: string;
 }
 
 /**
- * Base header button component with consistent styling
+ * The one header button every header icon uses (back, close, add), so size,
+ * tap area and press feedback are set in a single place
  */
 export const HeaderButton = ({
   icon,
   onPress,
   accessibilityLabel,
-  style,
-  iconSize = HEADER_ICON_SIZE,
-  color,
 }: HeaderButtonProps) => {
   const colors = useThemeColors();
   return (
@@ -37,10 +32,9 @@ export const HeaderButton = ({
       style={({ pressed }) => [
         headerButtonStyles.base,
         { opacity: pressed ? 0.6 : 1 },
-        style,
       ]}
     >
-      <Ionicons name={icon} size={iconSize} color={color ?? colors.primary} />
+      <Ionicons name={icon} size={HEADER_ICON_SIZE} color={colors.primary} />
     </Pressable>
   );
 };
@@ -51,7 +45,7 @@ interface HeaderBackButtonProps {
 }
 
 /**
- * Back button with chevron-back icon and extra left padding
+ * Back button with a chevron-back icon
  */
 export const HeaderBackButton = ({
   onPress,
@@ -78,27 +72,6 @@ export const HeaderCloseButton = ({
 }: HeaderCloseButtonProps) => (
   <HeaderButton
     icon='close'
-    onPress={onPress}
-    accessibilityLabel={accessibilityLabel}
-  />
-);
-
-interface HeaderActionButtonProps {
-  icon: keyof typeof Ionicons.glyphMap;
-  onPress: () => void;
-  accessibilityLabel: string;
-}
-
-/**
- * Action button for header right (like add/settings buttons)
- */
-export const HeaderActionButton = ({
-  icon,
-  onPress,
-  accessibilityLabel,
-}: HeaderActionButtonProps) => (
-  <HeaderButton
-    icon={icon}
     onPress={onPress}
     accessibilityLabel={accessibilityLabel}
   />

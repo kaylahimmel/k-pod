@@ -1,13 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
-import {
-  useAuthStore,
-  useHistoryStore,
-  useIsDarkMode,
-  usePodcastStore,
-  useSettingsStore,
-  useToast,
-} from '../../hooks';
+import { useIsDarkMode, useSettingsStore, useToast } from '../../hooks';
+import { podcastStore } from '../../stores';
+import { authStore } from '../../stores/authStore';
+import { historyStore } from '../../stores/historyStore';
 import { AuthService, unregisterBackgroundRefresh } from '../../services';
 import { formatAccount, getListeningStats } from './SettingsPresenter';
 import { SettingsViewModelReturn } from './Settings.types';
@@ -18,20 +14,21 @@ import { SettingsViewModelReturn } from './Settings.types';
  */
 export const useSettingsViewModel = (): SettingsViewModelReturn => {
   // Store access
-  const { settings, loading, updateSetting, resetSettings } =
-    useSettingsStore();
+  const { settings, updateSetting, resetSettings } = useSettingsStore();
   const toast = useToast();
   // The current look, whether it came from the phone or from this switch
   const isDarkMode = useIsDarkMode();
 
-  // Account and Listening sections (moved here from the old Profile tab)
-  const { user } = useAuthStore();
-  const { podcasts } = usePodcastStore();
-  const { history } = useHistoryStore();
+  // Account row and stats row. Each selector reads only the field it needs,
+  // so a feed refresh (which rewrites every podcast's episodes) doesn't
+  // re-render this tab unless the number of subscriptions changes
+  const user = authStore((state) => state.user);
+  const history = historyStore((state) => state.history);
+  const podcastCount = podcastStore((state) => state.podcasts.length);
   const account = useMemo(() => formatAccount(user), [user]);
   const listeningStats = useMemo(
-    () => getListeningStats(history, podcasts),
-    [history, podcasts],
+    () => getListeningStats(history, podcastCount),
+    [history, podcastCount],
   );
 
   /**
@@ -93,7 +90,6 @@ export const useSettingsViewModel = (): SettingsViewModelReturn => {
 
   return {
     downloadOnWiFi: settings.downloadOnWiFi,
-    isLoading: loading,
     isDarkMode,
     account,
     listeningStats,

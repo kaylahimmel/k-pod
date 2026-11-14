@@ -19,8 +19,6 @@ export const settingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
       settings: defaultSettings,
-      loading: false,
-      error: null,
       updateSetting: (key, value) =>
         set((state) => ({
           settings: {
@@ -37,13 +35,11 @@ export const settingsStore = create<SettingsStore>()(
         })),
       loadSettings: (settings) => set({ settings }),
       resetSettings: () => set({ settings: defaultSettings }),
-      setLoading: (loading) => set({ loading }),
-      setError: (error) => set({ error }),
     }),
     {
       name: STORAGE_KEYS.SETTINGS,
       storage: createJSONStorage(() => AsyncStorage),
-      // Persist only the user's settings; loading/error are transient UI state
+      // Persist only the user's settings, not the action functions
       partialize: (state) => ({
         settings: state.settings,
       }),

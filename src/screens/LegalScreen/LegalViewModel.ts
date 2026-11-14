@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Alert, Linking } from 'react-native';
+import { useExternalLink } from '../../hooks';
 import { LegalViewModelReturn } from './Legal.types';
 
 // Placeholder URLs for legal pages (TO-DO: replace with the real pages)
@@ -8,30 +8,21 @@ export const TERMS_OF_SERVICE_URL = 'https://example.com/terms';
 
 /**
  * ViewModel hook for the Legal screen (opened from Settings -> Legal).
- * Each row opens its page in the device browser
+ * Each row opens its page in the device browser through useExternalLink,
+ * which shows an Alert if the page can't open
  */
 export const useLegalViewModel = (): LegalViewModelReturn => {
-  /**
-   * Opens the privacy policy in the device browser
-   */
-  const handlePrivacyPolicyPress = useCallback(async () => {
-    try {
-      await Linking.openURL(PRIVACY_POLICY_URL);
-    } catch {
-      Alert.alert('Error', 'Unable to open privacy policy.');
-    }
-  }, []);
+  const { openUrl } = useExternalLink();
 
-  /**
-   * Opens the terms of service in the device browser
-   */
-  const handleTermsOfServicePress = useCallback(async () => {
-    try {
-      await Linking.openURL(TERMS_OF_SERVICE_URL);
-    } catch {
-      Alert.alert('Error', 'Unable to open terms of service.');
-    }
-  }, []);
+  const handlePrivacyPolicyPress = useCallback(
+    () => openUrl(PRIVACY_POLICY_URL),
+    [openUrl],
+  );
+
+  const handleTermsOfServicePress = useCallback(
+    () => openUrl(TERMS_OF_SERVICE_URL),
+    [openUrl],
+  );
 
   return { handlePrivacyPolicyPress, handleTermsOfServicePress };
 };

@@ -35,8 +35,6 @@ describe('FullPlayerScreen', () => {
     });
     settingsStore.setState({
       settings: createMockAppSettings(),
-      loading: false,
-      error: null,
     });
   });
 

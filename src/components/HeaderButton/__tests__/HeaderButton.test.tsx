@@ -4,9 +4,8 @@ import {
   HeaderButton,
   HeaderBackButton,
   HeaderCloseButton,
-  HeaderActionButton,
 } from '../HeaderButton';
-import { HEADER_ICON_SIZE } from '../../../navigation/screenOptions';
+import { HEADER_ICON_SIZE } from '../HeaderButton.styles';
 
 describe('HeaderButton', () => {
   const mockOnPress = jest.fn();
@@ -54,20 +53,6 @@ describe('HeaderButton', () => {
       expect(button).toBeTruthy();
       // Icon size comes from the shared config; color comes from the theme
       expect(HEADER_ICON_SIZE).toBe(28);
-    });
-
-    it('allows custom icon size and color', () => {
-      const { getByLabelText } = render(
-        <HeaderButton
-          icon='settings'
-          onPress={mockOnPress}
-          accessibilityLabel='Settings'
-          iconSize={24}
-          color='#FF0000'
-        />,
-      );
-
-      expect(getByLabelText('Settings')).toBeTruthy();
     });
   });
 
@@ -144,45 +129,6 @@ describe('HeaderButton', () => {
 
       fireEvent.press(getByLabelText('Close'));
       expect(mockOnPress).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('HeaderActionButton', () => {
-    it('renders with the provided icon', () => {
-      const { getByLabelText } = render(
-        <HeaderActionButton
-          icon='add-circle-outline'
-          onPress={mockOnPress}
-          accessibilityLabel='Add item'
-        />,
-      );
-
-      expect(getByLabelText('Add item')).toBeTruthy();
-    });
-
-    it('calls onPress when pressed', () => {
-      const { getByLabelText } = render(
-        <HeaderActionButton
-          icon='add-circle-outline'
-          onPress={mockOnPress}
-          accessibilityLabel='Add item'
-        />,
-      );
-
-      fireEvent.press(getByLabelText('Add item'));
-      expect(mockOnPress).toHaveBeenCalledTimes(1);
-    });
-
-    it('works with different icon names', () => {
-      const { getByLabelText } = render(
-        <HeaderActionButton
-          icon='settings-outline'
-          onPress={mockOnPress}
-          accessibilityLabel='Settings'
-        />,
-      );
-
-      expect(getByLabelText('Settings')).toBeTruthy();
     });
   });
 });

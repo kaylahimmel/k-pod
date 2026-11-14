@@ -1,9 +1,10 @@
-import { SkipOption, SpeedOption } from './PlayerControls.types';
+import { PlaybackSpeed } from '../../models';
+import { SettingOption } from '../../components';
 
 /**
  * Available playback speed options
  */
-export const SPEED_OPTIONS: SpeedOption[] = [
+export const SPEED_OPTIONS: SettingOption<PlaybackSpeed>[] = [
   { value: 0.5, label: '0.5x' },
   { value: 0.75, label: '0.75x' },
   { value: 1, label: '1x (Normal)' },
@@ -16,7 +17,7 @@ export const SPEED_OPTIONS: SpeedOption[] = [
 /**
  * Available skip forward duration options
  */
-export const SKIP_FORWARD_OPTIONS: SkipOption[] = [
+export const SKIP_FORWARD_OPTIONS: SettingOption<number>[] = [
   { value: 10, label: '10 seconds' },
   { value: 15, label: '15 seconds' },
   { value: 30, label: '30 seconds' },
@@ -27,7 +28,7 @@ export const SKIP_FORWARD_OPTIONS: SkipOption[] = [
 /**
  * Available skip backward duration options
  */
-export const SKIP_BACKWARD_OPTIONS: SkipOption[] = [
+export const SKIP_BACKWARD_OPTIONS: SettingOption<number>[] = [
   { value: 5, label: '5 seconds' },
   { value: 10, label: '10 seconds' },
   { value: 15, label: '15 seconds' },

@@ -20,8 +20,6 @@ describe('settingsStore', () => {
     // Reset store to initial state before each test
     settingsStore.setState({
       settings: defaultSettings,
-      loading: false,
-      error: null,
     });
   });
 
@@ -29,8 +27,6 @@ describe('settingsStore', () => {
     it('should initialize with default settings', () => {
       const state = settingsStore.getState();
       expect(state.settings).toEqual(defaultSettings);
-      expect(state.loading).toBe(false);
-      expect(state.error).toBeNull();
     });
   });
 
@@ -204,35 +200,9 @@ describe('settingsStore', () => {
     });
   });
 
-  describe('setLoading', () => {
-    it('should set loading state', () => {
-      settingsStore.getState().setLoading(true);
-      expect(settingsStore.getState().loading).toBe(true);
-
-      settingsStore.getState().setLoading(false);
-      expect(settingsStore.getState().loading).toBe(false);
-    });
-  });
-
-  describe('setError', () => {
-    it('should set error message', () => {
-      settingsStore.getState().setError('Failed to load settings');
-      expect(settingsStore.getState().error).toBe('Failed to load settings');
-    });
-
-    it('should clear error message', () => {
-      settingsStore.getState().setError('Some error');
-      settingsStore.getState().setError(null);
-      expect(settingsStore.getState().error).toBeNull();
-    });
-  });
-
   describe('complex scenarios', () => {
-    it('should handle loading flow: loading -> success -> reset', () => {
+    it('should load saved settings, then reset to defaults', () => {
       const state = settingsStore.getState();
-
-      state.setLoading(true);
-      expect(settingsStore.getState().loading).toBe(true);
 
       const newSettings: AppSettings = createMockAppSettings({
         autoPlayNext: false,
@@ -243,9 +213,7 @@ describe('settingsStore', () => {
       });
 
       state.loadSettings(newSettings);
-      state.setLoading(false);
 
-      expect(settingsStore.getState().loading).toBe(false);
       expect(settingsStore.getState().settings).toEqual(newSettings);
 
       state.resetSettings();
@@ -262,7 +230,7 @@ describe('settingsStore', () => {
       expect(options.name).toBe(STORAGE_KEYS.SETTINGS);
     });
 
-    it('should persist only the settings object, not loading/error state', () => {
+    it('should persist only the settings object, not the action functions', () => {
       const options = settingsStore.persist.getOptions();
       const partialized = options.partialize?.(settingsStore.getState());
 

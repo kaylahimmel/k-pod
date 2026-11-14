@@ -1,7 +1,7 @@
 import React, { useCallback, useLayoutEffect } from 'react';
 import { LibraryScreenProps } from '../../navigation/types';
 import { LibraryView } from './LibraryView';
-import { HeaderActionButton } from '../../components';
+import { HeaderButton } from '../../components';
 
 export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
   // Navigation handler: Navigate to podcast detail
@@ -21,7 +21,7 @@ export const LibraryScreen = ({ navigation }: LibraryScreenProps) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <HeaderActionButton
+        <HeaderButton
           icon='add-circle-outline'
           onPress={handleAddPodcastPressNav}
           accessibilityLabel='Add podcast'

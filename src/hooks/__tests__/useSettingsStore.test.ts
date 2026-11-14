@@ -8,8 +8,6 @@ describe('useSettingsStore', () => {
     // Wrapped in act() because store actions can trigger re-renders in mounted hooks
     act(() => {
       settingsStore.getState().resetSettings();
-      settingsStore.getState().setLoading(false);
-      settingsStore.getState().setError(null);
     });
   });
 
@@ -86,29 +84,5 @@ describe('useSettingsStore', () => {
 
     expect(result.current.settings.defaultSpeed).toBe(1);
     expect(result.current.settings.autoPlayNext).toBe(true);
-  });
-
-  it('manages loading and error states', () => {
-    const { result } = renderHook(() => useSettingsStore());
-
-    expect(result.current.loading).toBe(false);
-    expect(result.current.error).toBeNull();
-
-    act(() => {
-      result.current.setLoading(true);
-    });
-    expect(result.current.loading).toBe(true);
-
-    act(() => {
-      result.current.setError('Failed to load settings');
-    });
-    expect(result.current.error).toBe('Failed to load settings');
-
-    act(() => {
-      result.current.setLoading(false);
-      result.current.setError(null);
-    });
-    expect(result.current.loading).toBe(false);
-    expect(result.current.error).toBeNull();
   });
 });

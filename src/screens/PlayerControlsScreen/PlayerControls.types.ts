@@ -1,23 +1,14 @@
 import { PlaybackSpeed } from '../../models';
-
-export interface SpeedOption {
-  value: PlaybackSpeed;
-  label: string;
-}
-
-export interface SkipOption {
-  value: number;
-  label: string;
-}
+import { SettingOption } from '../../components';
 
 export interface PlayerControlsViewModelReturn {
   autoPlayNext: boolean;
   defaultSpeed: PlaybackSpeed;
   skipForwardSeconds: number;
   skipBackwardSeconds: number;
-  speedOptions: SpeedOption[];
-  skipForwardOptions: SkipOption[];
-  skipBackwardOptions: SkipOption[];
+  speedOptions: SettingOption<PlaybackSpeed>[];
+  skipForwardOptions: SettingOption<number>[];
+  skipBackwardOptions: SettingOption<number>[];
   handleToggleAutoPlayNext: () => void;
   handleSpeedChange: (speed: PlaybackSpeed) => void;
   handleSkipForwardChange: (seconds: number) => void;

@@ -1,6 +1,11 @@
 import { StyleSheet } from 'react-native';
-import { ThemeColors } from '../../constants';
+import { ThemeColors } from '../constants';
 
+/**
+ * Page layout shared by Settings and its sub-pages (Player Controls, Legal,
+ * App Information): a gray page with one white card. Kept in one file so the
+ * pages can't drift apart in spacing or color
+ */
 export const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: {

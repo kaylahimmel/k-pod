@@ -4,7 +4,6 @@ import { QueueStackParamList } from '../types';
 import { getDefaultScreenOptions } from '../screenOptions';
 import { useThemedStyles } from '../../hooks';
 import { QueueScreen, EpisodeDetailScreen } from '../../screens';
-import { NavigationBackButton } from '../../components';
 
 const Stack = createNativeStackNavigator<QueueStackParamList>();
 
@@ -20,11 +19,7 @@ export const QueueStackNavigator = () => {
       <Stack.Screen
         name='EpisodeDetail'
         component={EpisodeDetailScreen}
-        options={{
-          title: 'Episode',
-          headerBackVisible: false,
-          headerLeft: () => <NavigationBackButton />,
-        }}
+        options={{ title: 'Episode' }}
       />
     </Stack.Navigator>
   );

@@ -9,11 +9,8 @@ import {
 import {
   createMockEpisode,
   createMockListeningHistory,
-  createMockPodcasts,
   createMockUser,
 } from '../../../__mocks__';
-
-describe('SettingsPresenter', () => {});
 
 describe('formatListeningTime', () => {
   it("should return '0 min' for 0 seconds", () => {
@@ -22,6 +19,11 @@ describe('formatListeningTime', () => {
 
   it("should return '0 min' for negative seconds", () => {
     expect(formatListeningTime(-10)).toBe('0 min');
+  });
+
+  it("should return '0 min' for an unknown (infinite) duration", () => {
+    expect(formatListeningTime(Infinity)).toBe('0 min');
+    expect(formatListeningTime(NaN)).toBe('0 min');
   });
 
   it("should return '0 min' for null/undefined", () => {
@@ -135,11 +137,11 @@ describe('formatAccount', () => {
 
 describe('getListeningStats', () => {
   it('should return zero stats for empty data', () => {
-    expect(getListeningStats([], [])).toEqual({
-      totalListeningTime: '0 min',
-      episodesCompleted: 0,
-      podcastsSubscribed: 0,
-    });
+    expect(getListeningStats([], 0)).toEqual([
+      { label: 'Listening Time', value: '0 min' },
+      { label: 'Episodes', value: 0 },
+      { label: 'Subscribed', value: 0 },
+    ]);
   });
 
   it('should calculate time, completed episodes and subscriptions', () => {
@@ -154,10 +156,10 @@ describe('getListeningStats', () => {
       }),
     ];
 
-    expect(getListeningStats(history, createMockPodcasts(3))).toEqual({
-      totalListeningTime: '1h 30m',
-      episodesCompleted: 1,
-      podcastsSubscribed: 3,
-    });
+    expect(getListeningStats(history, 3)).toEqual([
+      { label: 'Listening Time', value: '1h 30m' },
+      { label: 'Episodes', value: 1 },
+      { label: 'Subscribed', value: 3 },
+    ]);
   });
 });

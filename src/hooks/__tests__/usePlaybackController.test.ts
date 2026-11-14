@@ -36,6 +36,22 @@ describe('usePlaybackActions', () => {
   });
 });
 
+describe('usePlaybackEvents', () => {
+  // Mounted in RootNavigator, so a re-render here re-renders the app root
+  it('should not re-render on playback position updates', () => {
+    let renderCount = 0;
+    renderHook(() => {
+      renderCount++;
+      usePlaybackEvents();
+    });
+    const rendersBefore = renderCount;
+
+    act(() => playerStore.setState({ position: 42, duration: 600 }));
+
+    expect(renderCount).toBe(rendersBefore);
+  });
+});
+
 describe('usePlaybackController', () => {
   const mockEpisode = createMockEpisode({
     id: 'episode-1',

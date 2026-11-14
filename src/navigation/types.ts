@@ -46,6 +46,9 @@ export type SettingsStackParamList = {
   ChangePassword: undefined;
 };
 
+// Every Settings stack screen except Settings itself: the pages its rows open
+export type SettingsSubPage = Exclude<keyof SettingsStackParamList, 'Settings'>;
+
 export type BottomTabParamList = {
   LibraryTab: NavigatorScreenParams<LibraryStackParamList>;
   DiscoverTab: NavigatorScreenParams<DiscoverStackParamList>;
@@ -107,24 +110,8 @@ export type PodcastPreviewScreenProps = CompositeScreenProps<
   >
 >;
 
-export type DiscoverEpisodeDetailScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<DiscoverStackParamList, 'EpisodeDetail'>,
-  CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, 'DiscoverTab'>,
-    NativeStackScreenProps<RootStackParamList>
-  >
->;
-
 export type QueueScreenProps = CompositeScreenProps<
   NativeStackScreenProps<QueueStackParamList, 'Queue'>,
-  CompositeScreenProps<
-    BottomTabScreenProps<BottomTabParamList, 'QueueTab'>,
-    NativeStackScreenProps<RootStackParamList>
-  >
->;
-
-export type QueueEpisodeDetailScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<QueueStackParamList, 'EpisodeDetail'>,
   CompositeScreenProps<
     BottomTabScreenProps<BottomTabParamList, 'QueueTab'>,
     NativeStackScreenProps<RootStackParamList>

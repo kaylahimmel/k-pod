@@ -44,13 +44,10 @@ describe('useLegalViewModel', () => {
       await result.current.handleTermsOfServicePress();
     });
 
+    expect(Alert.alert).toHaveBeenCalledTimes(2);
     expect(Alert.alert).toHaveBeenCalledWith(
       'Error',
-      'Unable to open privacy policy.',
-    );
-    expect(Alert.alert).toHaveBeenCalledWith(
-      'Error',
-      'Unable to open terms of service.',
+      'Unable to open this link.',
     );
   });
 });

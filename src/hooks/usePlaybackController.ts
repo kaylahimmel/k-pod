@@ -13,7 +13,9 @@ import {
   settingsStore,
   podcastStore,
 } from '../stores';
+import { historyStore } from '../stores/historyStore';
 import { ensureHydrated } from '../utils';
+import { COMPLETION_THRESHOLD_PERCENT } from '../constants';
 
 // ============================================
 // SHARED PLAYBACK BOOKKEEPING
@@ -330,11 +332,15 @@ async function showQueueCurrentPaused(): Promise<void> {
  * its unmount would clear them for the whole app (last-writer-wins slots).
  */
 export const usePlaybackEvents = () => {
-  const { setIsPlaying, setPosition, setDuration } = usePlayerStore();
-
-  const { settings } = useSettingsStore();
-
-  const { addToHistory } = useHistoryStore();
+  // Selectors, not whole stores: this hook is mounted in RootNavigator, so
+  // reading the whole player store re-rendered the app root on every
+  // position tick (once a second during playback). The actions never change,
+  // and autoPlayNext only changes when the user flips it
+  const setIsPlaying = playerStore((state) => state.setIsPlaying);
+  const setPosition = playerStore((state) => state.setPosition);
+  const setDuration = playerStore((state) => state.setDuration);
+  const autoPlayNext = settingsStore((state) => state.settings.autoPlayNext);
+  const addToHistory = historyStore((state) => state.addToHistory);
 
   /**
    * Progress callback: Update position and duration in store
@@ -407,7 +413,7 @@ export const usePlaybackEvents = () => {
     const completedItemId = freshQueue[freshCurrentIndex]?.id;
 
     // Check if auto-play next is enabled
-    if (!settings.autoPlayNext) {
+    if (!autoPlayNext) {
       // Not auto-playing, but still remove the completed episode
       if (completedItemId) {
         removeFromQueue(completedItemId);
@@ -437,7 +443,7 @@ export const usePlaybackEvents = () => {
       }
       showQueueCurrentPaused();
     }
-  }, [settings.autoPlayNext, addToHistory, setIsPlaying]);
+  }, [autoPlayNext, addToHistory, setIsPlaying]);
 
   /**
    * Error callback: Handle playback errors
@@ -673,10 +679,10 @@ export const usePlaybackActions = () => {
           );
           lastSavedPosition = freshPosition;
 
-          // Track partially completed episodes (>90% listened) in history
+          // Count it as finished once it's past the completion threshold
           if (freshDuration > 0 && freshPodcast) {
             const completionPercentage = (freshPosition / freshDuration) * 100;
-            if (completionPercentage >= 90) {
+            if (completionPercentage >= COMPLETION_THRESHOLD_PERCENT) {
               await addToHistory(
                 freshEpisode,
                 freshPodcast,

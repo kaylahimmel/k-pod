@@ -14,7 +14,7 @@ interface SettingStatsRowProps {
 
 /**
  * A row of side-by-side stats (big value, small label) separated by
- * dividers, used in the Settings Listening section
+ * dividers, used for the listening stats on Settings
  */
 export const SettingStatsRow = ({ stats }: SettingStatsRowProps) => {
   const styles = useThemedStyles(createStyles);

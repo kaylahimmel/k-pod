@@ -6,7 +6,6 @@ import { useThemedStyles } from '../../hooks';
 import { DiscoverScreen } from '../../screens/DiscoverScreen';
 import { PodcastPreviewScreen } from '../../screens/PodcastPreviewScreen';
 import { EpisodeDetailScreen } from '../../screens/EpisodeDetailScreen';
-import { NavigationBackButton } from '../../components';
 
 const Stack = createNativeStackNavigator<DiscoverStackParamList>();
 
@@ -22,20 +21,12 @@ export const DiscoverStackNavigator = () => {
       <Stack.Screen
         name='PodcastPreview'
         component={PodcastPreviewScreen}
-        options={{
-          title: 'Podcast',
-          headerBackVisible: false,
-          headerLeft: () => <NavigationBackButton />,
-        }}
+        options={{ title: 'Podcast' }}
       />
       <Stack.Screen
         name='EpisodeDetail'
         component={EpisodeDetailScreen}
-        options={{
-          title: 'Episode',
-          headerBackVisible: false,
-          headerLeft: () => <NavigationBackButton />,
-        }}
+        options={{ title: 'Episode' }}
       />
     </Stack.Navigator>
   );

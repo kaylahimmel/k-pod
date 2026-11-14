@@ -4,7 +4,7 @@ import { podcastStore, settingsStore } from '../../../stores';
 import { authStore } from '../../../stores/authStore';
 import { historyStore } from '../../../stores/historyStore';
 import { AuthService, unregisterBackgroundRefresh } from '../../../services';
-import { Alert, Linking } from 'react-native';
+import { Alert } from 'react-native';
 import {
   createMockAppSettings,
   createMockEpisode,
@@ -27,9 +27,7 @@ jest.mock('../../../services', () => ({
 
 const mockUnregister = unregisterBackgroundRefresh as jest.Mock;
 
-// Mock Alert and Linking
 jest.spyOn(Alert, 'alert');
-jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
 
 describe('useSettingsViewModel', () => {
   const mockUpdateSetting = jest.fn();
@@ -42,7 +40,6 @@ describe('useSettingsViewModel', () => {
   ) => {
     const state = {
       settings: { ...defaultSettings, ...overrides },
-      loading: false,
       updateSetting: mockUpdateSetting,
       resetSettings: mockResetSettings,
     };
@@ -54,13 +51,21 @@ describe('useSettingsViewModel', () => {
     );
   };
 
+  // The ViewModel reads podcastStore with a selector, so the mock runs it
+  const mockPodcasts = (podcasts: ReturnType<typeof createMockPodcasts>) => {
+    (podcastStore as unknown as jest.Mock).mockImplementation(
+      (selector: (s: { podcasts: typeof podcasts }) => unknown) =>
+        selector({ podcasts }),
+    );
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockSettingsState();
     mockUnregister.mockResolvedValue({ success: true, data: undefined });
-    // usePodcastStore reads the mocked barrel; auth and history are the real
-    // stores (their hooks import them directly), reset to empty here
-    (podcastStore as unknown as jest.Mock).mockReturnValue({ podcasts: [] });
+    mockPodcasts([]);
+    // Auth and history are the real stores (the ViewModel imports them from
+    // their own files, not the mocked barrel), reset to empty here
     authStore.setState({ user: null });
     historyStore.setState({ history: [] });
   });
@@ -69,19 +74,6 @@ describe('useSettingsViewModel', () => {
     const { result } = renderHook(() => useSettingsViewModel());
 
     expect(result.current.downloadOnWiFi).toBe(true);
-  });
-
-  it('should return loading state', () => {
-    (settingsStore as unknown as jest.Mock).mockReturnValue({
-      settings: defaultSettings,
-      loading: true,
-      updateSetting: mockUpdateSetting,
-      resetSettings: mockResetSettings,
-    });
-
-    const { result } = renderHook(() => useSettingsViewModel());
-
-    expect(result.current.isLoading).toBe(true);
   });
 
   describe('handleToggleDownloadOnWiFi', () => {
@@ -217,9 +209,7 @@ describe('useSettingsViewModel', () => {
     });
 
     it('should build stats from history and subscriptions', () => {
-      (podcastStore as unknown as jest.Mock).mockReturnValue({
-        podcasts: createMockPodcasts(2),
-      });
+      mockPodcasts(createMockPodcasts(2));
       historyStore.setState({
         history: [
           createMockListeningHistory({
@@ -230,11 +220,11 @@ describe('useSettingsViewModel', () => {
       });
       const { result } = renderHook(() => useSettingsViewModel());
 
-      expect(result.current.listeningStats).toEqual({
-        totalListeningTime: '10 min',
-        episodesCompleted: 1,
-        podcastsSubscribed: 2,
-      });
+      expect(result.current.listeningStats).toEqual([
+        { label: 'Listening Time', value: '10 min' },
+        { label: 'Episodes', value: 1 },
+        { label: 'Subscribed', value: 2 },
+      ]);
     });
 
     it('should sign out only after the user confirms', async () => {

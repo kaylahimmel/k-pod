@@ -28,8 +28,6 @@ describe('FullPlayerView', () => {
     });
     settingsStore.setState({
       settings: createMockAppSettings(),
-      loading: false,
-      error: null,
     });
   });
 
@@ -193,8 +191,6 @@ describe('FullPlayerView', () => {
           skipForwardSeconds: 45,
           skipBackwardSeconds: 10,
         },
-        loading: false,
-        error: null,
       });
 
       const { getByText } = await renderView();

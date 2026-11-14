@@ -7,24 +7,6 @@ export const createStyles = (colors: ThemeColors) =>
       flex: 1,
       backgroundColor: colors.background,
     },
-    searchContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: colors.border,
-      borderRadius: 10,
-      marginHorizontal: 16,
-      marginVertical: 12,
-      paddingHorizontal: 12,
-      height: 40,
-    },
-    searchIcon: {
-      marginRight: 8,
-    },
-    searchInput: {
-      flex: 1,
-      fontSize: 18,
-      color: colors.textPrimary,
-    },
     listContent: {
       paddingHorizontal: 16,
       paddingBottom: 100,
@@ -39,36 +21,5 @@ export const createStyles = (colors: ThemeColors) =>
       fontSize: 20,
       fontWeight: '700',
       color: colors.textPrimary,
-    },
-    emptyContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingHorizontal: 32,
-      backgroundColor: colors.background,
-    },
-    emptyTitle: {
-      fontSize: 22,
-      fontWeight: '600',
-      color: colors.textPrimary,
-      marginTop: 16,
-      marginBottom: 8,
-    },
-    emptyMessage: {
-      fontSize: 18,
-      color: colors.textSecondary,
-      textAlign: 'center',
-      marginBottom: 24,
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: colors.background,
-    },
-    loadingText: {
-      fontSize: 18,
-      color: colors.textSecondary,
-      marginTop: 12,
     },
   });
